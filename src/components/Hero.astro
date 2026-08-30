@@ -5,8 +5,65 @@
   import '@google/model-viewer';
 </script>
 
-<div class="page">
-  <section class="splash">
+<script>
+  import Lenis from 'lenis';
+
+  const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+  const raf = (time) => {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  };
+  requestAnimationFrame(raf);
+
+  const layers = Array.from(document.querySelectorAll('.layer'));
+  const K = 1.5;
+  const cl = (v) => Math.min(1, Math.max(0, v));
+  const sm = (t) => t * t * (3 - 2 * t);
+
+  const update = (e) => {
+    const at = e && e.scroll != null ? e.scroll : 0;
+    const raw = at / window.innerHeight;
+    const vh = window.innerHeight;
+
+    layers.forEach((el, i) => {
+      let scale = 1;
+      let opacity = 1;
+
+      if (i === 0) {
+        const t = sm(cl(raw));
+        opacity = 1 - t;
+      } else if (i === 1) {
+        const tin = sm(cl(raw));
+        const et = sm(cl(raw - 1));
+        const y = (1 - tin) * vh;
+        scale = 1 + et * (K - 1);
+        opacity = tin * (1 - et);
+        el.style.transform = `translate(-50%,-50%) translateY(${y.toFixed(1)}px) scale(${scale.toFixed(4)})`;
+        el.style.opacity = opacity.toFixed(4);
+        el.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
+        return;
+      } else {
+        const tin = sm(cl(raw - (i - 1)));
+        const et = sm(cl(raw - i));
+        scale = (1 / K + tin * (1 - 1 / K)) * (1 + et * (K - 1));
+        opacity = tin * (1 - et);
+      }
+
+      el.style.transform = `translate(-50%,-50%) scale(${scale.toFixed(4)})`;
+      el.style.opacity = opacity.toFixed(4);
+      el.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
+    });
+  };
+
+  lenis.on('scroll', update);
+  window.addEventListener('resize', () => update({ scroll: lenis.scroll }));
+  update({ scroll: 0 });
+</script>
+
+<div class="stars" aria-hidden="true"></div>
+
+<div class="stage">
+  <div class="layer" data-name="splash">
     <model-viewer
       class="splash-logo"
       src="/spiritxlogo4.glb"
@@ -35,27 +92,23 @@
       <p>University of Moratuwa</p>
     </div>
     <a class="scroll-hint" href="#home">Scroll to explore &darr;</a>
-  </section>
+  </div>
 
-  <div class="splash-spacer" aria-hidden="true"></div>
+  <div class="layer" data-name="home">
+    <nav class="nav">
+      <a class="brand" href="/">
+        <span class="brand-mark">SX</span>
+        <span>MoraSpirit</span>
+      </a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#tracks">Tracks</a>
+        <a href="#cta">FAQ</a>
+      </div>
+      <a class="btn btn-primary btn-sm" href="#cta">Register</a>
+    </nav>
 
-  <div class="content">
-  <nav class="nav">
-    <a class="brand" href="/">
-      <span class="brand-mark">SX</span>
-      <span>MoraSpirit</span>
-    </a>
-    <div class="nav-links">
-      <a href="#about">About</a>
-      <a href="#tracks">Tracks</a>
-      <a href="#faq">FAQ</a>
-    </div>
-    <a class="btn btn-primary btn-sm" href="#register">Register</a>
-  </nav>
-
-  <header id="home" class="hero">
-    <div class="hero-glow"></div>
-    <div class="hero-copy">
+    <div class="home-copy">
       <p class="eyebrow"><span class="dot"></span> Spirit X 2.0 &middot; 2026</p>
       <h1>
         Inter University
@@ -70,46 +123,32 @@
         history.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#register">Register Now</a>
+        <a class="btn btn-primary" href="#cta">Register Now</a>
         <a class="btn btn-ghost" href="#about">Learn More</a>
       </div>
-      <div class="stats">
-        <div class="stat">
-          <span class="stat-num">48</span>
-          <span class="stat-label">Hours</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">200+</span>
-          <span class="stat-label">Hackers</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">20+</span>
-          <span class="stat-label">Universities</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">5M+</span>
-          <span class="stat-label">In Prizes</span>
-        </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-num">48</span>
+        <span class="stat-label">Hours</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">200+</span>
+        <span class="stat-label">Hackers</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">20+</span>
+        <span class="stat-label">Universities</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">5M+</span>
+        <span class="stat-label">In Prizes</span>
       </div>
     </div>
-  </header>
+  </div>
 
-  <section class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-      <span>University of Moratuwa</span><i>&bull;</i>
-      <span>University of Colombo</span><i>&bull;</i>
-      <span>University of Peradeniya</span><i>&bull;</i>
-      <span>University of Kelaniya</span><i>&bull;</i>
-      <span>University of Ruhuna</span><i>&bull;</i>
-      <span>NSBM</span><i>&bull;</i>
-      <span>University of Moratuwa</span><i>&bull;</i>
-      <span>University of Colombo</span><i>&bull;</i>
-      <span>University of Peradeniya</span><i>&bull;</i>
-      <span>University of Kelaniya</span><i>&bull;</i>
-    </div>
-  </section>
-
-  <section id="about" class="section about">
+  <div class="layer" data-name="about">
     <div class="about-grid">
       <div class="about-model">
         <model-viewer
@@ -117,8 +156,8 @@
           environment-image="neutral"
           shadow-intensity="1"
           camera-controls
+          disable-zoom
           interaction-prompt="none"
-          auto-rotate
         ></model-viewer>
       </div>
       <div class="about-copy">
@@ -135,11 +174,14 @@
           <li>Mentors &amp; workshops from industry</li>
           <li>Live demos in front of top judges</li>
         </ul>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#tracks">Explore Tracks</a>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <section id="tracks" class="section tracks">
+  <div class="layer" data-name="tracks">
     <p class="eyebrow center"><span class="dot"></span> Challenge tracks</p>
     <h2 class="center">Pick your battlefield</h2>
     <div class="tracks-grid">
@@ -164,32 +206,32 @@
         <p>Green ideas for a smarter, cleaner island.</p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <section id="register" class="section cta">
-    <h2>Ready to dance with the best?</h2>
-    <p>Registrations are open. Teams of 1&ndash;4. Zero experience required.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="#register">Register Now</a>
-      <a class="btn btn-ghost" href="#">Download Brochure</a>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="footer-brand">
-      <span class="brand-mark">SX</span>
-      <div>
-        <strong>MoraSpirit</strong>
-        <p>&mdash; University Of Moratuwa</p>
+  <div class="layer" data-name="cta">
+    <div class="cta-box">
+      <h2>Ready to dance with the best?</h2>
+      <p>Registrations are open. Teams of 1&ndash;4. Zero experience required.</p>
+      <div class="hero-actions center-actions">
+        <a class="btn btn-primary" href="#cta">Register Now</a>
+        <a class="btn btn-ghost" href="#">Download Brochure</a>
       </div>
     </div>
-    <p class="footer-note">
-      Media, Arts &amp; Cultural Society &middot; University of Moratuwa
-    </p>
-    <p class="footer-copy">&copy; 2026 MoraSpirit. All rights reserved.</p>
-  </footer>
+
+    <footer class="footer">
+      <div class="footer-brand">
+        <span class="brand-mark">SX</span>
+        <div>
+          <strong>MoraSpirit</strong>
+          <p>&mdash; University Of Moratuwa</p>
+        </div>
+      </div>
+      <p class="footer-copy">&copy; 2026 MoraSpirit. All rights reserved.</p>
+    </footer>
   </div>
 </div>
+
+<div class="scroll-range" aria-hidden="true"></div>
 
 <style>
   :root {
@@ -203,13 +245,18 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
   }
 
-  .page {
+  body {
+    overscroll-behavior: none;
+  }
+
+  .page,
+  body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
   }
 
@@ -218,22 +265,156 @@
   h3 {
     font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
     letter-spacing: -0.02em;
+    margin: 0;
   }
 
-  /* Splash — models only */
-  .splash {
+  /* Starfield */
+  .stars {
     position: fixed;
     inset: 0;
     z-index: 0;
-    display: flex;
+    pointer-events: none;
     background:
-      radial-gradient(60% 60% at 20% 50%, rgba(236, 72, 153, 0.12), transparent 60%),
-      radial-gradient(60% 60% at 80% 50%, rgba(139, 92, 246, 0.16), transparent 60%);
+      radial-gradient(1.5px 1.5px at 12% 20%, rgba(255, 255, 255, 0.9), transparent 60%),
+      radial-gradient(1px 1px at 25% 65%, rgba(255, 255, 255, 0.6), transparent 60%),
+      radial-gradient(2px 2px at 40% 12%, rgba(255, 255, 255, 0.7), transparent 60%),
+      radial-gradient(1px 1px at 55% 40%, rgba(255, 255, 255, 0.5), transparent 60%),
+      radial-gradient(1.5px 1.5px at 70% 75%, rgba(255, 255, 255, 0.8), transparent 60%),
+      radial-gradient(1px 1px at 82% 25%, rgba(255, 255, 255, 0.6), transparent 60%),
+      radial-gradient(2px 2px at 92% 60%, rgba(255, 255, 255, 0.7), transparent 60%),
+      radial-gradient(1px 1px at 8% 85%, rgba(255, 255, 255, 0.5), transparent 60%),
+      radial-gradient(1.5px 1.5px at 33% 35%, rgba(255, 255, 255, 0.6), transparent 60%),
+      radial-gradient(1px 1px at 60% 90%, rgba(255, 255, 255, 0.7), transparent 60%);
+    animation: twinkle 7s ease-in-out infinite;
   }
 
-  .splash model-viewer {
-    width: 50%;
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  /* Stage + scrolling room */
+  .stage {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .scroll-range {
+    height: 400vh;
+  }
+
+  /* Layers */
+  .layer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
     height: 100%;
+    padding: clamp(1rem, 4vw, 4rem);
+    transform: translate(-50%, -50%) scale(1);
+    will-change: transform, opacity;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--grad);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+  }
+
+  .btn-ghost {
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .btn-sm {
+    padding: 0.55rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 2rem;
+  }
+
+  .center-actions {
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .eyebrow.center {
+    justify-content: center;
+    margin: 0 auto 0.75rem;
+    display: flex;
+  }
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--grad);
+    display: inline-block;
+  }
+
+  .grad {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ---- Layer 0: splash ---- */
+  .layer[data-name="splash"] {
+    display: flex;
+  }
+
+  .splash-logo,
+  .splash-dancer {
+    flex: 1;
+    height: 100%;
+    width: 50%;
   }
 
   .splash-logo {
@@ -258,11 +439,9 @@
     padding: 0 clamp(1rem, 3vw, 3rem);
     text-align: center;
     pointer-events: none;
-    z-index: 2;
   }
 
   .splash-copy h1 {
-    margin: 0;
     font-size: clamp(1.4rem, 3vw, 2.6rem);
     line-height: 1.1;
     font-weight: 800;
@@ -275,16 +454,6 @@
     font-size: clamp(0.9rem, 1.4vw, 1.2rem);
     font-weight: 500;
     letter-spacing: 0.02em;
-  }
-
-  .splash-spacer {
-    height: 100vh;
-  }
-
-  .content {
-    position: relative;
-    z-index: 1;
-    background: var(--bg);
   }
 
   .scroll-hint {
@@ -309,16 +478,27 @@
     }
   }
 
-  /* Nav */
+  /* ---- Layer 1: home ---- */
+  .layer[data-name="home"] {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
   .nav {
+    position: absolute;
+    top: clamp(1rem, 3vh, 2rem);
+    left: clamp(1rem, 4vw, 4rem);
+    right: clamp(1rem, 4vw, 4rem);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem clamp(1rem, 5vw, 4rem);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    background: var(--panel);
+    padding: 1rem 1.4rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(18, 18, 29, 0.65);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .brand {
@@ -352,110 +532,20 @@
     color: var(--muted);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: color 0.2s;
   }
 
   .nav-links a:hover {
     color: var(--text);
   }
 
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.85rem 1.6rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  .home-copy {
+    max-width: 680px;
   }
 
-  .btn-primary {
-    background: var(--grad);
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
-  }
-
-  .btn-ghost {
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-
-  .btn-ghost:hover {
-    border-color: rgba(255, 255, 255, 0.35);
-  }
-
-  .btn-sm {
-    padding: 0.55rem 1.2rem;
-    font-size: 0.85rem;
-  }
-
-  /* Hero */
-  .hero {
-    position: relative;
-    padding: clamp(4rem, 8vw, 7rem) clamp(1rem, 5vw, 4rem);
-    overflow: hidden;
-  }
-
-  .hero-glow {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(50% 60% at 80% 20%, rgba(139, 92, 246, 0.18), transparent 60%),
-      radial-gradient(40% 50% at 10% 90%, rgba(236, 72, 153, 0.14), transparent 60%);
-    pointer-events: none;
-  }
-
-  .hero-copy {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 1rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  .eyebrow.center {
-    justify-content: center;
-    margin: 0 auto 0.75rem;
-  }
-
-  .dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--grad);
-    display: inline-block;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: clamp(2.4rem, 6vw, 4.6rem);
+  .home-copy h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
     line-height: 1.02;
     font-weight: 800;
-  }
-
-  .grad {
-    background: var(--grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
   }
 
   .lead {
@@ -466,26 +556,25 @@
     line-height: 1.6;
   }
 
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.9rem;
-    margin-top: 2rem;
-  }
-
   .stats {
+    position: absolute;
+    bottom: clamp(2rem, 6vh, 4rem);
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    flex-wrap: wrap;
-    gap: 2.2rem;
-    margin-top: 2.6rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    padding: 1.4rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgba(18, 18, 29, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .stat-num {
     display: block;
     font-family: "Space Grotesk", sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     background: var(--grad);
     -webkit-background-clip: text;
@@ -495,58 +584,25 @@
 
   .stat-label {
     color: var(--muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
-  /* Marquee */
-  .marquee {
-    overflow: hidden;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 0;
-    background: var(--panel);
-  }
-
-  .marquee-track {
-    display: flex;
-    gap: 2rem;
-    white-space: nowrap;
-    width: max-content;
-    animation: marquee 22s linear infinite;
-  }
-
-  .marquee-track span {
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .marquee-track i {
-    color: var(--grad);
-    font-style: normal;
-  }
-
-  @keyframes marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
-  /* Sections */
-  .section {
-    padding: clamp(4rem, 8vw, 7rem) clamp(1rem, 5vw, 4rem);
+  /* ---- Layer 2: about ---- */
+  .layer[data-name="about"] {
+    display: grid;
+    place-items: center;
   }
 
   .about-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(1.5rem, 5vw, 4rem);
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1000px;
   }
 
   .about-model {
-    height: 420px;
+    height: clamp(280px, 50vh, 480px);
   }
 
   .about-model model-viewer {
@@ -555,8 +611,8 @@
   }
 
   h2 {
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    margin: 0 0 1rem;
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    margin-bottom: 1rem;
     line-height: 1.08;
   }
 
@@ -568,7 +624,7 @@
   .about-list {
     list-style: none;
     padding: 0;
-    margin: 1.5rem 0 0;
+    margin: 1.4rem 0 0;
     display: grid;
     gap: 0.7rem;
   }
@@ -590,16 +646,22 @@
     background: var(--grad);
   }
 
-  .tracks h2 {
+  /* ---- Layer 3: tracks ---- */
+  .layer[data-name="tracks"] {
+    display: grid;
+    place-content: center;
     text-align: center;
-    margin-bottom: 2.5rem;
+  }
+
+  .layer[data-name="tracks"] h2 {
+    margin-bottom: 2rem;
   }
 
   .tracks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
     gap: 1.2rem;
-    max-width: 1200px;
+    max-width: 720px;
     margin: 0 auto;
   }
 
@@ -607,7 +669,8 @@
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.6rem;
+    padding: 1.5rem;
+    text-align: left;
     transition: transform 0.25s, border-color 0.25s;
   }
 
@@ -617,12 +680,12 @@
   }
 
   .card-icon {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .card h3 {
     margin: 0.8rem 0 0.4rem;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
   }
 
   .card p {
@@ -632,45 +695,41 @@
     line-height: 1.6;
   }
 
-  /* CTA */
-  .cta {
+  /* ---- Layer 4: cta + footer ---- */
+  .layer[data-name="cta"] {
+    display: grid;
+    place-content: center;
     text-align: center;
+  }
+
+  .cta-box {
     position: relative;
+    padding: clamp(2rem, 5vw, 4rem);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: rgba(18, 18, 29, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    max-width: 640px;
+    margin: 0 auto;
   }
 
-  .cta::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(50% 80% at 50% 50%, rgba(139, 92, 246, 0.18), transparent 70%);
-  }
-
-  .cta h2,
-  .cta p,
-  .cta .hero-actions {
-    position: relative;
-  }
-
-  .cta p {
+  .cta-box p {
     color: var(--muted);
-    margin: 0 0 2rem;
+    margin: 0.5rem 0 0;
   }
 
-  .cta .hero-actions {
-    justify-content: center;
-    margin-top: 0;
-  }
-
-  /* Footer */
   .footer {
-    border-top: 1px solid var(--border);
-    padding: 2.5rem clamp(1rem, 5vw, 4rem);
+    position: absolute;
+    bottom: clamp(1rem, 3vh, 2rem);
+    left: clamp(1rem, 4vw, 4rem);
+    right: clamp(1rem, 4vw, 4rem);
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    background: var(--panel);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
   }
 
   .footer-brand {
@@ -689,31 +748,44 @@
     font-size: 0.85rem;
   }
 
-  .footer-note,
   .footer-copy {
     color: var(--muted);
     font-size: 0.85rem;
     margin: 0;
   }
 
-  /* Responsive */
+  /* ---- Responsive ---- */
   @media (max-width: 860px) {
     .nav-links {
       display: none;
     }
 
-    .lead {
+    .layer {
+      padding: 1.5rem;
+    }
+
+    .splash-copy {
+      bottom: 4rem;
+    }
+
+    .home-copy {
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    .home-copy .lead {
       margin-left: auto;
       margin-right: auto;
     }
 
-    .hero-copy {
-      text-align: center;
+    .hero-actions,
+    .center-actions {
+      justify-content: center;
     }
 
-    .hero-actions,
     .stats {
-      justify-content: center;
+      gap: 1.2rem;
+      padding: 1rem 1.4rem;
     }
 
     .about-grid {
@@ -723,10 +795,18 @@
 
     .about-list li {
       text-align: left;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .about-model {
-      height: 300px;
+      height: 260px;
+    }
+
+    .tracks-grid {
+      grid-template-columns: 1fr;
+      max-width: 400px;
     }
   }
 </style>
