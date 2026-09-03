@@ -14,8 +14,6 @@ export default defineConfig({
         'three',
         '@react-three/fiber',
         '@react-three/drei',
-        'use-sync-external-store',
-        'use-sync-external-store/shim/with-selector',
       ],
     },
   },

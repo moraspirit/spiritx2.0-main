@@ -1,247 +1,855 @@
----
----
-
 <script>
   import '@google/model-viewer';
 </script>
 
 <script>
+  import * as THREE from 'three';
   import Lenis from 'lenis';
 
-  const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
-  const raf = (time) => {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  };
-  requestAnimationFrame(raf);
+  const initExperience = () => {
+    const canvas = document.getElementById('web-canvas') as HTMLCanvasElement;
+    const stageEl = document.getElementById('stage') as HTMLElement;
+    const globalNav = document.getElementById('global-nav') as HTMLElement;
+    const layers = Array.from(document.querySelectorAll('.layer')) as HTMLElement[];
+    const navLinks = Array.from(document.querySelectorAll('.nav-links a')) as HTMLAnchorElement[];
 
-  const layers = Array.from(document.querySelectorAll('.layer'));
-  const K = 1.5;
-  const cl = (v) => Math.min(1, Math.max(0, v));
-  const sm = (t) => t * t * (3 - 2 * t);
+    if (!canvas || !stageEl || layers.length === 0) return;
 
-  const update = (e) => {
-    const at = e && e.scroll != null ? e.scroll : 0;
-    const raw = at / window.innerHeight;
-    const vh = window.innerHeight;
+    // -----------------------------------------------------------
+    // 1. Lenis Smooth Scroll Setup
+    // -----------------------------------------------------------
+    const lenis = new Lenis({
+      duration: 1.25,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
 
-    layers.forEach((el, i) => {
-      let scale = 1;
-      let opacity = 1;
+    let currentScroll = 0;
+    let targetScroll = 0;
+    let scrollVelocity = 0;
 
-      if (i === 0) {
-        const t = sm(cl(raw));
-        opacity = 1 - t;
-      } else if (i === 1) {
-        const tin = sm(cl(raw));
-        const et = sm(cl(raw - 1));
-        const y = (1 - tin) * vh;
-        scale = 1 + et * (K - 1);
-        opacity = tin * (1 - et);
-        el.style.transform = `translate(-50%,-50%) translateY(${y.toFixed(1)}px) scale(${scale.toFixed(4)})`;
-        el.style.opacity = opacity.toFixed(4);
-        el.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
-        return;
-      } else {
-        const tin = sm(cl(raw - (i - 1)));
-        const et = sm(cl(raw - i));
-        scale = (1 / K + tin * (1 - 1 / K)) * (1 + et * (K - 1));
-        opacity = tin * (1 - et);
+    lenis.on('scroll', (e) => {
+      targetScroll = e.scroll;
+      scrollVelocity = e.velocity || 0;
+    });
+
+    // -----------------------------------------------------------
+    // 2. Mouse Tracking for Parallax & 3D Web Magnetism
+    // -----------------------------------------------------------
+    const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    const mouse3D = new THREE.Vector3(0, 0, 0);
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.targetX = 0;
+      mouse.targetY = 0;
+    });
+
+    // -----------------------------------------------------------
+    // 3. Three.js Animated Cyber Web & Deep Space Fly-through
+    // -----------------------------------------------------------
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a0a12, 0.00065);
+
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 5000);
+    camera.position.z = 700;
+
+    // Procedural glow sprite
+    const createGlowTexture = () => {
+      const c = document.createElement('canvas');
+      c.width = 64;
+      c.height = 64;
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        grad.addColorStop(0.2, 'rgba(168, 85, 247, 0.9)');
+        grad.addColorStop(0.55, 'rgba(6, 182, 212, 0.4)');
+        grad.addColorStop(1, 'rgba(10, 10, 18, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.needsUpdate = true;
+      return tex;
+    };
+    const glowTexture = createGlowTexture();
+
+    // --- A. 3D Plexus / Neural Web System ---
+    const NODE_COUNT = 135;
+    const CONNECT_DIST = 160;
+    const MAX_LINES = 750;
+
+    interface PlexusNode {
+      pos: THREE.Vector3;
+      basePos: THREE.Vector3;
+      vel: THREE.Vector3;
+      pulseOffset: number;
+      color: THREE.Color;
+    }
+
+    const nodes: PlexusNode[] = [];
+    const colorPalette = [
+      new THREE.Color(0x8b5cf6), // Violet
+      new THREE.Color(0xec4899), // Pink
+      new THREE.Color(0x06b6d4), // Cyan
+      new THREE.Color(0x38bdf8), // Sky Blue
+    ];
+
+    const nodePositions = new Float32Array(NODE_COUNT * 3);
+    const nodeColors = new Float32Array(NODE_COUNT * 3);
+
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const pos = new THREE.Vector3(
+        (Math.random() - 0.5) * 1700,
+        (Math.random() - 0.5) * 1150,
+        (Math.random() - 0.5) * 2800 - 700
+      );
+      const vel = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.45,
+        (Math.random() - 0.5) * 0.45,
+        (Math.random() - 0.5) * 0.35
+      );
+      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+
+      nodes.push({
+        pos,
+        basePos: pos.clone(),
+        vel,
+        pulseOffset: Math.random() * Math.PI * 2,
+        color,
+      });
+
+      nodePositions[i * 3] = pos.x;
+      nodePositions[i * 3 + 1] = pos.y;
+      nodePositions[i * 3 + 2] = pos.z;
+
+      nodeColors[i * 3] = color.r;
+      nodeColors[i * 3 + 1] = color.g;
+      nodeColors[i * 3 + 2] = color.b;
+    }
+
+    const nodeGeometry = new THREE.BufferGeometry();
+    nodeGeometry.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));
+    nodeGeometry.setAttribute('color', new THREE.BufferAttribute(nodeColors, 3));
+
+    const nodeMaterial = new THREE.PointsMaterial({
+      size: 14,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.95,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const nodePoints = new THREE.Points(nodeGeometry, nodeMaterial);
+    scene.add(nodePoints);
+
+    // Connecting Web Lines
+    const linePositions = new Float32Array(MAX_LINES * 2 * 3);
+    const lineColors = new Float32Array(MAX_LINES * 2 * 3);
+
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
+
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
+    scene.add(lineSegments);
+
+    // --- B. Cyber Tunnel Web Rings (Geometric Depth Markers) ---
+    const tunnelGroup = new THREE.Group();
+    const ringDepths = [400, -200, -800, -1400, -2000, -2600, -3200];
+    const ringMeshes: THREE.LineLoop[] = [];
+
+    ringDepths.forEach((zDepth, idx) => {
+      const ringGeo = new THREE.BufferGeometry();
+      const segments = 24;
+      const radius = 460 + idx * 30;
+      const pts: number[] = [];
+
+      for (let s = 0; s < segments; s++) {
+        const theta = (s / segments) * Math.PI * 2;
+        pts.push(Math.cos(theta) * radius, Math.sin(theta) * radius, 0);
+      }
+      ringGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+
+      const ringColor = idx % 2 === 0 ? 0x8b5cf6 : 0x06b6d4;
+      const ringMat = new THREE.LineBasicMaterial({
+        color: ringColor,
+        transparent: true,
+        opacity: 0.24,
+        blending: THREE.AdditiveBlending,
+      });
+
+      const ring = new THREE.LineLoop(ringGeo, ringMat);
+      ring.position.z = zDepth;
+      ringMeshes.push(ring);
+      tunnelGroup.add(ring);
+    });
+    scene.add(tunnelGroup);
+
+    // --- C. Warp Starfield / Cosmic Cyber Dust ---
+    const STAR_COUNT = 1400;
+    const starPositions = new Float32Array(STAR_COUNT * 3);
+    const starColors = new Float32Array(STAR_COUNT * 3);
+    const starVelocities: number[] = [];
+
+    for (let i = 0; i < STAR_COUNT; i++) {
+      starPositions[i * 3] = (Math.random() - 0.5) * 2400;
+      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 1700;
+      starPositions[i * 3 + 2] = Math.random() * -3800 + 600;
+
+      const starCol = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      starColors[i * 3] = starCol.r;
+      starColors[i * 3 + 1] = starCol.g;
+      starColors[i * 3 + 2] = starCol.b;
+
+      starVelocities.push(0.7 + Math.random() * 1.5);
+    }
+
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+    const starMaterial = new THREE.PointsMaterial({
+      size: 10,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const starPoints = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starPoints);
+
+    // Window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // -----------------------------------------------------------
+    // 4. Three.js Frame Animation
+    // -----------------------------------------------------------
+    let frameTime = 0;
+
+    const renderThree = () => {
+      frameTime += 0.012;
+
+      // Mouse Parallax on Camera
+      mouse.x += (mouse.targetX - mouse.x) * 0.04;
+      mouse.y += (mouse.targetY - mouse.y) * 0.04;
+
+      camera.position.x = mouse.x * 110;
+      camera.position.y = mouse.y * 70;
+      camera.rotation.y = -mouse.x * 0.035;
+      camera.rotation.x = mouse.y * 0.035;
+
+      // Unproject mouse cursor plane into 3D world space at Z = 200
+      mouse3D.set(mouse.x * 600, mouse.y * 400, 200);
+
+      // Rotate & pulse cyber rings
+      ringMeshes.forEach((ring, idx) => {
+        const dir = idx % 2 === 0 ? 1 : -1;
+        ring.rotation.z += 0.0025 * dir;
+        const scalePulse = 1 + Math.sin(frameTime * 1.4 + idx) * 0.035;
+        ring.scale.set(scalePulse, scalePulse, 1);
+      });
+
+      // Update Plexus Nodes
+      const nodePosAttr = nodeGeometry.getAttribute('position') as THREE.BufferAttribute;
+      const nodeArray = nodePosAttr.array as Float32Array;
+
+      for (let i = 0; i < NODE_COUNT; i++) {
+        const node = nodes[i];
+        node.pos.x = node.basePos.x + Math.sin(frameTime + node.pulseOffset) * 45;
+        node.pos.y = node.basePos.y + Math.cos(frameTime * 0.9 + node.pulseOffset) * 35;
+        node.pos.z = node.basePos.z + Math.sin(frameTime * 0.7 + node.pulseOffset) * 40;
+
+        // Interactive cursor magnetism: nodes near mouse are attracted
+        const distToMouse = node.pos.distanceTo(mouse3D);
+        if (distToMouse < 260) {
+          const pullFactor = (1 - distToMouse / 260) * 0.14;
+          node.pos.x += (mouse3D.x - node.pos.x) * pullFactor;
+          node.pos.y += (mouse3D.y - node.pos.y) * pullFactor;
+        }
+
+        nodeArray[i * 3] = node.pos.x;
+        nodeArray[i * 3 + 1] = node.pos.y;
+        nodeArray[i * 3 + 2] = node.pos.z;
+      }
+      nodePosAttr.needsUpdate = true;
+
+      // Update Connecting Web Lines
+      const linePosAttr = lineGeometry.getAttribute('position') as THREE.BufferAttribute;
+      const lineColAttr = lineGeometry.getAttribute('color') as THREE.BufferAttribute;
+      const linePosArr = linePosAttr.array as Float32Array;
+      const lineColArr = lineColAttr.array as Float32Array;
+
+      let lineCount = 0;
+
+      // Node-to-node dynamic lines
+      for (let i = 0; i < NODE_COUNT && lineCount < MAX_LINES - 45; i++) {
+        for (let j = i + 1; j < NODE_COUNT && lineCount < MAX_LINES - 45; j++) {
+          const p1 = nodes[i].pos;
+          const p2 = nodes[j].pos;
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const dz = p1.z - p2.z;
+          const distSq = dx * dx + dy * dy + dz * dz;
+
+          if (distSq < CONNECT_DIST * CONNECT_DIST) {
+            const dist = Math.sqrt(distSq);
+            const alpha = Math.pow(1 - dist / CONNECT_DIST, 1.4) * 0.9;
+
+            const idx = lineCount * 6;
+            linePosArr[idx] = p1.x;
+            linePosArr[idx + 1] = p1.y;
+            linePosArr[idx + 2] = p1.z;
+
+            linePosArr[idx + 3] = p2.x;
+            linePosArr[idx + 4] = p2.y;
+            linePosArr[idx + 5] = p2.z;
+
+            const c1 = nodes[i].color;
+            const c2 = nodes[j].color;
+
+            lineColArr[idx] = c1.r * alpha;
+            lineColArr[idx + 1] = c1.g * alpha;
+            lineColArr[idx + 2] = c1.b * alpha;
+
+            lineColArr[idx + 3] = c2.r * alpha;
+            lineColArr[idx + 4] = c2.g * alpha;
+            lineColArr[idx + 5] = c2.b * alpha;
+
+            lineCount++;
+          }
+        }
       }
 
-      el.style.transform = `translate(-50%,-50%) scale(${scale.toFixed(4)})`;
-      el.style.opacity = opacity.toFixed(4);
-      el.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none';
+      // Interactive mouse spiderweb lines
+      if (Math.abs(mouse.targetX) > 0.01 || Math.abs(mouse.targetY) > 0.01) {
+        for (let i = 0; i < NODE_COUNT && lineCount < MAX_LINES; i++) {
+          const p = nodes[i].pos;
+          const distToCursor = p.distanceTo(mouse3D);
+          if (distToCursor < 250) {
+            const alpha = Math.pow(1 - distToCursor / 250, 1.2) * 0.95;
+            const idx = lineCount * 6;
+
+            linePosArr[idx] = p.x;
+            linePosArr[idx + 1] = p.y;
+            linePosArr[idx + 2] = p.z;
+
+            linePosArr[idx + 3] = mouse3D.x;
+            linePosArr[idx + 4] = mouse3D.y;
+            linePosArr[idx + 5] = mouse3D.z;
+
+            lineColArr[idx] = 0.92 * alpha;
+            lineColArr[idx + 1] = 0.28 * alpha;
+            lineColArr[idx + 2] = 0.95 * alpha;
+
+            lineColArr[idx + 3] = 0.02 * alpha;
+            lineColArr[idx + 4] = 0.71 * alpha;
+            lineColArr[idx + 5] = 0.83 * alpha;
+
+            lineCount++;
+          }
+        }
+      }
+
+      lineGeometry.setDrawRange(0, lineCount * 2);
+      linePosAttr.needsUpdate = true;
+      lineColAttr.needsUpdate = true;
+
+      // Update Warp Stars (accelerates on scroll velocity)
+      const starPosAttr = starGeometry.getAttribute('position') as THREE.BufferAttribute;
+      const starPosArr = starPosAttr.array as Float32Array;
+      const warpSpeed = 1.2 + Math.abs(scrollVelocity) * 0.09;
+
+      for (let i = 0; i < STAR_COUNT; i++) {
+        starPosArr[i * 3 + 2] += starVelocities[i] * warpSpeed;
+
+        if (starPosArr[i * 3 + 2] > 700) {
+          starPosArr[i * 3 + 2] = -3800;
+          starPosArr[i * 3] = (Math.random() - 0.5) * 2400;
+          starPosArr[i * 3 + 1] = (Math.random() - 0.5) * 1700;
+        }
+      }
+      starPosAttr.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    };
+
+    // -----------------------------------------------------------
+    // 5. Realistic 3D Spatial "Deep to Real" Layer Engine
+    // -----------------------------------------------------------
+    let smoothProgress = 0;
+    let targetProgress = 0;
+    let lastActiveIndex = -1;
+
+    const updateSpatialLayers = () => {
+      const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+      targetProgress = scrollMax > 0 ? (currentScroll / scrollMax) * (layers.length - 1) : 0;
+
+      // Smooth lerp for continuous physical momentum
+      smoothProgress += (targetProgress - smoothProgress) * 0.085;
+
+      // Holographic 3D Stage tilt from mouse
+      const tiltX = -mouse.y * 3.5;
+      const tiltY = mouse.x * 3.5;
+      stageEl.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+
+      // Persistent navigation bar toggle
+      if (globalNav) {
+        if (smoothProgress > 0.35) {
+          globalNav.classList.add('nav-visible');
+        } else {
+          globalNav.classList.remove('nav-visible');
+        }
+      }
+
+      // Active section in nav
+      const activeIndex = Math.round(smoothProgress);
+      if (activeIndex !== lastActiveIndex) {
+        lastActiveIndex = activeIndex;
+        navLinks.forEach((link) => {
+          const target = link.getAttribute('data-target');
+          if (target && parseInt(target, 10) === activeIndex) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+
+      // 3D Depth Transforms for Each Layer ("from deep to real")
+      layers.forEach((layer, i) => {
+        const delta = smoothProgress - i;
+
+        // Culling
+        if (Math.abs(delta) > 1.35) {
+          layer.style.opacity = '0';
+          layer.style.visibility = 'hidden';
+          layer.style.pointerEvents = 'none';
+          return;
+        }
+
+        layer.style.visibility = 'visible';
+
+        if (delta < 0) {
+          // COMING FROM DEEP SPACE (negative Z to 0)
+          const u = -delta; // 1.35 -> 0
+          const pIn = Math.pow(u, 1.28);
+
+          const z = -pIn * 1750;
+          const y = pIn * 45;
+          const scale = Math.max(0.35, 1 - pIn * 0.22);
+          const blur = Math.min(14, pIn * 11);
+          const opacity = Math.max(0, 1 - Math.pow(u / 1.05, 1.45));
+
+          layer.style.transform = `translate3d(0, ${y.toFixed(1)}px, ${z.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+          layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+          layer.style.opacity = opacity.toFixed(3);
+          layer.style.pointerEvents = Math.abs(delta) < 0.28 ? 'auto' : 'none';
+        } else {
+          // FLYING PAST CAMERA (0 to positive Z)
+          const v = delta; // 0 -> 1.35
+          const pOut = Math.pow(v, 1.25);
+
+          const z = pOut * 950;
+          const y = -pOut * 55;
+          const blur = Math.min(16, pOut * 13);
+          const opacity = Math.max(0, 1 - Math.pow(v / 0.82, 1.6));
+
+          layer.style.transform = `translate3d(0, ${y.toFixed(1)}px, ${z.toFixed(1)}px)`;
+          layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+          layer.style.opacity = opacity.toFixed(3);
+          layer.style.pointerEvents = Math.abs(delta) < 0.28 ? 'auto' : 'none';
+        }
+      });
+    };
+
+    // -----------------------------------------------------------
+    // 6. Anchor Nav Link Navigation
+    // -----------------------------------------------------------
+    const scrollTargets: Record<string, number> = {
+      '#home': 1,
+      '#about': 2,
+      '#tracks': 3,
+      '#cta': 4,
+    };
+
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        const href = anchor.getAttribute('href');
+        if (href && scrollTargets[href] !== undefined) {
+          e.preventDefault();
+          const targetIndex = scrollTargets[href];
+          const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+          const dest = (targetIndex / (layers.length - 1)) * scrollMax;
+
+          lenis.scrollTo(dest, {
+            duration: 1.4,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          });
+        }
+      });
     });
+
+    // -----------------------------------------------------------
+    // 7. Master Render Animation Loop
+    // -----------------------------------------------------------
+    const masterLoop = (time: number) => {
+      lenis.raf(time);
+      currentScroll = lenis.scroll;
+
+      renderThree();
+      updateSpatialLayers();
+
+      requestAnimationFrame(masterLoop);
+    };
+
+    requestAnimationFrame(masterLoop);
   };
 
-  lenis.on('scroll', update);
-  window.addEventListener('resize', () => update({ scroll: lenis.scroll }));
-  update({ scroll: 0 });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExperience);
+  } else {
+    initExperience();
+  }
 </script>
 
-<div class="stars" aria-hidden="true"></div>
+<!-- Background 3D Cyber WebGL Canvas -->
+<canvas id="web-canvas" class="web-canvas" aria-hidden="true"></canvas>
 
-<div class="stage">
-  <div class="layer" data-name="splash">
-    <model-viewer
-      class="splash-logo"
-      src="/spiritxlogo4.glb"
-      environment-image="neutral"
-      shadow-intensity="1"
-      camera-controls
-      disable-zoom
-      interaction-prompt="none"
-    ></model-viewer>
-    <model-viewer
-      class="splash-dancer"
-      src="/sambadanceboy.glb"
-      environment-image="neutral"
-      shadow-intensity="1"
-      camera-controls
-      disable-zoom
-      interaction-prompt="none"
-      animation-name="mixamo.com"
-      autoplay
-    ></model-viewer>
-    <div class="splash-copy">
-      <h1>
-        Inter University Hackathon Competition
-        <span class="grad">2026</span>
-      </h1>
-      <p>University of Moratuwa</p>
+<!-- Ambient Deep Cosmic Glow Lights -->
+<div class="ambient-glows" aria-hidden="true">
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+</div>
+
+<!-- Persistent Floating Cyber Navigation Bar -->
+<header class="global-nav" id="global-nav">
+  <a class="nav-brand" href="#home">
+    <span class="brand-badge">SX</span>
+    <span class="brand-title">MoraSpirit</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#home" data-target="1">Home</a>
+    <a href="#about" data-target="2">About</a>
+    <a href="#tracks" data-target="3">Tracks</a>
+    <a href="#cta" data-target="4">FAQ</a>
+  </nav>
+  <a class="btn btn-primary btn-sm nav-cta" href="#cta">Register</a>
+</header>
+
+<!-- 3D Perspective Stage Viewport -->
+<div class="stage-viewport">
+  <div class="stage" id="stage">
+    
+    <!-- ======================================================== -->
+    <!-- LAYER 0: SPLASH SCREEN (3D Logo, Samba Dancer, Hero Brand)-->
+    <!-- ======================================================== -->
+    <div class="layer" data-name="splash" data-index="0">
+      <div class="splash-wrapper">
+        <div class="splash-models-container">
+          <div class="model-pod logo-pod">
+            <model-viewer
+              class="splash-model splash-logo"
+              src="/spiritxlogo4.glb"
+              environment-image="neutral"
+              shadow-intensity="1"
+              camera-controls
+              disable-zoom
+              auto-rotate
+              rotation-per-second="18deg"
+              interaction-prompt="none"
+              aria-label="Spirit X 3D Logo"
+            ></model-viewer>
+          </div>
+
+          <div class="model-pod dancer-pod">
+            <model-viewer
+              class="splash-model splash-dancer"
+              src="/sambadanceboy.glb"
+              environment-image="neutral"
+              shadow-intensity="1.2"
+              camera-controls
+              disable-zoom
+              interaction-prompt="none"
+              animation-name="mixamo.com"
+              autoplay
+              aria-label="3D Samba Dance Boy"
+            ></model-viewer>
+          </div>
+        </div>
+
+        <div class="splash-content">
+          <div class="cyber-tag">
+            <span class="pulse-dot"></span>
+            <span>SPIRIT X 2.0 &bull; 2026</span>
+          </div>
+
+          <h1 class="splash-title">
+            Inter University
+            <span class="text-glow">Hackathon</span>
+            <span class="grad">Competition 2026</span>
+          </h1>
+
+          <div class="splash-sub">
+            <span class="sub-brand">MoraSpirit</span>
+            <span class="sub-divider">&bull;</span>
+            <span class="sub-uni">University of Moratuwa</span>
+          </div>
+        </div>
+
+        <a class="scroll-hint" href="#home">
+          <span class="hint-text">Dive Into The Depth</span>
+          <span class="hint-chevron">&darr;</span>
+        </a>
+      </div>
     </div>
-    <a class="scroll-hint" href="#home">Scroll to explore &darr;</a>
-  </div>
 
-  <div class="layer" data-name="home">
-    <nav class="nav">
-      <a class="brand" href="/">
-        <span class="brand-mark">SX</span>
-        <span>MoraSpirit</span>
-      </a>
-      <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#tracks">Tracks</a>
-        <a href="#cta">FAQ</a>
-      </div>
-      <a class="btn btn-primary btn-sm" href="#cta">Register</a>
-    </nav>
+    <!-- ======================================================== -->
+    <!-- LAYER 1: HOME SECTION (Hero Intro, Key Stats, Quick CTAs)-->
+    <!-- ======================================================== -->
+    <div class="layer" data-name="home" data-index="1">
+      <div class="home-container">
+        <div class="home-copy">
+          <p class="eyebrow">
+            <span class="dot"></span>
+            The Ultimate Collegiate Arena
+          </p>
+          <h1 class="main-title">
+            Inter University
+            <br />
+            Hackathon
+            <br />
+            <span class="grad">Competition 2026</span>
+          </h1>
+          <p class="lead">
+            The biggest inter-university hackathon in Sri Lanka. 48 hours, one
+            stage, no limits. Bring your ideas, build with the best, and make
+            history.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-glow" href="#cta">Register Now</a>
+            <a class="btn btn-ghost" href="#about">Explore Event</a>
+          </div>
+        </div>
 
-    <div class="home-copy">
-      <p class="eyebrow"><span class="dot"></span> Spirit X 2.0 &middot; 2026</p>
-      <h1>
-        Inter University
-        <br />
-        Hackathon
-        <br />
-        <span class="grad">Competition 2026</span>
-      </h1>
-      <p class="lead">
-        The biggest inter-university hackathon in Sri Lanka. 48 hours, one
-        stage, no limits. Bring your ideas, build with the best, and make
-        history.
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#cta">Register Now</a>
-        <a class="btn btn-ghost" href="#about">Learn More</a>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <span class="stat-num">48</span>
-        <span class="stat-label">Hours</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num">200+</span>
-        <span class="stat-label">Hackers</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num">20+</span>
-        <span class="stat-label">Universities</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num">5M+</span>
-        <span class="stat-label">In Prizes</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="layer" data-name="about">
-    <div class="about-grid">
-      <div class="about-model">
-        <model-viewer
-          src="/spiritxlogo4.glb"
-          environment-image="neutral"
-          shadow-intensity="1"
-          camera-controls
-          disable-zoom
-          interaction-prompt="none"
-        ></model-viewer>
-      </div>
-      <div class="about-copy">
-        <p class="eyebrow"><span class="dot"></span> About the event</p>
-        <h2>Built by students,<br />For students.</h2>
-        <p>
-          Spirit X is MoraSpirit's annual flagship hackathon hosted by the
-          Media, Arts and Cultural Society of the University of Moratuwa. Open
-          to every undergraduate across Sri Lanka, it's where raw talent meets
-          real problems.
-        </p>
-        <ul class="about-list">
-          <li>48 hours of non-stop building</li>
-          <li>Mentors &amp; workshops from industry</li>
-          <li>Live demos in front of top judges</li>
-        </ul>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#tracks">Explore Tracks</a>
+        <div class="stats-card">
+          <div class="stat">
+            <span class="stat-num">48</span>
+            <span class="stat-label">Hours Non-stop</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">200+</span>
+            <span class="stat-label">Elite Hackers</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">20+</span>
+            <span class="stat-label">Universities</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">5M+</span>
+            <span class="stat-label">In Prize Pool</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="layer" data-name="tracks">
-    <p class="eyebrow center"><span class="dot"></span> Challenge tracks</p>
-    <h2 class="center">Pick your battlefield</h2>
-    <div class="tracks-grid">
-      <div class="card">
-        <span class="card-icon">&#9889;</span>
-        <h3>AI &amp; Machine Learning</h3>
-        <p>Intelligent systems that solve real South Asian problems.</p>
-      </div>
-      <div class="card">
-        <span class="card-icon">&#128187;</span>
-        <h3>Web &amp; Mobile</h3>
-        <p>Products the world actually wants to use.</p>
-      </div>
-      <div class="card">
-        <span class="card-icon">&#128248;</span>
-        <h3>Creative Tech</h3>
-        <p>3D, AR, VR and interactive media that amaze.</p>
-      </div>
-      <div class="card">
-        <span class="card-icon">&#127793;</span>
-        <h3>Sustainability</h3>
-        <p>Green ideas for a smarter, cleaner island.</p>
-      </div>
-    </div>
-  </div>
+    <!-- ======================================================== -->
+    <!-- LAYER 2: ABOUT SECTION (Interactive 3D Logo & Event Story)-->
+    <!-- ======================================================== -->
+    <div class="layer" data-name="about" data-index="2">
+      <div class="about-grid">
+        <div class="about-model-box">
+          <div class="model-glow-ring"></div>
+          <model-viewer
+            class="about-model-viewer"
+            src="/spiritxlogo4.glb"
+            environment-image="neutral"
+            shadow-intensity="1.2"
+            camera-controls
+            disable-zoom
+            auto-rotate
+            rotation-per-second="25deg"
+            interaction-prompt="none"
+          ></model-viewer>
+          <div class="model-hint">Interactive 3D Emblem</div>
+        </div>
 
-  <div class="layer" data-name="cta">
-    <div class="cta-box">
-      <h2>Ready to dance with the best?</h2>
-      <p>Registrations are open. Teams of 1&ndash;4. Zero experience required.</p>
-      <div class="hero-actions center-actions">
-        <a class="btn btn-primary" href="#cta">Register Now</a>
-        <a class="btn btn-ghost" href="#">Download Brochure</a>
-      </div>
-    </div>
-
-    <footer class="footer">
-      <div class="footer-brand">
-        <span class="brand-mark">SX</span>
-        <div>
-          <strong>MoraSpirit</strong>
-          <p>&mdash; University Of Moratuwa</p>
+        <div class="about-copy">
+          <p class="eyebrow"><span class="dot"></span> About The Event</p>
+          <h2>Built by students,<br /><span class="grad">For students.</span></h2>
+          <p class="about-desc">
+            Spirit X is MoraSpirit's annual flagship hackathon hosted by the
+            Media, Arts and Cultural Society of the University of Moratuwa. Open
+            to every undergraduate across Sri Lanka, it's where raw talent meets
+            real-world challenges.
+          </p>
+          <ul class="about-list">
+            <li>
+              <div class="list-bullet"></div>
+              <div>
+                <strong>48 Hours of Pure Innovation</strong>
+                <span>Sprint from ideation to production in high-intensity sprints.</span>
+              </div>
+            </li>
+            <li>
+              <div class="list-bullet"></div>
+              <div>
+                <strong>Top Tier Industry Mentors</strong>
+                <span>Direct guidance from tech leads, architects, and founders.</span>
+              </div>
+            </li>
+            <li>
+              <div class="list-bullet"></div>
+              <div>
+                <strong>Live Pitch &amp; Grand Finals</strong>
+                <span>Showcase your masterpiece directly in front of premier juries.</span>
+              </div>
+            </li>
+          </ul>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#tracks">Discover Tracks &rarr;</a>
+          </div>
         </div>
       </div>
-      <p class="footer-copy">&copy; 2026 MoraSpirit. All rights reserved.</p>
-    </footer>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- LAYER 3: TRACKS SECTION (Battlefield Challenge Cards)    -->
+    <!-- ======================================================== -->
+    <div class="layer" data-name="tracks" data-index="3">
+      <div class="tracks-wrapper">
+        <div class="section-header">
+          <p class="eyebrow center"><span class="dot"></span> Challenge Tracks</p>
+          <h2 class="center">Pick Your <span class="grad">Battlefield</span></h2>
+          <p class="section-lead">Choose your domain of mastery and push technological boundaries.</p>
+        </div>
+
+        <div class="tracks-grid">
+          <div class="track-card">
+            <div class="card-glow"></div>
+            <div class="card-icon-wrap">&#9889;</div>
+            <h3>AI &amp; Machine Learning</h3>
+            <p>Intelligent neural systems, LLMs, and autonomous agents solving pressing South Asian challenges.</p>
+            <div class="card-badge">Data &bull; Deep Learning</div>
+          </div>
+
+          <div class="track-card">
+            <div class="card-glow"></div>
+            <div class="card-icon-wrap">&#128187;</div>
+            <h3>Web &amp; Mobile</h3>
+            <p>Hyper-responsive platforms, scalable distributed cloud architectures, and transformative user apps.</p>
+            <div class="card-badge">Full Stack &bull; Cloud</div>
+          </div>
+
+          <div class="track-card">
+            <div class="card-glow"></div>
+            <div class="card-icon-wrap">&#128248;</div>
+            <h3>Creative Tech</h3>
+            <p>Next-gen 3D spatial web, WebGL, AR/VR immersive worlds, and interactive digital storytelling.</p>
+            <div class="card-badge">Spatial &bull; 3D &bull; AR/VR</div>
+          </div>
+
+          <div class="track-card">
+            <div class="card-glow"></div>
+            <div class="card-icon-wrap">&#127793;</div>
+            <h3>Sustainability</h3>
+            <p>Green tech, smart energy networks, circular economy algorithms, and resilient climate solutions.</p>
+            <div class="card-badge">EcoTech &bull; Smart City</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- LAYER 4: CTA & FOOTER (Grand Registration & Credits)     -->
+    <!-- ======================================================== -->
+    <div class="layer" data-name="cta" data-index="4">
+      <div class="cta-wrapper">
+        <div class="cta-portal-box">
+          <div class="cta-glow-backdrop"></div>
+          <div class="cyber-tag center">
+            <span class="pulse-dot"></span>
+            <span>REGISTRATIONS CLOSING SOON</span>
+          </div>
+          <h2 class="cta-title">Ready To Dance With <span class="grad">The Best?</span></h2>
+          <p class="cta-desc">
+            Registrations are officially open for all universities across Sri Lanka.
+            Teams of 1 to 4. Zero barrier to entry. Maximum glory.
+          </p>
+          <div class="hero-actions center-actions">
+            <a class="btn btn-primary btn-large btn-glow" href="#cta">Claim Your Spot Now</a>
+            <a class="btn btn-ghost btn-large" href="#">Download Delegate Kit</a>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="footer-brand">
+            <span class="brand-badge">SX</span>
+            <div class="footer-text">
+              <strong>Spirit X 2.0 &bull; MoraSpirit</strong>
+              <p>University of Moratuwa, Sri Lanka</p>
+            </div>
+          </div>
+          <p class="footer-copy">&copy; 2026 MoraSpirit. Empowering Sri Lankan Youth through Tech &amp; Culture.</p>
+        </footer>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<!-- Virtual Scroll Track for 3D Camera Travel (500vh) -->
 <div class="scroll-range" aria-hidden="true"></div>
 
 <style>
+  /* -----------------------------------------------------------
+     1. CSS Variables & Theme
+     ----------------------------------------------------------- */
   :root {
     --bg: #0a0a12;
-    --panel: #12121d;
+    --panel: #11111e;
+    --panel-glow: rgba(139, 92, 246, 0.12);
     --border: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(139, 92, 246, 0.35);
     --text: #f4f4f8;
     --muted: #9a9aae;
-    --grad: linear-gradient(90deg, #8b5cf6, #ec4899);
-    --radius: 16px;
+    --grad: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #06b6d4 100%);
+    --grad-glow: linear-gradient(90deg, #8b5cf6, #ec4899);
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
   }
 
   html {
@@ -250,152 +858,823 @@
 
   body {
     overscroll-behavior: none;
-  }
-
-  .page,
-  body {
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
   }
 
-  h1,
-  h2,
-  h3 {
-    font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-    letter-spacing: -0.02em;
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.025em;
     margin: 0;
   }
 
-  /* Starfield */
-  .stars {
+  /* -----------------------------------------------------------
+     2. 3D WebGL Canvas & Ambient Lighting
+     ----------------------------------------------------------- */
+  .web-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .ambient-glows {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background:
-      radial-gradient(1.5px 1.5px at 12% 20%, rgba(255, 255, 255, 0.9), transparent 60%),
-      radial-gradient(1px 1px at 25% 65%, rgba(255, 255, 255, 0.6), transparent 60%),
-      radial-gradient(2px 2px at 40% 12%, rgba(255, 255, 255, 0.7), transparent 60%),
-      radial-gradient(1px 1px at 55% 40%, rgba(255, 255, 255, 0.5), transparent 60%),
-      radial-gradient(1.5px 1.5px at 70% 75%, rgba(255, 255, 255, 0.8), transparent 60%),
-      radial-gradient(1px 1px at 82% 25%, rgba(255, 255, 255, 0.6), transparent 60%),
-      radial-gradient(2px 2px at 92% 60%, rgba(255, 255, 255, 0.7), transparent 60%),
-      radial-gradient(1px 1px at 8% 85%, rgba(255, 255, 255, 0.5), transparent 60%),
-      radial-gradient(1.5px 1.5px at 33% 35%, rgba(255, 255, 255, 0.6), transparent 60%),
-      radial-gradient(1px 1px at 60% 90%, rgba(255, 255, 255, 0.7), transparent 60%);
-    animation: twinkle 7s ease-in-out infinite;
-  }
-
-  @keyframes twinkle {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.55;
-    }
-  }
-
-  /* Stage + scrolling room */
-  .stage {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
     overflow: hidden;
   }
 
-  .scroll-range {
-    height: 400vh;
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.28;
+    animation: driftOrb 16s ease-in-out infinite alternate;
   }
 
-  /* Layers */
-  .layer {
+  .orb-1 {
+    width: 550px;
+    height: 550px;
+    top: 5%;
+    left: 15%;
+    background: radial-gradient(circle, #8b5cf6, transparent 70%);
+  }
+
+  .orb-2 {
+    width: 600px;
+    height: 600px;
+    bottom: 5%;
+    right: 10%;
+    background: radial-gradient(circle, #ec4899, transparent 70%);
+    animation-delay: -5s;
+  }
+
+  .orb-3 {
+    width: 450px;
+    height: 450px;
+    top: 45%;
+    right: 30%;
+    background: radial-gradient(circle, #06b6d4, transparent 70%);
+    animation-delay: -9s;
+  }
+
+  @keyframes driftOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, -50px) scale(1.15); }
+  }
+
+  /* -----------------------------------------------------------
+     3. Persistent Global Nav
+     ----------------------------------------------------------- */
+  .global-nav {
+    position: fixed;
+    top: 1.5rem;
+    left: clamp(1rem, 4vw, 4rem);
+    right: clamp(1rem, 4vw, 4rem);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    background: rgba(14, 14, 24, 0.72);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-15px);
+    transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s ease;
+  }
+
+  .global-nav.nav-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .global-nav:hover {
+    border-color: var(--border-glow);
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .brand-badge {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--grad-glow);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.8rem;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: #fff;
+  }
+
+  .nav-links a.active::after {
+    content: '';
     position: absolute;
-    left: 50%;
-    top: 50%;
+    bottom: -6px;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: var(--grad-glow);
+    border-radius: 999px;
+  }
+
+  /* -----------------------------------------------------------
+     4. 3D Perspective Stage Viewport
+     ----------------------------------------------------------- */
+  .stage-viewport {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .stage {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    padding: clamp(1rem, 4vw, 4rem);
-    transform: translate(-50%, -50%) scale(1);
-    will-change: transform, opacity;
+    transform-style: preserve-3d;
+    will-change: transform;
+    pointer-events: none;
   }
 
-  /* ---- Buttons ---- */
+  .layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 4rem);
+    transform-style: preserve-3d;
+    will-change: transform, opacity, filter;
+    backface-visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* -----------------------------------------------------------
+     5. Layer 0: Splash Screen
+     ----------------------------------------------------------- */
+  .splash-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .splash-models-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+  }
+
+  .model-pod {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .splash-model {
+    width: 100%;
+    height: 90%;
+    outline: none;
+  }
+
+  .splash-logo {
+    animation: floatLogo 5s ease-in-out infinite;
+  }
+
+  @keyframes floatLogo {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-16px) rotate(1.5deg); }
+  }
+
+  .splash-content {
+    position: relative;
+    z-index: 2;
+    max-width: 680px;
+    margin-top: clamp(2rem, 8vh, 6rem);
+    text-align: center;
+    pointer-events: auto;
+  }
+
+  .cyber-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(18, 18, 29, 0.7);
+    border: 1px solid var(--border-glow);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #c084fc;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+    margin-bottom: 1.2rem;
+  }
+
+  .cyber-tag.center {
+    margin: 0 auto 1.4rem;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 8px #22d3ee;
+    animation: pulseGlow 1.8s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.5; }
+  }
+
+  .splash-title {
+    font-size: clamp(2rem, 4.8vw, 3.8rem);
+    line-height: 1.05;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+
+  .text-glow {
+    background: linear-gradient(90deg, #fff, #c084fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .splash-sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 999px;
+    background: rgba(14, 14, 24, 0.65);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .splash-sub .sub-brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    background: var(--grad-glow);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .splash-sub .sub-divider {
+    color: var(--muted);
+    opacity: 0.5;
+  }
+
+  .splash-sub .sub-uni {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .scroll-hint {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: auto;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .scroll-hint:hover {
+    color: #fff;
+    transform: translateY(3px);
+  }
+
+  .hint-chevron {
+    font-size: 1.2rem;
+    color: #c084fc;
+    animation: bounceChevron 1.8s infinite;
+  }
+
+  @keyframes bounceChevron {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* -----------------------------------------------------------
+     6. Layer 1: Home Section
+     ----------------------------------------------------------- */
+  .home-container {
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3.5rem;
+  }
+
+  .home-copy {
+    max-width: 660px;
+    transform: translateZ(40px);
+  }
+
+  .main-title {
+    font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+    line-height: 1.02;
+    font-weight: 800;
+    margin-top: 0.5rem;
+  }
+
+  .lead {
+    margin: 1.4rem 0 0;
+    color: var(--muted);
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    line-height: 1.65;
+    max-width: 35rem;
+  }
+
+  .stats-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1.4rem 2.2rem;
+    border-radius: var(--radius-md);
+    background: rgba(18, 18, 29, 0.65);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    transform: translateZ(30px);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    font-weight: 800;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .stat-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 2.2rem;
+    background: var(--border);
+  }
+
+  /* -----------------------------------------------------------
+     7. Layer 2: About Section
+     ----------------------------------------------------------- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+    max-width: 1050px;
+    width: 100%;
+  }
+
+  .about-model-box {
+    position: relative;
+    height: clamp(300px, 50vh, 480px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: translateZ(50px);
+  }
+
+  .model-glow-ring {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  .about-model-viewer {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    pointer-events: auto;
+  }
+
+  .model-hint {
+    margin-top: -1.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .about-copy {
+    transform: translateZ(35px);
+  }
+
+  .about-copy h2 {
+    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .about-desc {
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 1.02rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .about-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .about-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .list-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #a855f7;
+    box-shadow: 0 0 8px #a855f7;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .about-list strong {
+    display: block;
+    color: var(--text);
+    font-size: 1rem;
+  }
+
+  .about-list span {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* -----------------------------------------------------------
+     8. Layer 3: Tracks Section
+     ----------------------------------------------------------- */
+  .tracks-wrapper {
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2.2rem;
+    transform: translateZ(40px);
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+    margin-top: 0.4rem;
+  }
+
+  .section-lead {
+    color: var(--muted);
+    font-size: 0.98rem;
+    margin-top: 0.6rem;
+  }
+
+  .tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+    width: 100%;
+    transform: translateZ(25px);
+  }
+
+  .track-card {
+    position: relative;
+    padding: 1.8rem;
+    border-radius: var(--radius-md);
+    background: rgba(18, 18, 29, 0.7);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .track-card:hover {
+    transform: translateY(-6px) translateZ(10px);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 16px 35px rgba(139, 92, 246, 0.15);
+  }
+
+  .card-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-icon-wrap {
+    font-size: 1.8rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .track-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .track-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 0 1.2rem;
+    flex-grow: 1;
+  }
+
+  .card-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    background: rgba(6, 182, 212, 0.1);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+  }
+
+  /* -----------------------------------------------------------
+     9. Layer 4: CTA & Footer
+     ----------------------------------------------------------- */
+  .cta-wrapper {
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 2rem 0;
+  }
+
+  .cta-portal-box {
+    position: relative;
+    width: 100%;
+    margin: auto 0;
+    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem);
+    border-radius: var(--radius-lg);
+    background: rgba(18, 18, 29, 0.75);
+    border: 1px solid var(--border-glow);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(139, 92, 246, 0.08);
+    transform: translateZ(40px);
+  }
+
+  .cta-glow-backdrop {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.2), transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-size: clamp(2rem, 4.2vw, 3.2rem);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .cta-desc {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    max-width: 520px;
+    margin: 0 auto 2.2rem;
+  }
+
+  .footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    transform: translateZ(20px);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .footer-text strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .footer-text p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .footer-copy {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin: 0;
+  }
+
+  /* -----------------------------------------------------------
+     10. Buttons & Atoms
+     ----------------------------------------------------------- */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.85rem 1.6rem;
+    padding: 0.9rem 1.8rem;
     border-radius: 999px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: pointer;
   }
 
   .btn-primary {
     background: var(--grad);
     color: #fff;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(236, 72, 153, 0.5);
+  }
+
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
   }
 
   .btn-ghost {
     color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .btn-ghost:hover {
-    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
   }
 
   .btn-sm {
-    padding: 0.55rem 1.2rem;
+    padding: 0.55rem 1.3rem;
     font-size: 0.85rem;
+  }
+
+  .btn-large {
+    padding: 1.1rem 2.4rem;
+    font-size: 1.05rem;
   }
 
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.9rem;
-    margin-top: 2rem;
+    gap: 1rem;
+    margin-top: 1.8rem;
   }
 
   .center-actions {
     justify-content: center;
-    margin-top: 2rem;
   }
 
   .eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 1rem;
-    color: var(--muted);
+    gap: 0.55rem;
+    color: #c084fc;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 700;
   }
 
   .eyebrow.center {
     justify-content: center;
-    margin: 0 auto 0.75rem;
-    display: flex;
   }
 
   .dot {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: var(--grad);
-    display: inline-block;
+    background: #06b6d4;
+    box-shadow: 0 0 8px #06b6d4;
   }
 
   .grad {
@@ -405,408 +1684,78 @@
     color: transparent;
   }
 
-  /* ---- Layer 0: splash ---- */
-  .layer[data-name="splash"] {
-    display: flex;
+  .scroll-range {
+    height: 500vh;
   }
 
-  .splash-logo,
-  .splash-dancer {
-    flex: 1;
-    height: 100%;
-    width: 50%;
-  }
-
-  .splash-logo {
-    animation: float 4.5s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
+  /* -----------------------------------------------------------
+     11. Responsive Design
+     ----------------------------------------------------------- */
+  @media (max-width: 900px) {
+    .global-nav {
+      left: 1rem;
+      right: 1rem;
+      top: 1rem;
+      padding: 0.6rem 1rem;
     }
-    50% {
-      transform: translateY(-14px) scale(1.03);
-    }
-  }
 
-  .splash-copy {
-    position: absolute;
-    left: 0;
-    bottom: 5rem;
-    width: 50%;
-    padding: 0 clamp(1rem, 3vw, 3rem);
-    text-align: center;
-    pointer-events: none;
-  }
-
-  .splash-copy h1 {
-    font-size: clamp(1.4rem, 3vw, 2.6rem);
-    line-height: 1.1;
-    font-weight: 800;
-    text-wrap: balance;
-  }
-
-  .splash-copy p {
-    margin: 0.6rem 0 0;
-    color: var(--muted);
-    font-size: clamp(0.9rem, 1.4vw, 1.2rem);
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-
-  .scroll-hint {
-    position: absolute;
-    bottom: 1.2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.8rem;
-    z-index: 2;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.35;
-    }
-  }
-
-  /* ---- Layer 1: home ---- */
-  .layer[data-name="home"] {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .nav {
-    position: absolute;
-    top: clamp(1rem, 3vh, 2rem);
-    left: clamp(1rem, 4vw, 4rem);
-    right: clamp(1rem, 4vw, 4rem);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.4rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: rgba(18, 18, 29, 0.65);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.05rem;
-  }
-
-  .brand-mark {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 8px;
-    background: var(--grad);
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #fff;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 1.6rem;
-  }
-
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.9rem;
-  }
-
-  .nav-links a:hover {
-    color: var(--text);
-  }
-
-  .home-copy {
-    max-width: 680px;
-  }
-
-  .home-copy h1 {
-    font-size: clamp(2rem, 5vw, 4rem);
-    line-height: 1.02;
-    font-weight: 800;
-  }
-
-  .lead {
-    margin: 1.4rem 0 0;
-    max-width: 34rem;
-    color: var(--muted);
-    font-size: 1.05rem;
-    line-height: 1.6;
-  }
-
-  .stats {
-    position: absolute;
-    bottom: clamp(2rem, 6vh, 4rem);
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: clamp(1.5rem, 5vw, 4rem);
-    padding: 1.4rem 2rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: rgba(18, 18, 29, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .stat-num {
-    display: block;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    background: var(--grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .stat-label {
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-
-  /* ---- Layer 2: about ---- */
-  .layer[data-name="about"] {
-    display: grid;
-    place-items: center;
-  }
-
-  .about-grid {
-    display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
-    gap: clamp(1.5rem, 5vw, 4rem);
-    align-items: center;
-    max-width: 1000px;
-  }
-
-  .about-model {
-    height: clamp(280px, 50vh, 480px);
-  }
-
-  .about-model model-viewer {
-    width: 100%;
-    height: 100%;
-  }
-
-  h2 {
-    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
-    margin-bottom: 1rem;
-    line-height: 1.08;
-  }
-
-  .about-copy p {
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .about-list {
-    list-style: none;
-    padding: 0;
-    margin: 1.4rem 0 0;
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .about-list li {
-    padding-left: 1.4rem;
-    position: relative;
-    color: var(--text);
-  }
-
-  .about-list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.55em;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--grad);
-  }
-
-  /* ---- Layer 3: tracks ---- */
-  .layer[data-name="tracks"] {
-    display: grid;
-    place-content: center;
-    text-align: center;
-  }
-
-  .layer[data-name="tracks"] h2 {
-    margin-bottom: 2rem;
-  }
-
-  .tracks-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-    gap: 1.2rem;
-    max-width: 720px;
-    margin: 0 auto;
-  }
-
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    text-align: left;
-    transition: transform 0.25s, border-color 0.25s;
-  }
-
-  .card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(139, 92, 246, 0.5);
-  }
-
-  .card-icon {
-    font-size: 1.5rem;
-  }
-
-  .card h3 {
-    margin: 0.8rem 0 0.4rem;
-    font-size: 1.1rem;
-  }
-
-  .card p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.92rem;
-    line-height: 1.6;
-  }
-
-  /* ---- Layer 4: cta + footer ---- */
-  .layer[data-name="cta"] {
-    display: grid;
-    place-content: center;
-    text-align: center;
-  }
-
-  .cta-box {
-    position: relative;
-    padding: clamp(2rem, 5vw, 4rem);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    background: rgba(18, 18, 29, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  .cta-box p {
-    color: var(--muted);
-    margin: 0.5rem 0 0;
-  }
-
-  .footer {
-    position: absolute;
-    bottom: clamp(1rem, 3vh, 2rem);
-    left: clamp(1rem, 4vw, 4rem);
-    right: clamp(1rem, 4vw, 4rem);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-
-  .footer-brand strong {
-    display: block;
-  }
-
-  .footer-brand p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-
-  .footer-copy {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin: 0;
-  }
-
-  /* ---- Responsive ---- */
-  @media (max-width: 860px) {
     .nav-links {
       display: none;
     }
 
-    .layer {
-      padding: 1.5rem;
+    .splash-models-container {
+      flex-direction: column;
     }
 
-    .splash-copy {
-      bottom: 4rem;
+    .splash-logo {
+      height: 45vh;
     }
 
-    .home-copy {
-      text-align: center;
-      margin: 0 auto;
+    .splash-dancer {
+      height: 45vh;
     }
 
-    .home-copy .lead {
-      margin-left: auto;
-      margin-right: auto;
+    .splash-content {
+      margin-top: 2rem;
     }
 
-    .hero-actions,
-    .center-actions {
-      justify-content: center;
-    }
-
-    .stats {
-      gap: 1.2rem;
-      padding: 1rem 1.4rem;
+    .splash-title {
+      font-size: 2.2rem;
     }
 
     .about-grid {
       grid-template-columns: 1fr;
       text-align: center;
+      gap: 1.5rem;
     }
 
-    .about-list li {
+    .about-model-box {
+      height: 280px;
+    }
+
+    .about-list {
       text-align: left;
-      max-width: 300px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .about-model {
-      height: 260px;
     }
 
     .tracks-grid {
       grid-template-columns: 1fr;
-      max-width: 400px;
+    }
+
+    .stats-card {
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      padding: 1.2rem;
+      justify-content: space-around;
+    }
+
+    .stat-divider {
+      display: none;
+    }
+
+    .footer {
+      flex-direction: column;
+      gap: 0.8rem;
+      text-align: center;
     }
   }
 </style>
