@@ -1,0 +1,85 @@
+---
+import { FLYBY_IMAGES } from '../config/models';
+---
+
+<!-- 1. Transparent Space Shuttle Flyby Actor -->
+<div id="shuttle-actor" class="flyby-actor shuttle-actor" aria-hidden="true">
+  <div class="actor-glow shuttle-glow"></div>
+  <img
+    id="shuttle-img"
+    src={FLYBY_IMAGES.shuttle.primary}
+    onerror={`this.onerror=null; this.src='${FLYBY_IMAGES.shuttle.fallback}';`}
+    alt={FLYBY_IMAGES.shuttle.alt}
+    class="actor-img"
+    loading="eager"
+  />
+</div>
+
+<!-- 2. Transparent Giant Astronaut Spacewalk Actor -->
+<div id="astronaut-actor" class="flyby-actor astronaut-actor" aria-hidden="true">
+  <div class="actor-glow astronaut-glow"></div>
+  <img
+    id="astronaut-img"
+    src={FLYBY_IMAGES.astronaut.primary}
+    onerror={`this.onerror=null; this.src='${FLYBY_IMAGES.astronaut.fallback}';`}
+    alt={FLYBY_IMAGES.astronaut.alt}
+    class="actor-img"
+    loading="eager"
+  />
+</div>
+
+<style>
+  .flyby-actor {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 45;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    will-change: transform, opacity;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    transition: opacity 0.1s ease-out;
+  }
+
+  .actor-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* Shuttle Glow & Thruster Flare */
+  .shuttle-actor .actor-img {
+    filter: drop-shadow(0 0 45px rgba(6, 182, 212, 0.65)) drop-shadow(0 0 90px rgba(244, 63, 94, 0.45));
+  }
+
+  .shuttle-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.45), rgba(244, 63, 94, 0.25), transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+  }
+
+  /* Astronaut Gold Visor Glow */
+  .astronaut-actor .actor-img {
+    filter: drop-shadow(0 0 50px rgba(251, 191, 36, 0.65)) drop-shadow(0 0 100px rgba(59, 130, 246, 0.4));
+  }
+
+  .astronaut-glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.4), rgba(59, 130, 246, 0.25), transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+  }
+</style>

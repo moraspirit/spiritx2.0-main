@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <defs>
+    <!-- Engine Plasma Plume Gradients -->
+    <linearGradient id="plasmaCore" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#38bdf8"/>
+      <stop offset="60%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="rgba(6,182,212,0)"/>
+    </linearGradient>
+    <linearGradient id="plasmaOuter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="40%" stop-color="#ec4899"/>
+      <stop offset="85%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="rgba(139,92,246,0)"/>
+    </linearGradient>
+
+    <!-- Shuttle Fuselage Gradients -->
+    <linearGradient id="shuttleBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="20%" stop-color="#e2e8f0"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="80%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <linearGradient id="heatShield" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#09090b"/>
+      <stop offset="35%" stop-color="#18181b"/>
+      <stop offset="70%" stop-color="#27272a"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+
+    <!-- Cockpit Canopy -->
+    <linearGradient id="canopy" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="40%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#082f49"/>
+    </linearGradient>
+
+    <filter id="plumeGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g transform="translate(400, 260) rotate(-25)">
+    <!-- 1. Engine Plasma Flame Exhaust Trails -->
+    <g filter="url(#plumeGlow)">
+      <!-- Left Thruster Plume -->
+      <path d="M -45 130 C -60 220, -35 320, -42 380 C -48 320, -25 220, -35 130 Z" fill="url(#plasmaOuter)" opacity="0.8"/>
+      <path d="M -42 130 C -52 190, -37 260, -40 300 C -44 260, -32 190, -38 130 Z" fill="url(#plasmaCore)"/>
+
+      <!-- Right Thruster Plume -->
+      <path d="M 35 130 C 25 220, 48 320, 42 380 C 35 320, 60 220, 45 130 Z" fill="url(#plasmaOuter)" opacity="0.8"/>
+      <path d="M 38 130 C 32 190, 44 260, 40 300 C 37 260, 52 190, 42 130 Z" fill="url(#plasmaCore)"/>
+
+      <!-- Center Main Engine Plume -->
+      <path d="M -15 140 C -30 250, -5 370, 0 440 C 5 370, 30 250, 15 140 Z" fill="url(#plasmaOuter)"/>
+      <path d="M -10 140 C -18 220, -4 310, 0 360 C 4 310, 18 220, 10 140 Z" fill="url(#plasmaCore)"/>
+    </g>
+
+    <!-- 2. Delta Wings -->
+    <!-- Underwing Heatshield (Black Ceramic) -->
+    <polygon points="0,-160 -195,115 -145,135 0,105 145,135 195,115" fill="url(#heatShield)"/>
+    <!-- Top Wing Surface (White Ceramic) -->
+    <polygon points="0,-160 -190,110 -140,128 0,98 140,128 190,110" fill="url(#shuttleBody)"/>
+    <!-- Wing Leading Edge Heat Panels -->
+    <path d="M 0 -160 L -190 110 L -175 112 L 0 -150 Z" fill="#18181b"/>
+    <path d="M 0 -160 L 190 110 L 175 112 L 0 -150 Z" fill="#18181b"/>
+
+    <!-- Wing Tip Elevons / Stripes -->
+    <path d="M -180 90 L -140 128" stroke="#06b6d4" stroke-width="3"/>
+    <path d="M 180 90 L 140 128" stroke="#06b6d4" stroke-width="3"/>
+
+    <!-- 3. Shuttle Fuselage Body -->
+    <path d="M 0 -220 C -25 -190, -45 -120, -45 90 C -45 120, -35 130, 0 130 C 35 130, 45 120, 45 90 C 45 -120, 25 -190, 0 -220 Z" fill="url(#shuttleBody)"/>
+
+    <!-- Black Nose Cone Cap -->
+    <path d="M 0 -220 C -18 -200, -26 -165, 0 -150 C 26 -165, 18 -200, 0 -220 Z" fill="#09090b"/>
+
+    <!-- Cockpit Windshield Windows -->
+    <path d="M 0 -140 L -22 -118 C -15 -108, -5 -105, 0 -105 C 5 -105, 15 -108, 22 -118 Z" fill="url(#canopy)"/>
+    <path d="M -1 -138 L -1 -106" stroke="#0f172a" stroke-width="2"/>
+    <path d="M -11 -128 L -7 -108" stroke="#0f172a" stroke-width="2"/>
+    <path d="M 11 -128 L 7 -108" stroke="#0f172a" stroke-width="2"/>
+
+    <!-- Canopy Glass Reflection -->
+    <path d="M -16 -122 L -8 -112" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.75"/>
+
+    <!-- Vertical Stabilizer (Tail Fin) -->
+    <path d="M 0 -40 L -6 115 L 0 125 L 6 115 Z" fill="#e2e8f0"/>
+    <path d="M 0 -40 L 0 125" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M -4 100 L 4 100" stroke="#06b6d4" stroke-width="3"/>
+
+    <!-- Spirit X Mission Marking -->
+    <rect x="-14" y="0" width="28" height="12" rx="3" fill="#09090b"/>
+    <text x="0" y="9" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="8" fill="#38bdf8" text-anchor="middle" letter-spacing="1">SX-26</text>
+
+    <!-- 4. Rocket Engine Nozzles -->
+    <ellipse cx="-24" cy="130" rx="10" ry="6" fill="#27272a" stroke="#09090b" stroke-width="2"/>
+    <ellipse cx="-24" cy="130" rx="6" ry="3" fill="#06b6d4"/>
+
+    <ellipse cx="24" cy="130" rx="10" ry="6" fill="#27272a" stroke="#09090b" stroke-width="2"/>
+    <ellipse cx="24" cy="130" rx="6" ry="3" fill="#06b6d4"/>
+
+    <ellipse cx="0" cy="136" rx="12" ry="7" fill="#27272a" stroke="#09090b" stroke-width="2"/>
+    <ellipse cx="0" cy="136" rx="8" ry="4" fill="#f43f5e"/>
+  </g>
+</svg>

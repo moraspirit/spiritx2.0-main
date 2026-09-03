@@ -1,0 +1,194 @@
+---
+---
+
+<div class="layer" data-name="tracks" data-index="3">
+  <div class="tracks-wrapper">
+    <div class="section-header">
+      <p class="eyebrow center"><span class="dot"></span> Earth &amp; Sun Orbit</p>
+      <h2 class="center">Pick Your <span class="grad">Solar Battlefield</span></h2>
+      <p class="section-lead">Four specialized orbital arenas configured for maximum planetary impact.</p>
+    </div>
+
+    <div class="tracks-grid">
+      <div class="track-card">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrap">&#9889;</div>
+        <h3>AI &amp; Neural Autonomy</h3>
+        <p>Autonomous agents, orbital LLMs, and real-time computer vision systems solving planetary challenges.</p>
+        <div class="card-badge">Neural Nets &bull; Deep Learning</div>
+      </div>
+
+      <div class="track-card">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrap">&#128187;</div>
+        <h3>Distributed Web &amp; Mobile</h3>
+        <p>Resilient decentralized protocols, edge computing architectures, and hyper-responsive user interfaces.</p>
+        <div class="card-badge">Decentralized &bull; Cloud Native</div>
+      </div>
+
+      <div class="track-card">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrap">&#128248;</div>
+        <h3>Spatial &amp; Immersive Tech</h3>
+        <p>Spatial WebGL, 3D simulation engines, digital twins, and immersive VR/AR navigation cockpits.</p>
+        <div class="card-badge">Spatial Web &bull; 3D &bull; AR/VR</div>
+      </div>
+
+      <div class="track-card">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrap">&#127793;</div>
+        <h3>Earth &amp; Planetary Sustainability</h3>
+        <p>Clean grid automation, climate telemetry algorithms, and circular economy hardware-software solutions.</p>
+        <div class="card-badge">Green Tech &bull; Earth Observation</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 4rem);
+    transform-style: preserve-3d;
+    will-change: transform, opacity, filter;
+    backface-visibility: hidden;
+    pointer-events: none;
+  }
+
+  .tracks-wrapper {
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2.2rem;
+    transform: translateZ(40px);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #fcd34d;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .eyebrow.center {
+    justify-content: center;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+    margin-top: 0.4rem;
+  }
+
+  .grad {
+    background: var(--grad, linear-gradient(135deg, #f59e0b 0%, #fbbf24 45%, #38bdf8 100%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .section-lead {
+    color: var(--muted, #9a9aae);
+    font-size: 0.98rem;
+    margin-top: 0.6rem;
+  }
+
+  .tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+    width: 100%;
+    transform-style: preserve-3d;
+  }
+
+  .track-card {
+    position: relative;
+    padding: 1.8rem;
+    border-radius: var(--radius-md, 18px);
+    background: rgba(18, 18, 29, 0.72);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    will-change: transform;
+  }
+
+  .track-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    border-color: var(--border-glow, rgba(245, 158, 11, 0.45));
+    box-shadow: 0 16px 35px rgba(245, 158, 11, 0.2);
+  }
+
+  .card-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 130px;
+    height: 130px;
+    background: radial-gradient(circle, var(--border-glow, rgba(245, 158, 11, 0.3)), transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-icon-wrap {
+    font-size: 1.8rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .track-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text, #f4f4f8);
+  }
+
+  .track-card p {
+    color: var(--muted, #9a9aae);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 0 1.2rem;
+    flex-grow: 1;
+  }
+
+  .card-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    background: rgba(6, 182, 212, 0.1);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(6, 182, 212, 0.25);
+  }
+
+  @media (max-width: 900px) {
+    .tracks-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

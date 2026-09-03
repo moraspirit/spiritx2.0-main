@@ -1,0 +1,529 @@
+---
+---
+
+<canvas id="web-canvas" class="web-canvas" aria-hidden="true"></canvas>
+
+<script>
+  import * as THREE from 'three';
+
+  const initCosmicCanvas = () => {
+    const canvas = document.getElementById('web-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a0a12, 0.00045);
+
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 7000);
+    camera.position.z = 700;
+
+    // Procedural circular glow texture
+    const createGlowTexture = () => {
+      const c = document.createElement('canvas');
+      c.width = 64;
+      c.height = 64;
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        grad.addColorStop(0.25, 'rgba(168, 85, 247, 0.9)');
+        grad.addColorStop(0.55, 'rgba(6, 182, 212, 0.4)');
+        grad.addColorStop(1, 'rgba(10, 10, 18, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.needsUpdate = true;
+      return tex;
+    };
+    const glowTexture = createGlowTexture();
+
+    // ===========================================================
+    // WORLD 1: CYBER ORBIT (Plexus Web, Cyber Rings, Digital Void)
+    // ===========================================================
+    const cyberWorldGroup = new THREE.Group();
+
+    const NODE_COUNT = 130;
+    const CONNECT_DIST = 160;
+    const MAX_LINES = 700;
+
+    interface PlexusNode {
+      pos: THREE.Vector3;
+      basePos: THREE.Vector3;
+      vel: THREE.Vector3;
+      pulseOffset: number;
+      color: THREE.Color;
+    }
+
+    const cyberColors = [
+      new THREE.Color(0x8b5cf6),
+      new THREE.Color(0xec4899),
+      new THREE.Color(0x06b6d4),
+      new THREE.Color(0x38bdf8),
+    ];
+
+    const nodes: PlexusNode[] = [];
+    const nodePositions = new Float32Array(NODE_COUNT * 3);
+    const nodeColors = new Float32Array(NODE_COUNT * 3);
+
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const pos = new THREE.Vector3(
+        (Math.random() - 0.5) * 1700,
+        (Math.random() - 0.5) * 1150,
+        (Math.random() - 0.5) * 2600 - 600
+      );
+      const vel = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.45,
+        (Math.random() - 0.5) * 0.45,
+        (Math.random() - 0.5) * 0.35
+      );
+      const color = cyberColors[Math.floor(Math.random() * cyberColors.length)];
+
+      nodes.push({
+        pos,
+        basePos: pos.clone(),
+        vel,
+        pulseOffset: Math.random() * Math.PI * 2,
+        color,
+      });
+
+      nodePositions[i * 3] = pos.x;
+      nodePositions[i * 3 + 1] = pos.y;
+      nodePositions[i * 3 + 2] = pos.z;
+
+      nodeColors[i * 3] = color.r;
+      nodeColors[i * 3 + 1] = color.g;
+      nodeColors[i * 3 + 2] = color.b;
+    }
+
+    const nodeGeometry = new THREE.BufferGeometry();
+    nodeGeometry.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));
+    nodeGeometry.setAttribute('color', new THREE.BufferAttribute(nodeColors, 3));
+
+    const nodeMaterial = new THREE.PointsMaterial({
+      size: 14,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.95,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const nodePoints = new THREE.Points(nodeGeometry, nodeMaterial);
+    cyberWorldGroup.add(nodePoints);
+
+    // Connecting Web Lines
+    const linePositions = new Float32Array(MAX_LINES * 2 * 3);
+    const lineColors = new Float32Array(MAX_LINES * 2 * 3);
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
+
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
+    cyberWorldGroup.add(lineSegments);
+
+    // Cyber Tunnel Rings
+    const ringDepths = [400, -200, -800, -1400, -2000];
+    const ringMeshes: THREE.LineLoop[] = [];
+
+    ringDepths.forEach((zDepth, idx) => {
+      const ringGeo = new THREE.BufferGeometry();
+      const segments = 24;
+      const radius = 460 + idx * 30;
+      const pts: number[] = [];
+      for (let s = 0; s < segments; s++) {
+        const theta = (s / segments) * Math.PI * 2;
+        pts.push(Math.cos(theta) * radius, Math.sin(theta) * radius, 0);
+      }
+      ringGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+
+      const ringMat = new THREE.LineBasicMaterial({
+        color: idx % 2 === 0 ? 0x8b5cf6 : 0x06b6d4,
+        transparent: true,
+        opacity: 0.24,
+        blending: THREE.AdditiveBlending,
+      });
+
+      const ring = new THREE.LineLoop(ringGeo, ringMat);
+      ring.position.z = zDepth;
+      ringMeshes.push(ring);
+      cyberWorldGroup.add(ring);
+    });
+
+    scene.add(cyberWorldGroup);
+
+    // ===========================================================
+    // WORLD 2: ALIEN EARTH / ANOTHER WORLD (Emerald Biosphere)
+    // ===========================================================
+    const alienWorldGroup = new THREE.Group();
+    alienWorldGroup.position.z = -1200;
+
+    // 3D Undulating Alien Terrain Surface
+    const terrainGeo = new THREE.PlaneGeometry(2800, 1800, 48, 36);
+    const terrainPos = terrainGeo.attributes.position;
+    for (let i = 0; i < terrainPos.count; i++) {
+      const vx = terrainPos.getX(i);
+      const vy = terrainPos.getY(i);
+      const vz = Math.sin(vx * 0.005) * 80 + Math.cos(vy * 0.006) * 60 + Math.sin(vx * 0.01 + vy * 0.01) * 35;
+      terrainPos.setZ(i, vz);
+    }
+    terrainGeo.computeVertexNormals();
+
+    const terrainMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.28,
+      blending: THREE.AdditiveBlending,
+    });
+    const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
+    terrainMesh.rotation.x = -Math.PI / 2.3;
+    terrainMesh.position.set(0, -450, -200);
+    alienWorldGroup.add(terrainMesh);
+
+    // Glowing Aurora Borealis Ribbons
+    const auroraGroup = new THREE.Group();
+    for (let a = 0; a < 4; a++) {
+      const auroraGeo = new THREE.PlaneGeometry(2600, 300, 32, 4);
+      const aPos = auroraGeo.attributes.position;
+      for (let i = 0; i < aPos.count; i++) {
+        const ax = aPos.getX(i);
+        aPos.setZ(i, Math.sin(ax * 0.004 + a) * 120);
+      }
+      const auroraMat = new THREE.MeshBasicMaterial({
+        color: a % 2 === 0 ? 0x10b981 : 0x06b6d4,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.2,
+        blending: THREE.AdditiveBlending,
+      });
+      const aurora = new THREE.Mesh(auroraGeo, auroraMat);
+      aurora.position.set(0, 180 + a * 65, -400 + a * 80);
+      aurora.rotation.x = -0.15;
+      auroraGroup.add(aurora);
+    }
+    alienWorldGroup.add(auroraGroup);
+
+    // Bioluminescent Floating Spores (500 particles)
+    const SPORE_COUNT = 500;
+    const sporePositions = new Float32Array(SPORE_COUNT * 3);
+    const sporeColors = new Float32Array(SPORE_COUNT * 3);
+    const sporeData: { basePos: THREE.Vector3; speedY: number; offset: number }[] = [];
+    const sporePalette = [new THREE.Color(0x10b981), new THREE.Color(0x2dd4bf), new THREE.Color(0xf59e0b)];
+
+    for (let i = 0; i < SPORE_COUNT; i++) {
+      const sp = new THREE.Vector3(
+        (Math.random() - 0.5) * 2200,
+        (Math.random() - 0.5) * 1200 - 100,
+        (Math.random() - 0.5) * 1800
+      );
+      sporeData.push({
+        basePos: sp.clone(),
+        speedY: 0.4 + Math.random() * 0.8,
+        offset: Math.random() * Math.PI * 2,
+      });
+
+      sporePositions[i * 3] = sp.x;
+      sporePositions[i * 3 + 1] = sp.y;
+      sporePositions[i * 3 + 2] = sp.z;
+
+      const col = sporePalette[Math.floor(Math.random() * sporePalette.length)];
+      sporeColors[i * 3] = col.r;
+      sporeColors[i * 3 + 1] = col.g;
+      sporeColors[i * 3 + 2] = col.b;
+    }
+
+    const sporeGeo = new THREE.BufferGeometry();
+    sporeGeo.setAttribute('position', new THREE.BufferAttribute(sporePositions, 3));
+    sporeGeo.setAttribute('color', new THREE.BufferAttribute(sporeColors, 3));
+
+    const sporeMat = new THREE.PointsMaterial({
+      size: 16,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const sporePoints = new THREE.Points(sporeGeo, sporeMat);
+    alienWorldGroup.add(sporePoints);
+
+    // Alien Moon with Ring
+    const alienMoonGeo = new THREE.SphereGeometry(90, 32, 32);
+    const alienMoonMat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf });
+    const alienMoon = new THREE.Mesh(alienMoonGeo, alienMoonMat);
+    alienMoon.position.set(-550, 280, -900);
+
+    const moonRingGeo = new THREE.RingGeometry(110, 140, 32);
+    const moonRingMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.35,
+      blending: THREE.AdditiveBlending,
+    });
+    const moonRing = new THREE.Mesh(moonRingGeo, moonRingMat);
+    moonRing.rotation.x = 1.2;
+    alienMoon.add(moonRing);
+    alienWorldGroup.add(alienMoon);
+
+    alienWorldGroup.visible = false;
+    scene.add(alienWorldGroup);
+
+    // ===========================================================
+    // WORLD 3: SOLAR GALAXY (Sun, Earth & Golden Cosmos)
+    // ===========================================================
+    const solarWorldGroup = new THREE.Group();
+    solarWorldGroup.position.z = -1200;
+
+    // A. The Sun
+    const sunGeo = new THREE.SphereGeometry(140, 32, 32);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xffedd5 });
+    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    sunMesh.position.set(-420, 180, -400);
+
+    const sunCoronaGroup = new THREE.Group();
+    for (let sc = 0; sc < 3; sc++) {
+      const coronaGeo = new THREE.RingGeometry(155 + sc * 35, 195 + sc * 50, 32);
+      const coronaMat = new THREE.MeshBasicMaterial({
+        color: sc === 0 ? 0xffedd5 : (sc === 1 ? 0xf59e0b : 0xf43f5e),
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.35 - sc * 0.08,
+        blending: THREE.AdditiveBlending,
+      });
+      const cMesh = new THREE.Mesh(coronaGeo, coronaMat);
+      sunCoronaGroup.add(cMesh);
+    }
+    sunMesh.add(sunCoronaGroup);
+    solarWorldGroup.add(sunMesh);
+
+    // B. Planet Earth
+    const earthGeo = new THREE.SphereGeometry(85, 32, 32);
+    const earthMat = new THREE.MeshBasicMaterial({ color: 0x1d4ed8 });
+    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+    earthMesh.position.set(380, -110, -500);
+
+    const cloudsGeo = new THREE.SphereGeometry(88, 32, 32);
+    const cloudsMat = new THREE.MeshBasicMaterial({
+      color: 0x67e8f9,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
+    earthMesh.add(cloudsMesh);
+
+    const earthHaloGeo = new THREE.RingGeometry(92, 115, 32);
+    const earthHaloMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.45,
+      blending: THREE.AdditiveBlending,
+    });
+    const earthHalo = new THREE.Mesh(earthHaloGeo, earthHaloMat);
+    earthMesh.add(earthHalo);
+    solarWorldGroup.add(earthMesh);
+
+    // Moon
+    const moonGeo = new THREE.SphereGeometry(22, 16, 16);
+    const moonMat = new THREE.MeshBasicMaterial({ color: 0xd4d4d8 });
+    const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+    moonMesh.position.set(540, -40, -420);
+    solarWorldGroup.add(moonMesh);
+
+    // Golden Solar Dust
+    const SOLAR_DUST_COUNT = 1200;
+    const solarPositions = new Float32Array(SOLAR_DUST_COUNT * 3);
+    const solarColors = new Float32Array(SOLAR_DUST_COUNT * 3);
+    const solarPalette = [new THREE.Color(0xf59e0b), new THREE.Color(0xfbbf24), new THREE.Color(0x38bdf8)];
+
+    for (let s = 0; s < SOLAR_DUST_COUNT; s++) {
+      solarPositions[s * 3] = (Math.random() - 0.5) * 2600;
+      solarPositions[s * 3 + 1] = (Math.random() - 0.5) * 1800;
+      solarPositions[s * 3 + 2] = (Math.random() - 0.5) * 2400;
+
+      const sc = solarPalette[Math.floor(Math.random() * solarPalette.length)];
+      solarColors[s * 3] = sc.r;
+      solarColors[s * 3 + 1] = sc.g;
+      solarColors[s * 3 + 2] = sc.b;
+    }
+
+    const solarDustGeo = new THREE.BufferGeometry();
+    solarDustGeo.setAttribute('position', new THREE.BufferAttribute(solarPositions, 3));
+    solarDustGeo.setAttribute('color', new THREE.BufferAttribute(solarColors, 3));
+
+    const solarDustMat = new THREE.PointsMaterial({
+      size: 14,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const solarDustPoints = new THREE.Points(solarDustGeo, solarDustMat);
+    solarWorldGroup.add(solarDustPoints);
+
+    solarWorldGroup.visible = false;
+    scene.add(solarWorldGroup);
+
+    // ===========================================================
+    // SHARED: Hyperspace Warp Stars
+    // ===========================================================
+    const STAR_COUNT = 1400;
+    const starPositions = new Float32Array(STAR_COUNT * 3);
+    const starColors = new Float32Array(STAR_COUNT * 3);
+    const starVelocities: number[] = [];
+
+    for (let i = 0; i < STAR_COUNT; i++) {
+      starPositions[i * 3] = (Math.random() - 0.5) * 2600;
+      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 1800;
+      starPositions[i * 3 + 2] = Math.random() * -4400 + 700;
+
+      const starCol = cyberColors[Math.floor(Math.random() * cyberColors.length)];
+      starColors[i * 3] = starCol.r;
+      starColors[i * 3 + 1] = starCol.g;
+      starColors[i * 3 + 2] = starCol.b;
+
+      starVelocities.push(0.8 + Math.random() * 1.6);
+    }
+
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+    const starMaterial = new THREE.PointsMaterial({
+      size: 11,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const starPoints = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starPoints);
+
+    // Master Render Hook
+    let frameTime = 0;
+
+    (window as any).__updateCosmicCanvas = (
+      smoothProgress: number,
+      scrollVelocity: number,
+      mouse: { x: number; y: number }
+    ) => {
+      frameTime += 0.012;
+
+      // Mouse Camera Parallax
+      camera.position.x = mouse.x * 120;
+      camera.position.y = mouse.y * 80;
+      camera.rotation.y = -mouse.x * 0.038;
+      camera.rotation.x = mouse.y * 0.038;
+
+      // World 1 Visibility
+      cyberWorldGroup.visible = smoothProgress < 1.5;
+      if (cyberWorldGroup.visible) {
+        const cFactor = THREE.MathUtils.clamp(1 - (smoothProgress - 1.0) / 0.4, 0, 1);
+        nodeMaterial.opacity = 0.95 * cFactor;
+        lineMaterial.opacity = 0.85 * cFactor;
+      }
+
+      // World 2 Visibility
+      alienWorldGroup.visible = smoothProgress >= 1.15 && smoothProgress < 2.65;
+      if (alienWorldGroup.visible) {
+        let aFactor = 1;
+        if (smoothProgress < 1.5) aFactor = THREE.MathUtils.clamp((smoothProgress - 1.15) / 0.35, 0, 1);
+        else if (smoothProgress > 2.2) aFactor = THREE.MathUtils.clamp(1 - (smoothProgress - 2.2) / 0.4, 0, 1);
+        terrainMat.opacity = 0.28 * aFactor;
+        sporeMat.opacity = 0.85 * aFactor;
+      }
+
+      // World 3 Visibility
+      solarWorldGroup.visible = smoothProgress >= 2.25;
+      if (solarWorldGroup.visible) {
+        const sFactor = THREE.MathUtils.clamp((smoothProgress - 2.25) / 0.4, 0, 1);
+        solarDustMat.opacity = 0.85 * sFactor;
+      }
+
+      // Micro-animations
+      ringMeshes.forEach((ring, idx) => {
+        ring.rotation.z += 0.002 * (idx % 2 === 0 ? 1 : -1);
+      });
+
+      if (alienWorldGroup.visible) {
+        terrainMesh.position.y = -450 + Math.sin(frameTime * 1.5) * 15;
+        auroraGroup.children.forEach((aur, idx) => {
+          aur.position.y += Math.sin(frameTime + idx) * 0.4;
+        });
+
+        const sPosArr = sporeGeo.getAttribute('position').array as Float32Array;
+        for (let i = 0; i < SPORE_COUNT; i++) {
+          const sd = sporeData[i];
+          sPosArr[i * 3 + 1] += sd.speedY;
+          sPosArr[i * 3] += Math.sin(frameTime + sd.offset) * 0.5;
+          if (sPosArr[i * 3 + 1] > 600) sPosArr[i * 3 + 1] = -700;
+        }
+        sporeGeo.getAttribute('position').needsUpdate = true;
+      }
+
+      if (solarWorldGroup.visible) {
+        sunCoronaGroup.rotation.z += 0.003;
+        earthMesh.rotation.y += 0.004;
+        cloudsMesh.rotation.y += 0.006;
+        moonMesh.rotation.y += 0.002;
+      }
+
+      // Warp stars
+      const starPosArr = starGeometry.getAttribute('position').array as Float32Array;
+      const warpSpeed = 1.2 + Math.abs(scrollVelocity) * 0.1;
+      for (let i = 0; i < STAR_COUNT; i++) {
+        starPosArr[i * 3 + 2] += starVelocities[i] * warpSpeed;
+        if (starPosArr[i * 3 + 2] > 700) starPosArr[i * 3 + 2] = -4400;
+      }
+      starGeometry.getAttribute('position').needsUpdate = true;
+
+      renderer.render(scene, camera);
+    };
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCosmicCanvas);
+  } else {
+    initCosmicCanvas();
+  }
+</script>
+
+<style>
+  .web-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+</style>
