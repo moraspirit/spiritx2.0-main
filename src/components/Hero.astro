@@ -1,3 +1,6 @@
+---
+---
+
 <script>
   import '@google/model-viewer';
 </script>
@@ -10,7 +13,15 @@
     const canvas = document.getElementById('web-canvas') as HTMLCanvasElement;
     const stageEl = document.getElementById('stage') as HTMLElement;
     const globalNav = document.getElementById('global-nav') as HTMLElement;
+    const warpFlash = document.getElementById('warp-flash') as HTMLElement;
+    const spaceHud = document.getElementById('space-hud') as HTMLElement;
+    const hudAltitude = document.getElementById('hud-altitude') as HTMLElement;
+    const hudGForce = document.getElementById('hud-gforce') as HTMLElement;
+    const hudSector = document.getElementById('hud-sector') as HTMLElement;
+    const hudReticle = document.getElementById('hud-reticle') as HTMLElement;
+
     const layers = Array.from(document.querySelectorAll('.layer')) as HTMLElement[];
+    const trackCards = Array.from(document.querySelectorAll('.track-card')) as HTMLElement[];
     const navLinks = Array.from(document.querySelectorAll('.nav-links a')) as HTMLAnchorElement[];
 
     if (!canvas || !stageEl || layers.length === 0) return;
@@ -34,12 +45,14 @@
     });
 
     // -----------------------------------------------------------
-    // 2. Mouse Tracking for Parallax & 3D Web Magnetism
+    // 2. Mouse Tracking for Parallax, Web Magnetism & Visor HUD
     // -----------------------------------------------------------
-    const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    const mouse = { x: 0, y: 0, targetX: 0, targetY: 0, rawX: 0, rawY: 0 };
     const mouse3D = new THREE.Vector3(0, 0, 0);
 
     window.addEventListener('mousemove', (e) => {
+      mouse.rawX = e.clientX;
+      mouse.rawY = e.clientY;
       mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
     });
@@ -50,7 +63,7 @@
     });
 
     // -----------------------------------------------------------
-    // 3. Three.js Animated Cyber Web & Deep Space Fly-through
+    // 3. Three.js Dual-Realm: Cyber Orbit -> Deep Space Vortex
     // -----------------------------------------------------------
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -62,12 +75,12 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0a12, 0.00065);
+    scene.fog = new THREE.FogExp2(0x0a0a12, 0.00055);
 
-    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 5000);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 6000);
     camera.position.z = 700;
 
-    // Procedural glow sprite
+    // Procedural soft glowing circular sprite
     const createGlowTexture = () => {
       const c = document.createElement('canvas');
       c.width = 64;
@@ -88,10 +101,21 @@
     };
     const glowTexture = createGlowTexture();
 
-    // --- A. 3D Plexus / Neural Web System ---
-    const NODE_COUNT = 135;
+    const colorPalette = [
+      new THREE.Color(0x8b5cf6), // Violet
+      new THREE.Color(0xec4899), // Pink
+      new THREE.Color(0x06b6d4), // Cyan
+      new THREE.Color(0x38bdf8), // Sky Blue
+    ];
+
+    // ===========================================================
+    // REALM 1: CYBER ORBIT (Plexus Web & Cyber Tunnel Rings)
+    // ===========================================================
+    const cyberGroup = new THREE.Group();
+
+    const NODE_COUNT = 130;
     const CONNECT_DIST = 160;
-    const MAX_LINES = 750;
+    const MAX_LINES = 700;
 
     interface PlexusNode {
       pos: THREE.Vector3;
@@ -102,13 +126,6 @@
     }
 
     const nodes: PlexusNode[] = [];
-    const colorPalette = [
-      new THREE.Color(0x8b5cf6), // Violet
-      new THREE.Color(0xec4899), // Pink
-      new THREE.Color(0x06b6d4), // Cyan
-      new THREE.Color(0x38bdf8), // Sky Blue
-    ];
-
     const nodePositions = new Float32Array(NODE_COUNT * 3);
     const nodeColors = new Float32Array(NODE_COUNT * 3);
 
@@ -116,7 +133,7 @@
       const pos = new THREE.Vector3(
         (Math.random() - 0.5) * 1700,
         (Math.random() - 0.5) * 1150,
-        (Math.random() - 0.5) * 2800 - 700
+        (Math.random() - 0.5) * 2600 - 600
       );
       const vel = new THREE.Vector3(
         (Math.random() - 0.5) * 0.45,
@@ -156,7 +173,7 @@
       depthWrite: false,
     });
     const nodePoints = new THREE.Points(nodeGeometry, nodeMaterial);
-    scene.add(nodePoints);
+    cyberGroup.add(nodePoints);
 
     // Connecting Web Lines
     const linePositions = new Float32Array(MAX_LINES * 2 * 3);
@@ -174,11 +191,10 @@
       depthWrite: false,
     });
     const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial);
-    scene.add(lineSegments);
+    cyberGroup.add(lineSegments);
 
-    // --- B. Cyber Tunnel Web Rings (Geometric Depth Markers) ---
-    const tunnelGroup = new THREE.Group();
-    const ringDepths = [400, -200, -800, -1400, -2000, -2600, -3200];
+    // Cyber Tunnel Web Rings
+    const ringDepths = [400, -200, -800, -1400, -2000, -2600];
     const ringMeshes: THREE.LineLoop[] = [];
 
     ringDepths.forEach((zDepth, idx) => {
@@ -204,27 +220,152 @@
       const ring = new THREE.LineLoop(ringGeo, ringMat);
       ring.position.z = zDepth;
       ringMeshes.push(ring);
-      tunnelGroup.add(ring);
+      cyberGroup.add(ring);
     });
-    scene.add(tunnelGroup);
 
-    // --- C. Warp Starfield / Cosmic Cyber Dust ---
-    const STAR_COUNT = 1400;
+    scene.add(cyberGroup);
+
+    // ===========================================================
+    // REALM 2: DEEP SPACE (Swirling Galactic Vortex, Nebula & Singularity)
+    // ===========================================================
+    const deepSpaceGroup = new THREE.Group();
+    deepSpaceGroup.position.z = -1200;
+
+    // A. Swirling Accretion Disk / Galactic Vortex (2,200 stardust particles)
+    const VORTEX_COUNT = 2200;
+    const vortexPositions = new Float32Array(VORTEX_COUNT * 3);
+    const vortexColors = new Float32Array(VORTEX_COUNT * 3);
+    const vortexData: { radius: number; angle: number; speed: number; yOffset: number }[] = [];
+
+    const coreGold = new THREE.Color(0xffedd5); // Bright gold/white core
+    const solarAmber = new THREE.Color(0xf59e0b); // Radiant Amber
+    const cosmicMagenta = new THREE.Color(0xf43f5e); // Hot Pink Nebula Gas
+    const outerCyan = new THREE.Color(0x06b6d4); // Deep Space Cyan
+
+    for (let i = 0; i < VORTEX_COUNT; i++) {
+      const r = 90 + Math.pow(Math.random(), 1.6) * 850;
+      const angle = Math.random() * Math.PI * 2;
+      // Keplerian physics: particles closer to center orbit faster
+      const speed = 0.005 + (380 / (r + 120)) * 0.015;
+      const yOffset = (Math.random() - 0.5) * (r * 0.16);
+
+      vortexData.push({ radius: r, angle, speed, yOffset });
+
+      vortexPositions[i * 3] = Math.cos(angle) * r;
+      vortexPositions[i * 3 + 1] = yOffset;
+      vortexPositions[i * 3 + 2] = Math.sin(angle) * r;
+
+      const normR = Math.min(1, r / 900);
+      const col = new THREE.Color();
+      if (normR < 0.22) {
+        col.lerpColors(coreGold, solarAmber, normR / 0.22);
+      } else if (normR < 0.6) {
+        col.lerpColors(solarAmber, cosmicMagenta, (normR - 0.22) / 0.38);
+      } else {
+        col.lerpColors(cosmicMagenta, outerCyan, (normR - 0.6) / 0.4);
+      }
+
+      vortexColors[i * 3] = col.r;
+      vortexColors[i * 3 + 1] = col.g;
+      vortexColors[i * 3 + 2] = col.b;
+    }
+
+    const vortexGeometry = new THREE.BufferGeometry();
+    vortexGeometry.setAttribute('position', new THREE.BufferAttribute(vortexPositions, 3));
+    vortexGeometry.setAttribute('color', new THREE.BufferAttribute(vortexColors, 3));
+
+    const vortexMaterial = new THREE.PointsMaterial({
+      size: 16,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const vortexPoints = new THREE.Points(vortexGeometry, vortexMaterial);
+    // Dramatic inclination tilt of galactic disk
+    vortexPoints.rotation.x = 1.05;
+    vortexPoints.rotation.y = 0.4;
+    deepSpaceGroup.add(vortexPoints);
+
+    // B. Central Singularity / Event Horizon Core
+    const singularityGeo = new THREE.SphereGeometry(75, 32, 32);
+    const singularityMat = new THREE.MeshBasicMaterial({ color: 0x050508 });
+    const singularityMesh = new THREE.Mesh(singularityGeo, singularityMat);
+    deepSpaceGroup.add(singularityMesh);
+
+    // Glowing Corona Rings around the Singularity
+    const coronaGroup = new THREE.Group();
+    for (let c = 0; c < 3; c++) {
+      const coronaGeo = new THREE.RingGeometry(85 + c * 30, 110 + c * 40, 32);
+      const coronaMat = new THREE.MeshBasicMaterial({
+        color: c === 0 ? 0xffedd5 : (c === 1 ? 0xf59e0b : 0x8b5cf6),
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+      });
+      const coronaMesh = new THREE.Mesh(coronaGeo, coronaMat);
+      coronaMesh.rotation.x = 1.05;
+      coronaMesh.rotation.y = 0.4;
+      coronaGroup.add(coronaMesh);
+    }
+    deepSpaceGroup.add(coronaGroup);
+
+    // C. Deep Cosmic Nebula Gas Cloud Motes
+    const NEBULA_COUNT = 550;
+    const nebulaPositions = new Float32Array(NEBULA_COUNT * 3);
+    const nebulaColors = new Float32Array(NEBULA_COUNT * 3);
+
+    for (let n = 0; n < NEBULA_COUNT; n++) {
+      nebulaPositions[n * 3] = (Math.random() - 0.5) * 2800;
+      nebulaPositions[n * 3 + 1] = (Math.random() - 0.5) * 1900;
+      nebulaPositions[n * 3 + 2] = (Math.random() - 0.5) * 2400;
+
+      const c = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      nebulaColors[n * 3] = c.r;
+      nebulaColors[n * 3 + 1] = c.g;
+      nebulaColors[n * 3 + 2] = c.b;
+    }
+
+    const nebulaGeometry = new THREE.BufferGeometry();
+    nebulaGeometry.setAttribute('position', new THREE.BufferAttribute(nebulaPositions, 3));
+    nebulaGeometry.setAttribute('color', new THREE.BufferAttribute(nebulaColors, 3));
+
+    const nebulaMaterial = new THREE.PointsMaterial({
+      size: 26,
+      map: glowTexture,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const nebulaPoints = new THREE.Points(nebulaGeometry, nebulaMaterial);
+    deepSpaceGroup.add(nebulaPoints);
+
+    scene.add(deepSpaceGroup);
+
+    // ===========================================================
+    // SHARED: Hyperspace Warp Starfield (Accelerates on scroll)
+    // ===========================================================
+    const STAR_COUNT = 1500;
     const starPositions = new Float32Array(STAR_COUNT * 3);
     const starColors = new Float32Array(STAR_COUNT * 3);
     const starVelocities: number[] = [];
 
     for (let i = 0; i < STAR_COUNT; i++) {
-      starPositions[i * 3] = (Math.random() - 0.5) * 2400;
-      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 1700;
-      starPositions[i * 3 + 2] = Math.random() * -3800 + 600;
+      starPositions[i * 3] = (Math.random() - 0.5) * 2600;
+      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 1800;
+      starPositions[i * 3 + 2] = Math.random() * -4200 + 700;
 
       const starCol = colorPalette[Math.floor(Math.random() * colorPalette.length)];
       starColors[i * 3] = starCol.r;
       starColors[i * 3 + 1] = starCol.g;
       starColors[i * 3 + 2] = starCol.b;
 
-      starVelocities.push(0.7 + Math.random() * 1.5);
+      starVelocities.push(0.8 + Math.random() * 1.6);
     }
 
     const starGeometry = new THREE.BufferGeometry();
@@ -232,18 +373,18 @@
     starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
     const starMaterial = new THREE.PointsMaterial({
-      size: 10,
+      size: 11,
       map: glowTexture,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
     const starPoints = new THREE.Points(starGeometry, starMaterial);
     scene.add(starPoints);
 
-    // Window resize
+    // Window resize handler
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -251,9 +392,12 @@
     });
 
     // -----------------------------------------------------------
-    // 4. Three.js Frame Animation
+    // 4. Three.js Animation Loop & Realm Cross-fading
     // -----------------------------------------------------------
     let frameTime = 0;
+    let smoothProgress = 0;
+    let targetProgress = 0;
+    let lastActiveIndex = -1;
 
     const renderThree = () => {
       frameTime += 0.012;
@@ -262,15 +406,61 @@
       mouse.x += (mouse.targetX - mouse.x) * 0.04;
       mouse.y += (mouse.targetY - mouse.y) * 0.04;
 
-      camera.position.x = mouse.x * 110;
-      camera.position.y = mouse.y * 70;
-      camera.rotation.y = -mouse.x * 0.035;
-      camera.rotation.x = mouse.y * 0.035;
+      camera.position.x = mouse.x * 120;
+      camera.position.y = mouse.y * 80;
+      camera.rotation.y = -mouse.x * 0.038;
+      camera.rotation.x = mouse.y * 0.038;
 
-      // Unproject mouse cursor plane into 3D world space at Z = 200
-      mouse3D.set(mouse.x * 600, mouse.y * 400, 200);
+      // Unproject mouse cursor plane into 3D world space
+      mouse3D.set(mouse.x * 650, mouse.y * 420, 200);
 
-      // Rotate & pulse cyber rings
+      // =========================================================
+      // DYNAMIC REALM SHIFT: CYBER ORBIT -> DEEP SPACE SINGULARITY
+      // =========================================================
+      // Transition happens between progress 1.25 and 1.95 (Entering the middle)
+      const deepSpaceFactor = THREE.MathUtils.clamp((smoothProgress - 1.25) / 0.65, 0, 1);
+      const cyberFactor = 1 - deepSpaceFactor;
+
+      // Warp Flash intensity bell curve around progress 1.55
+      if (warpFlash) {
+        const distToWarp = Math.abs(smoothProgress - 1.55);
+        if (distToWarp < 0.35) {
+          const flashIntensity = Math.pow(1 - distToWarp / 0.35, 2) * 0.85;
+          warpFlash.style.opacity = flashIntensity.toFixed(3);
+        } else {
+          warpFlash.style.opacity = '0';
+        }
+      }
+
+      // Fade Cyber Group
+      nodeMaterial.opacity = 0.95 * cyberFactor;
+      lineMaterial.opacity = 0.85 * cyberFactor;
+      ringMeshes.forEach((ring) => {
+        (ring.material as THREE.LineBasicMaterial).opacity = 0.24 * cyberFactor;
+      });
+
+      // Fade Deep Space Vortex Group
+      vortexMaterial.opacity = 0.96 * deepSpaceFactor;
+      nebulaMaterial.opacity = 0.7 * deepSpaceFactor;
+      coronaGroup.children.forEach((c, idx) => {
+        ((c as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = (0.28 - idx * 0.07) * deepSpaceFactor;
+      });
+
+      // Move deep space vortex toward camera as user plunges deep
+      deepSpaceGroup.position.z = -1200 + (smoothProgress - 1.3) * 320;
+      deepSpaceGroup.rotation.z += 0.001;
+
+      // Swirl the accretion disk stardust particles (Keplerian physics)
+      const vPosArr = vortexGeometry.getAttribute('position').array as Float32Array;
+      for (let i = 0; i < VORTEX_COUNT; i++) {
+        const vd = vortexData[i];
+        vd.angle += vd.speed;
+        vPosArr[i * 3] = Math.cos(vd.angle) * vd.radius;
+        vPosArr[i * 3 + 2] = Math.sin(vd.angle) * vd.radius;
+      }
+      vortexGeometry.getAttribute('position').needsUpdate = true;
+
+      // Rotate and pulse cyber rings
       ringMeshes.forEach((ring, idx) => {
         const dir = idx % 2 === 0 ? 1 : -1;
         ring.rotation.z += 0.0025 * dir;
@@ -288,7 +478,7 @@
         node.pos.y = node.basePos.y + Math.cos(frameTime * 0.9 + node.pulseOffset) * 35;
         node.pos.z = node.basePos.z + Math.sin(frameTime * 0.7 + node.pulseOffset) * 40;
 
-        // Interactive cursor magnetism: nodes near mouse are attracted
+        // Interactive cursor magnetism
         const distToMouse = node.pos.distanceTo(mouse3D);
         if (distToMouse < 260) {
           const pullFactor = (1 - distToMouse / 260) * 0.14;
@@ -310,7 +500,6 @@
 
       let lineCount = 0;
 
-      // Node-to-node dynamic lines
       for (let i = 0; i < NODE_COUNT && lineCount < MAX_LINES - 45; i++) {
         for (let j = i + 1; j < NODE_COUNT && lineCount < MAX_LINES - 45; j++) {
           const p1 = nodes[i].pos;
@@ -322,7 +511,7 @@
 
           if (distSq < CONNECT_DIST * CONNECT_DIST) {
             const dist = Math.sqrt(distSq);
-            const alpha = Math.pow(1 - dist / CONNECT_DIST, 1.4) * 0.9;
+            const alpha = Math.pow(1 - dist / CONNECT_DIST, 1.4) * 0.9 * cyberFactor;
 
             const idx = lineCount * 6;
             linePosArr[idx] = p1.x;
@@ -350,12 +539,12 @@
       }
 
       // Interactive mouse spiderweb lines
-      if (Math.abs(mouse.targetX) > 0.01 || Math.abs(mouse.targetY) > 0.01) {
+      if ((Math.abs(mouse.targetX) > 0.01 || Math.abs(mouse.targetY) > 0.01) && cyberFactor > 0.1) {
         for (let i = 0; i < NODE_COUNT && lineCount < MAX_LINES; i++) {
           const p = nodes[i].pos;
           const distToCursor = p.distanceTo(mouse3D);
           if (distToCursor < 250) {
-            const alpha = Math.pow(1 - distToCursor / 250, 1.2) * 0.95;
+            const alpha = Math.pow(1 - distToCursor / 250, 1.2) * 0.95 * cyberFactor;
             const idx = lineCount * 6;
 
             linePosArr[idx] = p.x;
@@ -383,18 +572,18 @@
       linePosAttr.needsUpdate = true;
       lineColAttr.needsUpdate = true;
 
-      // Update Warp Stars (accelerates on scroll velocity)
+      // Update Warp Stars (Hyperspace travel)
       const starPosAttr = starGeometry.getAttribute('position') as THREE.BufferAttribute;
       const starPosArr = starPosAttr.array as Float32Array;
-      const warpSpeed = 1.2 + Math.abs(scrollVelocity) * 0.09;
+      const warpSpeed = 1.2 + Math.abs(scrollVelocity) * 0.1;
 
       for (let i = 0; i < STAR_COUNT; i++) {
         starPosArr[i * 3 + 2] += starVelocities[i] * warpSpeed;
 
         if (starPosArr[i * 3 + 2] > 700) {
-          starPosArr[i * 3 + 2] = -3800;
-          starPosArr[i * 3] = (Math.random() - 0.5) * 2400;
-          starPosArr[i * 3 + 1] = (Math.random() - 0.5) * 1700;
+          starPosArr[i * 3 + 2] = -4200;
+          starPosArr[i * 3] = (Math.random() - 0.5) * 2600;
+          starPosArr[i * 3 + 1] = (Math.random() - 0.5) * 1800;
         }
       }
       starPosAttr.needsUpdate = true;
@@ -403,25 +592,32 @@
     };
 
     // -----------------------------------------------------------
-    // 5. Realistic 3D Spatial "Deep to Real" Layer Engine
+    // 5. Distinct Spatial Transition Choreography & Astronaut HUD
     // -----------------------------------------------------------
-    let smoothProgress = 0;
-    let targetProgress = 0;
-    let lastActiveIndex = -1;
-
     const updateSpatialLayers = () => {
       const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
       targetProgress = scrollMax > 0 ? (currentScroll / scrollMax) * (layers.length - 1) : 0;
 
-      // Smooth lerp for continuous physical momentum
+      // Physical momentum smoothing
       smoothProgress += (targetProgress - smoothProgress) * 0.085;
 
-      // Holographic 3D Stage tilt from mouse
-      const tiltX = -mouse.y * 3.5;
-      const tiltY = mouse.x * 3.5;
-      stageEl.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+      // =========================================================
+      // DYNAMIC STAGE TRANSFORMS: Barrel Roll on Hyperspace Warp Jump
+      // =========================================================
+      // Roll the stage during the middle hyperspace jump between Home and About
+      let warpRoll = 0;
+      let warpPitch = 0;
+      if (smoothProgress > 0.8 && smoothProgress < 2.2) {
+        const warpPhase = (smoothProgress - 0.8) / 1.4; // 0 to 1
+        warpRoll = Math.sin(warpPhase * Math.PI) * -16; // 16-degree barrel roll
+        warpPitch = Math.sin(warpPhase * Math.PI) * 8;
+      }
 
-      // Persistent navigation bar toggle
+      const tiltX = -mouse.y * 3.5 + warpPitch;
+      const tiltY = mouse.x * 3.5;
+      stageEl.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) rotateZ(${warpRoll.toFixed(2)}deg)`;
+
+      // Persistent navigation bar
       if (globalNav) {
         if (smoothProgress > 0.35) {
           globalNav.classList.add('nav-visible');
@@ -430,7 +626,7 @@
         }
       }
 
-      // Active section in nav
+      // Active nav link
       const activeIndex = Math.round(smoothProgress);
       if (activeIndex !== lastActiveIndex) {
         lastActiveIndex = activeIndex;
@@ -444,11 +640,47 @@
         });
       }
 
-      // 3D Depth Transforms for Each Layer ("from deep to real")
+      // =========================================================
+      // ASTRONAUT / SHUTTLE COCKPIT HUD TELEMETRY UPDATE
+      // =========================================================
+      if (spaceHud) {
+        // Boots up as you enter deep space (progress > 1.25)
+        const hudOpacity = THREE.MathUtils.clamp((smoothProgress - 1.25) / 0.5, 0, 1);
+        spaceHud.style.opacity = (hudOpacity * 0.9).toFixed(2);
+        spaceHud.style.pointerEvents = hudOpacity > 0.5 ? 'auto' : 'none';
+
+        // Real-time dynamic altitude readout
+        if (hudAltitude) {
+          const descentKm = Math.max(0, (4 - smoothProgress) * 12500);
+          hudAltitude.textContent = `${descentKm.toLocaleString('en-US', { maximumFractionDigits: 0 })} KM`;
+        }
+
+        // Dynamic G-Force readout based on scroll acceleration
+        if (hudGForce) {
+          const g = Math.abs(scrollVelocity) * 0.11;
+          hudGForce.textContent = `${g.toFixed(2)} G`;
+        }
+
+        // Sector name readout
+        if (hudSector) {
+          if (smoothProgress < 1.3) hudSector.textContent = 'SECTOR 01 // ORBITAL DEPLOY';
+          else if (smoothProgress < 2.4) hudSector.textContent = 'SECTOR 02 // SUB-LIGHT NEBULA';
+          else if (smoothProgress < 3.4) hudSector.textContent = 'SECTOR 03 // ZERO-G BATTLEFIELD';
+          else hudSector.textContent = 'SECTOR 04 // EVENT HORIZON';
+        }
+
+        // Move Visor Targeting Reticle with mouse
+        if (hudReticle) {
+          hudReticle.style.transform = `translate(${mouse.rawX}px, ${mouse.rawY}px)`;
+        }
+      }
+
+      // =========================================================
+      // NON-REPETITIVE 3D LAYER TRANSFORMS
+      // =========================================================
       layers.forEach((layer, i) => {
         const delta = smoothProgress - i;
 
-        // Culling
         if (Math.abs(delta) > 1.35) {
           layer.style.opacity = '0';
           layer.style.visibility = 'hidden';
@@ -458,35 +690,131 @@
 
         layer.style.visibility = 'visible';
 
-        if (delta < 0) {
-          // COMING FROM DEEP SPACE (negative Z to 0)
-          const u = -delta; // 1.35 -> 0
-          const pIn = Math.pow(u, 1.28);
-
-          const z = -pIn * 1750;
-          const y = pIn * 45;
-          const scale = Math.max(0.35, 1 - pIn * 0.22);
-          const blur = Math.min(14, pIn * 11);
-          const opacity = Math.max(0, 1 - Math.pow(u / 1.05, 1.45));
-
-          layer.style.transform = `translate3d(0, ${y.toFixed(1)}px, ${z.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+        // -------------------------------------------------------
+        // Distinct behavior for each individual layer:
+        // -------------------------------------------------------
+        if (i === 0) {
+          // Splash: Classic forward dive
+          const t = Math.max(0, delta);
+          const z = t * 900;
+          const blur = Math.min(16, t * 14);
+          const opacity = Math.max(0, 1 - Math.pow(t / 0.85, 1.6));
+          layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
           layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
           layer.style.opacity = opacity.toFixed(3);
-          layer.style.pointerEvents = Math.abs(delta) < 0.28 ? 'auto' : 'none';
-        } else {
-          // FLYING PAST CAMERA (0 to positive Z)
-          const v = delta; // 0 -> 1.35
-          const pOut = Math.pow(v, 1.25);
+          layer.style.pointerEvents = delta < 0.25 ? 'auto' : 'none';
+        } else if (i === 1) {
+          // Home: Accelerates into the Hyperspace Jump
+          if (delta < 0) {
+            const u = -delta;
+            const p = Math.pow(u, 1.25);
+            const z = -p * 1700;
+            const y = p * 40;
+            const blur = Math.min(14, p * 11);
+            const opacity = Math.max(0, 1 - Math.pow(u / 1.05, 1.45));
+            layer.style.transform = `translate3d(0, ${y.toFixed(1)}px, ${z.toFixed(1)}px)`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
+          } else {
+            // Flies past camera with a hyperspace stretch
+            const v = delta;
+            const z = v * 1100;
+            const blur = Math.min(18, v * 15);
+            const opacity = Math.max(0, 1 - Math.pow(v / 0.78, 1.8));
+            layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px) scale(${1 + v * 0.4})`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
+          }
+          layer.style.pointerEvents = Math.abs(delta) < 0.25 ? 'auto' : 'none';
+        } else if (i === 2) {
+          // About: Space Station Module Docking (Rotational Deceleration Arrival)
+          if (delta < 0) {
+            const u = -delta;
+            const p = Math.pow(u, 1.3);
+            const z = -p * 1800;
+            // Arrives with an orbital docking twist
+            const rotZ = u * 18;
+            const rotY = u * -14;
+            const blur = Math.min(14, p * 11);
+            const opacity = Math.max(0, 1 - Math.pow(u / 1.05, 1.45));
+            layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px) rotateZ(${rotZ.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg)`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
+          } else {
+            const v = delta;
+            const z = v * 950;
+            const blur = Math.min(16, v * 13);
+            const opacity = Math.max(0, 1 - Math.pow(v / 0.82, 1.6));
+            layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
+          }
+          layer.style.pointerEvents = Math.abs(delta) < 0.25 ? 'auto' : 'none';
+        } else if (i === 3) {
+          // Tracks: Zero-G Modular Satellite De-clustering
+          if (delta < 0) {
+            const u = -delta;
+            const p = Math.pow(u, 1.25);
+            const z = -p * 1750;
+            const blur = Math.min(14, p * 11);
+            const opacity = Math.max(0, 1 - Math.pow(u / 1.05, 1.45));
+            layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
 
-          const z = pOut * 950;
-          const y = -pOut * 55;
-          const blur = Math.min(16, pOut * 13);
-          const opacity = Math.max(0, 1 - Math.pow(v / 0.82, 1.6));
+            // Stagger 4 track cards along individual zero-gravity spatial vectors
+            trackCards.forEach((card, cIdx) => {
+              const dirX = cIdx % 2 === 0 ? -1 : 1;
+              const dirY = cIdx < 2 ? -1 : 1;
+              const cardOffset = u * 120;
+              const cardRot = u * 15 * dirX;
+              card.style.transform = `translate3d(${(dirX * cardOffset).toFixed(1)}px, ${(dirY * cardOffset * 0.7).toFixed(1)}px, ${(-cardOffset * 2).toFixed(1)}px) rotateY(${cardRot.toFixed(1)}deg)`;
+            });
+          } else {
+            const v = delta;
+            const z = v * 950;
+            const blur = Math.min(16, v * 13);
+            const opacity = Math.max(0, 1 - Math.pow(v / 0.82, 1.6));
+            layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
 
-          layer.style.transform = `translate3d(0, ${y.toFixed(1)}px, ${z.toFixed(1)}px)`;
-          layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
-          layer.style.opacity = opacity.toFixed(3);
-          layer.style.pointerEvents = Math.abs(delta) < 0.28 ? 'auto' : 'none';
+            // Disperse cards outward into deep space
+            trackCards.forEach((card, cIdx) => {
+              const dirX = cIdx % 2 === 0 ? -1 : 1;
+              const dirY = cIdx < 2 ? -1 : 1;
+              const cardOffset = v * 140;
+              card.style.transform = `translate3d(${(dirX * cardOffset).toFixed(1)}px, ${(dirY * cardOffset).toFixed(1)}px, ${(v * 300).toFixed(1)}px)`;
+            });
+          }
+
+          // At focal zero-G rest, cards float gently on independent sine waves
+          if (Math.abs(delta) < 0.25) {
+            trackCards.forEach((card, cIdx) => {
+              const floatY = Math.sin(frameTime * 1.5 + cIdx * 1.2) * 6;
+              const floatRot = Math.cos(frameTime * 1.2 + cIdx) * 1.2;
+              card.style.transform = `translate3d(0, ${floatY.toFixed(1)}px, 0) rotateZ(${floatRot.toFixed(1)}deg)`;
+            });
+          }
+
+          layer.style.pointerEvents = Math.abs(delta) < 0.25 ? 'auto' : 'none';
+        } else if (i === 4) {
+          // CTA: Entering the Event Horizon & Cosmic Gateway
+          if (delta < 0) {
+            const u = -delta;
+            const p = Math.pow(u, 1.28);
+            const z = -p * 1800;
+            const blur = Math.min(14, p * 11);
+            const opacity = Math.max(0, 1 - Math.pow(u / 1.05, 1.45));
+            layer.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
+            layer.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
+            layer.style.opacity = opacity.toFixed(3);
+          } else {
+            layer.style.transform = `translate3d(0, 0, 0)`;
+            layer.style.filter = 'none';
+            layer.style.opacity = '1';
+          }
+          layer.style.pointerEvents = Math.abs(delta) < 0.35 ? 'auto' : 'none';
         }
       });
     };
@@ -511,7 +839,7 @@
           const dest = (targetIndex / (layers.length - 1)) * scrollMax;
 
           lenis.scrollTo(dest, {
-            duration: 1.4,
+            duration: 1.45,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           });
         }
@@ -541,10 +869,68 @@
   }
 </script>
 
-<!-- Background 3D Cyber WebGL Canvas -->
+<!-- Background 3D Cyber & Cosmic WebGL Canvas -->
 <canvas id="web-canvas" class="web-canvas" aria-hidden="true"></canvas>
 
-<!-- Ambient Deep Cosmic Glow Lights -->
+<!-- Hyperspace Warp Flash Shockwave Overlay -->
+<div id="warp-flash" class="warp-flash" aria-hidden="true"></div>
+
+<!-- Astronaut / Space Shuttle Visor Cockpit HUD -->
+<aside id="space-hud" class="space-hud" aria-label="Astronaut Flight Deck Telemetry">
+  <!-- Top Cockpit Status Bar -->
+  <div class="hud-top">
+    <div class="hud-badge">
+      <span class="hud-pulse"></span>
+      <span>STS-2026 // SPIRIT X EXPEDITION</span>
+    </div>
+    <div id="hud-sector" class="hud-center-text">SECTOR 02 // SUB-LIGHT NEBULA</div>
+    <div class="hud-meta">
+      <span>WARP: 4.8c</span>
+      <span class="hud-sep">&bull;</span>
+      <span>O2: 100%</span>
+      <span class="hud-sep">&bull;</span>
+      <span>06°47'N 79°54'E</span>
+    </div>
+  </div>
+
+  <!-- Left Flight Descent Ladder -->
+  <div class="hud-left">
+    <div class="hud-bracket-top"></div>
+    <div class="hud-ladder">
+      <div class="ladder-label">DESCENT ALTITUDE</div>
+      <div id="hud-altitude" class="ladder-val">37,500 KM</div>
+      <div class="ladder-ticks">
+        <div class="tick active"><span>ORBIT</span></div>
+        <div class="tick"><span>NEBULA</span></div>
+        <div class="tick"><span>CLUSTER</span></div>
+        <div class="tick"><span>GATEWAY</span></div>
+      </div>
+    </div>
+    <div class="hud-bracket-bot"></div>
+  </div>
+
+  <!-- Right Gravitational G-Force Meter -->
+  <div class="hud-right">
+    <div class="hud-bracket-top"></div>
+    <div class="hud-g-meter">
+      <div class="meter-label">G-FORCE ACCEL</div>
+      <div id="hud-gforce" class="meter-val">0.00 G</div>
+      <div class="meter-bar-track">
+        <div class="meter-bar-fill"></div>
+      </div>
+      <div class="meter-status">STATUS: NOMINAL</div>
+    </div>
+    <div class="hud-bracket-bot"></div>
+  </div>
+
+  <!-- Floating Astronaut Visor Reticle -->
+  <div id="hud-reticle" class="hud-reticle" aria-hidden="true">
+    <div class="reticle-ring"></div>
+    <div class="reticle-cross"></div>
+  </div>
+</aside>
+
+<!-- Ambient Cosmic Glow Lights -->
 <div class="ambient-glows" aria-hidden="true">
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
@@ -627,7 +1013,7 @@
         </div>
 
         <a class="scroll-hint" href="#home">
-          <span class="hint-text">Dive Into The Depth</span>
+          <span class="hint-text">Engage Deep Space Flight</span>
           <span class="hint-chevron">&darr;</span>
         </a>
       </div>
@@ -641,7 +1027,7 @@
         <div class="home-copy">
           <p class="eyebrow">
             <span class="dot"></span>
-            The Ultimate Collegiate Arena
+            Collegiate Deep Space Hackathon
           </p>
           <h1 class="main-title">
             Inter University
@@ -653,11 +1039,11 @@
           <p class="lead">
             The biggest inter-university hackathon in Sri Lanka. 48 hours, one
             stage, no limits. Bring your ideas, build with the best, and make
-            history.
+            history among the stars.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary btn-glow" href="#cta">Register Now</a>
-            <a class="btn btn-ghost" href="#about">Explore Event</a>
+            <a class="btn btn-primary btn-glow" href="#cta">Register For Mission</a>
+            <a class="btn btn-ghost" href="#about">Mission Briefing</a>
           </div>
         </div>
 
@@ -669,7 +1055,7 @@
           <div class="stat-divider"></div>
           <div class="stat">
             <span class="stat-num">200+</span>
-            <span class="stat-label">Elite Hackers</span>
+            <span class="stat-label">Cosmic Hackers</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat">
@@ -679,14 +1065,14 @@
           <div class="stat-divider"></div>
           <div class="stat">
             <span class="stat-num">5M+</span>
-            <span class="stat-label">In Prize Pool</span>
+            <span class="stat-label">Prize Bounty</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- LAYER 2: ABOUT SECTION (Interactive 3D Logo & Event Story)-->
+    <!-- LAYER 2: ABOUT SECTION (Space Station Docking / 3D Emblem)-->
     <!-- ======================================================== -->
     <div class="layer" data-name="about" data-index="2">
       <div class="about-grid">
@@ -696,104 +1082,104 @@
             class="about-model-viewer"
             src="/spiritxlogo4.glb"
             environment-image="neutral"
-            shadow-intensity="1.2"
+            shadow-intensity="1.3"
             camera-controls
             disable-zoom
             auto-rotate
             rotation-per-second="25deg"
             interaction-prompt="none"
           ></model-viewer>
-          <div class="model-hint">Interactive 3D Emblem</div>
+          <div class="model-hint">Orbital Telemetry Node // SX-4</div>
         </div>
 
         <div class="about-copy">
-          <p class="eyebrow"><span class="dot"></span> About The Event</p>
+          <p class="eyebrow"><span class="dot"></span> Mission Architecture</p>
           <h2>Built by students,<br /><span class="grad">For students.</span></h2>
           <p class="about-desc">
             Spirit X is MoraSpirit's annual flagship hackathon hosted by the
             Media, Arts and Cultural Society of the University of Moratuwa. Open
             to every undergraduate across Sri Lanka, it's where raw talent meets
-            real-world challenges.
+            uncharted frontiers.
           </p>
           <ul class="about-list">
             <li>
               <div class="list-bullet"></div>
               <div>
-                <strong>48 Hours of Pure Innovation</strong>
-                <span>Sprint from ideation to production in high-intensity sprints.</span>
+                <strong>48 Hours of Orbital Prototyping</strong>
+                <span>Sprint from zero gravity ideation to full production architecture.</span>
               </div>
             </li>
             <li>
               <div class="list-bullet"></div>
               <div>
-                <strong>Top Tier Industry Mentors</strong>
-                <span>Direct guidance from tech leads, architects, and founders.</span>
+                <strong>Veteran Flight Mentors</strong>
+                <span>Direct guidance from industry lead architects, founders, and astronauts.</span>
               </div>
             </li>
             <li>
               <div class="list-bullet"></div>
               <div>
-                <strong>Live Pitch &amp; Grand Finals</strong>
-                <span>Showcase your masterpiece directly in front of premier juries.</span>
+                <strong>Live Pitch &amp; Galactic Finals</strong>
+                <span>Showcase your product directly in front of premier juries.</span>
               </div>
             </li>
           </ul>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#tracks">Discover Tracks &rarr;</a>
+            <a class="btn btn-primary" href="#tracks">Access Battlefields &rarr;</a>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- LAYER 3: TRACKS SECTION (Battlefield Challenge Cards)    -->
+    <!-- LAYER 3: TRACKS SECTION (Zero-G Modular Mission Pods)    -->
     <!-- ======================================================== -->
     <div class="layer" data-name="tracks" data-index="3">
       <div class="tracks-wrapper">
         <div class="section-header">
-          <p class="eyebrow center"><span class="dot"></span> Challenge Tracks</p>
-          <h2 class="center">Pick Your <span class="grad">Battlefield</span></h2>
-          <p class="section-lead">Choose your domain of mastery and push technological boundaries.</p>
+          <p class="eyebrow center"><span class="dot"></span> Zero-G Battlefields</p>
+          <h2 class="center">Pick Your <span class="grad">Trajectory</span></h2>
+          <p class="section-lead">Four specialized arenas configured for maximum technological impact.</p>
         </div>
 
         <div class="tracks-grid">
           <div class="track-card">
             <div class="card-glow"></div>
             <div class="card-icon-wrap">&#9889;</div>
-            <h3>AI &amp; Machine Learning</h3>
-            <p>Intelligent neural systems, LLMs, and autonomous agents solving pressing South Asian challenges.</p>
-            <div class="card-badge">Data &bull; Deep Learning</div>
+            <h3>AI &amp; Neural Autonomy</h3>
+            <p>Autonomous agents, orbital LLMs, and real-time computer vision systems solving planetary challenges.</p>
+            <div class="card-badge">Neural Nets &bull; Deep Learning</div>
           </div>
 
           <div class="track-card">
             <div class="card-glow"></div>
             <div class="card-icon-wrap">&#128187;</div>
-            <h3>Web &amp; Mobile</h3>
-            <p>Hyper-responsive platforms, scalable distributed cloud architectures, and transformative user apps.</p>
-            <div class="card-badge">Full Stack &bull; Cloud</div>
+            <h3>Distributed Web &amp; Mobile</h3>
+            <p>Resilient decentralized protocols, edge computing architectures, and hyper-responsive user interfaces.</p>
+            <div class="card-badge">Decentralized &bull; Cloud Native</div>
           </div>
 
           <div class="track-card">
             <div class="card-glow"></div>
             <div class="card-icon-wrap">&#128248;</div>
-            <h3>Creative Tech</h3>
-            <p>Next-gen 3D spatial web, WebGL, AR/VR immersive worlds, and interactive digital storytelling.</p>
-            <div class="card-badge">Spatial &bull; 3D &bull; AR/VR</div>
+            <h3>Spatial &amp; Immersive Tech</h3>
+            <p>Spatial WebGL, 3D simulation engines, digital twins, and immersive VR/AR navigation cockpits.</p>
+            <div class="card-badge">Spatial Web &bull; 3D &bull; AR/VR</div>
           </div>
 
           <div class="track-card">
             <div class="card-glow"></div>
             <div class="card-icon-wrap">&#127793;</div>
-            <h3>Sustainability</h3>
-            <p>Green tech, smart energy networks, circular economy algorithms, and resilient climate solutions.</p>
-            <div class="card-badge">EcoTech &bull; Smart City</div>
+            <h3>Planetary Sustainability</h3>
+            <p>Clean grid automation, climate telemetry algorithms, and circular economy hardware-software solutions.</p>
+            <div class="card-badge">Green Tech &bull; Earth Observation</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- LAYER 4: CTA & FOOTER (Grand Registration & Credits)     -->
+    <!-- LAYER 4: CTA & FOOTER (Event Horizon Singularity Portal) -->
     <!-- ======================================================== -->
     <div class="layer" data-name="cta" data-index="4">
       <div class="cta-wrapper">
@@ -801,16 +1187,16 @@
           <div class="cta-glow-backdrop"></div>
           <div class="cyber-tag center">
             <span class="pulse-dot"></span>
-            <span>REGISTRATIONS CLOSING SOON</span>
+            <span>FLIGHT REGISTRATION PASSES REMAINING</span>
           </div>
-          <h2 class="cta-title">Ready To Dance With <span class="grad">The Best?</span></h2>
+          <h2 class="cta-title">Ready To Dance Beyond <span class="grad">The Horizon?</span></h2>
           <p class="cta-desc">
-            Registrations are officially open for all universities across Sri Lanka.
-            Teams of 1 to 4. Zero barrier to entry. Maximum glory.
+            Boarding passes are officially live for undergraduates across all Sri Lankan universities.
+            Crews of 1 to 4. Zero barrier to entry. Maximum cosmic glory.
           </p>
           <div class="hero-actions center-actions">
-            <a class="btn btn-primary btn-large btn-glow" href="#cta">Claim Your Spot Now</a>
-            <a class="btn btn-ghost btn-large" href="#">Download Delegate Kit</a>
+            <a class="btn btn-primary btn-large btn-glow" href="#cta">Claim Flight Pass</a>
+            <a class="btn btn-ghost btn-large" href="#">Download Expedition Kit</a>
           </div>
         </div>
 
@@ -822,7 +1208,7 @@
               <p>University of Moratuwa, Sri Lanka</p>
             </div>
           </div>
-          <p class="footer-copy">&copy; 2026 MoraSpirit. Empowering Sri Lankan Youth through Tech &amp; Culture.</p>
+          <p class="footer-copy">&copy; 2026 MoraSpirit. Elevating collegiate innovation across the cosmos.</p>
         </footer>
       </div>
     </div>
@@ -835,7 +1221,7 @@
 
 <style>
   /* -----------------------------------------------------------
-     1. CSS Variables & Theme
+     1. CSS Variables & Deep Space Theme
      ----------------------------------------------------------- */
   :root {
     --bg: #0a0a12;
@@ -871,7 +1257,7 @@
   }
 
   /* -----------------------------------------------------------
-     2. 3D WebGL Canvas & Ambient Lighting
+     2. 3D WebGL Canvas & Hyperspace Warp Shockwave
      ----------------------------------------------------------- */
   .web-canvas {
     position: fixed;
@@ -882,6 +1268,231 @@
     pointer-events: none;
   }
 
+  .warp-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(139, 92, 246, 0.75) 45%,
+      rgba(6, 182, 212, 0.3) 70%,
+      transparent 90%
+    );
+    mix-blend-mode: screen;
+    transition: opacity 0.12s ease-out;
+  }
+
+  /* -----------------------------------------------------------
+     3. Astronaut / Shuttle Cockpit HUD (Active in Deep Space)
+     ----------------------------------------------------------- */
+  .space-hud {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    font-family: 'Space Grotesk', ui-monospace, monospace;
+  }
+
+  .hud-top {
+    position: absolute;
+    top: 5.5rem;
+    left: clamp(1rem, 4vw, 4rem);
+    right: clamp(1rem, 4vw, 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 1rem;
+    border-top: 1px solid rgba(6, 182, 212, 0.35);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.25);
+    background: rgba(10, 10, 18, 0.4);
+    backdrop-filter: blur(4px);
+    font-size: 0.72rem;
+    color: #38bdf8;
+    letter-spacing: 0.12em;
+  }
+
+  .hud-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+  }
+
+  .hud-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #06b6d4;
+    box-shadow: 0 0 8px #06b6d4;
+    animation: pulseDot 1.4s infinite;
+  }
+
+  .hud-center-text {
+    font-weight: 700;
+    color: #e0e7ff;
+    letter-spacing: 0.15em;
+  }
+
+  .hud-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--muted);
+  }
+
+  .hud-sep {
+    color: #38bdf8;
+    opacity: 0.5;
+  }
+
+  .hud-left,
+  .hud-right {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    color: #38bdf8;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .hud-left {
+    left: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .hud-right {
+    right: clamp(1rem, 3vw, 2.5rem);
+    text-align: right;
+  }
+
+  .hud-bracket-top {
+    height: 12px;
+    border-top: 1px solid rgba(6, 182, 212, 0.45);
+    border-left: 1px solid rgba(6, 182, 212, 0.45);
+  }
+
+  .hud-right .hud-bracket-top {
+    border-left: none;
+    border-right: 1px solid rgba(6, 182, 212, 0.45);
+  }
+
+  .hud-bracket-bot {
+    height: 12px;
+    border-bottom: 1px solid rgba(6, 182, 212, 0.45);
+    border-left: 1px solid rgba(6, 182, 212, 0.45);
+  }
+
+  .hud-right .hud-bracket-bot {
+    border-left: none;
+    border-right: 1px solid rgba(6, 182, 212, 0.45);
+  }
+
+  .hud-ladder,
+  .hud-g-meter {
+    padding: 0.6rem 0.4rem;
+  }
+
+  .ladder-label,
+  .meter-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .ladder-val,
+  .meter-val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f4f4f8;
+    margin: 0.25rem 0 0.6rem;
+  }
+
+  .ladder-ticks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-left: 2px dashed rgba(6, 182, 212, 0.3);
+    padding-left: 0.5rem;
+  }
+
+  .tick {
+    color: var(--muted);
+    font-size: 0.62rem;
+  }
+
+  .tick.active {
+    color: #22d3ee;
+    font-weight: 700;
+  }
+
+  .meter-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+  }
+
+  .meter-bar-fill {
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(90deg, #06b6d4, #ec4899);
+    border-radius: 999px;
+  }
+
+  .meter-status {
+    font-size: 0.62rem;
+    color: #4ade80;
+  }
+
+  /* Targeting Reticle */
+  .hud-reticle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    margin-left: -24px;
+    margin-top: -24px;
+    pointer-events: none;
+    transition: transform 0.06s ease-out;
+    opacity: 0.45;
+  }
+
+  .reticle-ring {
+    width: 100%;
+    height: 100%;
+    border: 1px dashed rgba(6, 182, 212, 0.5);
+    border-radius: 50%;
+    animation: spinReticle 12s linear infinite;
+  }
+
+  .reticle-cross {
+    position: absolute;
+    inset: 50%;
+    width: 6px;
+    height: 6px;
+    transform: translate(-50%, -50%);
+    background: #06b6d4;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #06b6d4;
+  }
+
+  @keyframes spinReticle {
+    to { transform: rotate(360deg); }
+  }
+
+  /* -----------------------------------------------------------
+     4. Ambient Glows
+     ----------------------------------------------------------- */
   .ambient-glows {
     position: fixed;
     inset: 0;
@@ -930,7 +1541,7 @@
   }
 
   /* -----------------------------------------------------------
-     3. Persistent Global Nav
+     5. Persistent Global Nav
      ----------------------------------------------------------- */
   .global-nav {
     position: fixed;
@@ -1018,7 +1629,7 @@
   }
 
   /* -----------------------------------------------------------
-     4. 3D Perspective Stage Viewport
+     6. 3D Perspective Stage Viewport
      ----------------------------------------------------------- */
   .stage-viewport {
     position: fixed;
@@ -1056,7 +1667,7 @@
   }
 
   /* -----------------------------------------------------------
-     5. Layer 0: Splash Screen
+     7. Layer 0: Splash Screen
      ----------------------------------------------------------- */
   .splash-wrapper {
     position: relative;
@@ -1136,10 +1747,10 @@
     border-radius: 50%;
     background: #22d3ee;
     box-shadow: 0 0 8px #22d3ee;
-    animation: pulseGlow 1.8s infinite;
+    animation: pulseDot 1.8s infinite;
   }
 
-  @keyframes pulseGlow {
+  @keyframes pulseDot {
     0%, 100% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.4); opacity: 0.5; }
   }
@@ -1229,7 +1840,7 @@
   }
 
   /* -----------------------------------------------------------
-     6. Layer 1: Home Section
+     8. Layer 1: Home Section
      ----------------------------------------------------------- */
   .home-container {
     max-width: 1000px;
@@ -1304,7 +1915,7 @@
   }
 
   /* -----------------------------------------------------------
-     7. Layer 2: About Section
+     9. Layer 2: About Section (Space Station Docking)
      ----------------------------------------------------------- */
   .about-grid {
     display: grid;
@@ -1330,7 +1941,7 @@
     width: 320px;
     height: 320px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 70%);
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.25), rgba(139, 92, 246, 0.15), transparent 70%);
     filter: blur(40px);
     pointer-events: none;
   }
@@ -1346,9 +1957,13 @@
     margin-top: -1.5rem;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--muted);
+    color: #38bdf8;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    background: rgba(10, 10, 18, 0.6);
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(6, 182, 212, 0.3);
   }
 
   .about-copy {
@@ -1387,8 +2002,8 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #a855f7;
-    box-shadow: 0 0 8px #a855f7;
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
     margin-top: 0.45rem;
     flex-shrink: 0;
   }
@@ -1406,7 +2021,7 @@
   }
 
   /* -----------------------------------------------------------
-     8. Layer 3: Tracks Section
+     10. Layer 3: Tracks Section (Zero-G Modular Mission Pods)
      ----------------------------------------------------------- */
   .tracks-wrapper {
     max-width: 900px;
@@ -1438,37 +2053,38 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1.4rem;
     width: 100%;
-    transform: translateZ(25px);
+    transform-style: preserve-3d;
   }
 
   .track-card {
     position: relative;
     padding: 1.8rem;
     border-radius: var(--radius-md);
-    background: rgba(18, 18, 29, 0.7);
+    background: rgba(18, 18, 29, 0.72);
     border: 1px solid var(--border);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     overflow: hidden;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    will-change: transform;
   }
 
   .track-card:hover {
-    transform: translateY(-6px) translateZ(10px);
-    border-color: rgba(139, 92, 246, 0.5);
-    box-shadow: 0 16px 35px rgba(139, 92, 246, 0.15);
+    transform: translateY(-8px) scale(1.02) !important;
+    border-color: rgba(6, 182, 212, 0.6);
+    box-shadow: 0 16px 35px rgba(6, 182, 212, 0.2);
   }
 
   .card-glow {
     position: absolute;
     top: 0;
     right: 0;
-    width: 120px;
-    height: 120px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent 70%);
+    width: 130px;
+    height: 130px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.18), transparent 70%);
     pointer-events: none;
   }
 
@@ -1499,11 +2115,11 @@
     background: rgba(6, 182, 212, 0.1);
     padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    border: 1px solid rgba(6, 182, 212, 0.2);
+    border: 1px solid rgba(6, 182, 212, 0.25);
   }
 
   /* -----------------------------------------------------------
-     9. Layer 4: CTA & Footer
+     11. Layer 4: CTA & Footer (Event Horizon Portal)
      ----------------------------------------------------------- */
   .cta-wrapper {
     max-width: 800px;
@@ -1522,19 +2138,19 @@
     margin: auto 0;
     padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem);
     border-radius: var(--radius-lg);
-    background: rgba(18, 18, 29, 0.75);
-    border: 1px solid var(--border-glow);
+    background: rgba(18, 18, 29, 0.78);
+    border: 1px solid rgba(245, 158, 11, 0.35);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(139, 92, 246, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(245, 158, 11, 0.1);
     transform: translateZ(40px);
   }
 
   .cta-glow-backdrop {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.2), transparent 70%);
+    background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.2), rgba(139, 92, 246, 0.15), transparent 70%);
     pointer-events: none;
   }
 
@@ -1587,7 +2203,7 @@
   }
 
   /* -----------------------------------------------------------
-     10. Buttons & Atoms
+     12. Buttons & Atoms
      ----------------------------------------------------------- */
   .btn {
     display: inline-flex;
@@ -1689,7 +2305,7 @@
   }
 
   /* -----------------------------------------------------------
-     11. Responsive Design
+     13. Responsive Design
      ----------------------------------------------------------- */
   @media (max-width: 900px) {
     .global-nav {
@@ -1701,6 +2317,10 @@
 
     .nav-links {
       display: none;
+    }
+
+    .space-hud {
+      display: none; /* Hide heavy HUD chrome on narrow mobile viewports */
     }
 
     .splash-models-container {
