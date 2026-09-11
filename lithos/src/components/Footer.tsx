@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './footer.css';
-import { LOGO_PATH } from '../brand.ts';
+import AmbientVideo from './AmbientVideo.tsx';
+import BrandLogo from './BrandLogo.tsx';
 
 const POSTER = '/media/footer-tunnel.webp';
 const VIDEO = '/media/footer-tunnel.mp4';
@@ -77,19 +78,14 @@ export default function Footer() {
   return (
     <footer className="site-footer" id="site-footer">
       <div className="footer-media" aria-hidden="true">
-        <video className="footer-bg" autoPlay muted loop playsInline preload="auto" poster={POSTER}>
-          <source src={VIDEO} type="video/mp4" />
-        </video>
+        <AmbientVideo className="footer-bg" cut={{ src: VIDEO, poster: POSTER }} lazy />
       </div>
 
       <div className="footer-inner">
         <div className="footer-grid">
           <div className="brand">
             <div className="brand-lockup">
-              <svg className="brand-mark" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-                <path d={LOGO_PATH} />
-              </svg>
-              <p className="brand-name">Spirit X 2.0</p>
+              <BrandLogo className="brand-logo" label="Spirit X 2.0" />
             </div>
 
             <p className="brand-blurb">
@@ -167,7 +163,7 @@ export default function Footer() {
               </button>
             </form>
             <p className="subscribe-note" role="status">
-              {subscribed ? "You’re on the list — watch your inbox." : ' '}
+              {subscribed ? "You’re on the list — watch your inbox." : ' '}
             </p>
           </div>
         </div>

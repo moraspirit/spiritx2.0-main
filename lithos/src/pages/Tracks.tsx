@@ -95,7 +95,7 @@ function TrackIndex({ active }: { active: number }) {
         <span aria-hidden="true" className="absolute inset-y-3 left-0 w-px bg-border" />
         <motion.span
           aria-hidden="true"
-          className="absolute inset-y-3 left-0 w-px origin-top bg-volt-ink"
+          className="absolute inset-y-3 left-0 w-px origin-top bg-brand-ink"
           style={{ scaleY: fill }}
         />
 
@@ -111,7 +111,7 @@ function TrackIndex({ active }: { active: number }) {
                   i === active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <span className={cn('text-sm tabular-nums', i === active && 'text-volt-ink')}>
+                <span className={cn('text-sm tabular-nums', i === active && 'text-brand-ink')}>
                   {pad(i + 1)}
                 </span>
                 <span className="text-2xl font-medium tracking-tight xl:text-3xl">{title}</span>
@@ -136,7 +136,7 @@ function TrackDots({ active }: { active: number }) {
           key={id}
           className={cn(
             'h-1 rounded-full transition-all duration-300',
-            i === active ? 'w-8 bg-volt-ink' : 'w-4 bg-border'
+            i === active ? 'w-8 bg-brand-ink' : 'w-4 bg-border'
           )}
         />
       ))}
@@ -166,18 +166,18 @@ function TrackStack() {
                 className="items-start justify-between gap-4 border border-border bg-card/95 p-7 text-foreground backdrop-blur-md"
               >
                 <div className="flex w-full items-start justify-between">
-                  <div className="flex size-14 items-center justify-center rounded-2xl bg-volt/10 text-volt-ink">
+                  <div className="flex size-14 items-center justify-center rounded-2xl bg-brand/10 text-brand-ink">
                     <Icon size={26} strokeWidth={1.75} />
                   </div>
                   <span className="text-sm font-medium tabular-nums text-muted-foreground">
                     {pad(index + 1)}
-                    <span className="text-volt-ink"> / </span>
+                    <span className="text-brand-ink"> / </span>
                     {pad(TRACKS.length)}
                   </span>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-volt-ink">
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-brand-ink">
                     {badge}
                   </p>
                   <h2
@@ -192,7 +192,7 @@ function TrackStack() {
                 <button
                   type="button"
                   onClick={register}
-                  className="group -my-3 inline-flex items-center gap-2 py-3 text-sm font-medium text-foreground transition-colors hover:text-volt-ink"
+                  className="group -my-3 inline-flex items-center gap-2 py-3 text-sm font-medium text-foreground transition-colors hover:text-brand-ink"
                 >
                   register for this track
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
@@ -217,7 +217,7 @@ export default function Tracks() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">4 tracks · 48 hours</p>
           <h1 className="hero-title mt-4 text-5xl font-medium text-foreground sm:text-6xl md:text-7xl">
-            competition tracks<span className="text-volt-ink">.</span>
+            competition tracks<span className="text-brand-ink">.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
             Four frontiers, 48 hours. Pick the one you want to reshape &mdash; every track is open
@@ -234,7 +234,7 @@ export default function Tracks() {
           <button
             type="button"
             onClick={register}
-            className="mt-5 rounded-full bg-volt px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-volt active:scale-95"
+            className="mt-5 rounded-full bg-brand px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
           >
             register your team
           </button>

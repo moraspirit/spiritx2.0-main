@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import SiteNav from './SiteNav.tsx';
 import { scrollToId } from '../scrollTo.ts';
 import { type ThemedArt, themedArtStyle } from '../themedArt.ts';
+import { useSpotlight } from '../useSpotlight.ts';
 
 const BASE_ART: ThemedArt = {
   dark: '/media/experience-sprinter.webp',
@@ -13,107 +14,9 @@ const REVEAL_ART: ThemedArt = {
   light: '/media/experience-sprinter-reveal-light.webp',
 };
 
-const SPOTLIGHT_R = 260;
-
-type RevealLayerProps = {
-  art: ThemedArt;
-  cursorX: number;
-  cursorY: number;
-};
-
-function RevealLayer({ art, cursorX, cursorY }: RevealLayerProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
-
-  // Keep the offscreen canvas the size of the viewport so the generated mask
-  // maps 1:1 onto the reveal layer.
-  useEffect(() => {
-    const sizeCanvas = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    sizeCanvas();
-    window.addEventListener('resize', sizeCanvas);
-    return () => window.removeEventListener('resize', sizeCanvas);
-  }, []);
-
-  // Repaint the soft spotlight and push it onto the reveal div as a mask.
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const reveal = revealRef.current;
-    if (!canvas || !reveal) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const gradient = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, SPOTLIGHT_R);
-    gradient.addColorStop(0, 'rgba(255,255,255,1)');
-    gradient.addColorStop(0.4, 'rgba(255,255,255,1)');
-    gradient.addColorStop(0.6, 'rgba(255,255,255,0.75)');
-    gradient.addColorStop(0.75, 'rgba(255,255,255,0.4)');
-    gradient.addColorStop(0.88, 'rgba(255,255,255,0.12)');
-    gradient.addColorStop(1, 'rgba(255,255,255,0)');
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(cursorX, cursorY, SPOTLIGHT_R, 0, Math.PI * 2);
-    ctx.fill();
-
-    const maskUrl = `url(${canvas.toDataURL()})`;
-    reveal.style.setProperty('mask-image', maskUrl);
-    reveal.style.setProperty('-webkit-mask-image', maskUrl);
-    reveal.style.setProperty('mask-size', '100% 100%');
-    reveal.style.setProperty('-webkit-mask-size', '100% 100%');
-  });
-
-  return (
-    <>
-      <canvas
-        ref={canvasRef}
-        className="pointer-events-none absolute inset-0"
-        style={{ display: 'none' }}
-      />
-      <div
-        ref={revealRef}
-        className="themed-art pointer-events-none absolute inset-0 z-30 bg-cover bg-center bg-no-repeat"
-        style={themedArtStyle(art)}
-      />
-    </>
-  );
-}
-
 export default function HeroSection() {
-  const mouse = useRef({ x: -999, y: -999 });
-  const smooth = useRef({ x: -999, y: -999 });
-  const rafRef = useRef<number>(0);
-  const [cursorPos, setCursorPos] = useState({ x: -999, y: -999 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
-    };
-
-    const tick = () => {
-      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.1;
-      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.1;
-      setCursorPos({ x: smooth.current.x, y: smooth.current.y });
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    rafRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+  const revealRef = useRef<HTMLDivElement>(null);
+  useSpotlight(revealRef);
 
   return (
     <section
@@ -125,7 +28,11 @@ export default function HeroSection() {
         style={themedArtStyle(BASE_ART)}
       />
 
-      <RevealLayer art={REVEAL_ART} cursorX={cursorPos.x} cursorY={cursorPos.y} />
+      <div
+        ref={revealRef}
+        className="themed-art spotlight-reveal pointer-events-none absolute inset-0 z-30 bg-cover bg-center bg-no-repeat"
+        style={themedArtStyle(REVEAL_ART)}
+      />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-56 bg-gradient-to-b from-transparent to-background" />
 
@@ -141,7 +48,7 @@ export default function HeroSection() {
             create unforgettable
           </span>
           <span
-            className="hero-anim hero-reveal block text-5xl font-semibold text-volt-ink sm:text-7xl md:text-8xl"
+            className="hero-anim hero-reveal block text-5xl font-semibold text-brand-ink sm:text-7xl md:text-8xl"
             style={{ animationDelay: '0.42s' }}
           >
             experiences
@@ -170,7 +77,7 @@ export default function HeroSection() {
         <button
           type="button"
           onClick={() => scrollToId('nl-email', { focus: true })}
-          className="rounded-full bg-volt px-7 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-volt active:scale-95"
+          className="rounded-full bg-brand px-7 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
         >
           register now
         </button>

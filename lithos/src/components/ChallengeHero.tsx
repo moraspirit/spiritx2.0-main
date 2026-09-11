@@ -1,7 +1,13 @@
 import SiteNav from './SiteNav.tsx';
+import AmbientVideo from './AmbientVideo.tsx';
 
-const VIDEO = '/media/home-snowboard.mp4';
-const POSTER = '/media/home-snowboard-poster.webp';
+const LANDSCAPE = { src: '/media/home-snowboard.mp4', poster: '/media/home-snowboard-poster.webp' };
+// Centre 3:4 crop: upright phones and tablets only ever show the middle of the frame,
+// so they download about half the bytes for the same picture.
+const PORTRAIT = {
+  src: '/media/home-snowboard-portrait.mp4',
+  poster: '/media/home-snowboard-portrait-poster.webp',
+};
 
 const WORD = 'hero-title absolute block font-medium text-foreground text-[14vw] md:text-[13vw]';
 
@@ -11,16 +17,10 @@ export default function ChallengeHero() {
       id="hero"
       className="stage-dark relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-background"
     >
-      <video
+      <AmbientVideo
         className="absolute inset-0 h-full w-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        poster={POSTER}
-        src={VIDEO}
+        cut={LANDSCAPE}
+        portrait={PORTRAIT}
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background/70 to-transparent" />
 
@@ -31,7 +31,7 @@ export default function ChallengeHero() {
           <span className={`${WORD} left-4 top-[18%] md:left-10`}>reinvent</span>
           <span className={`${WORD} right-4 top-[38%] md:right-10`}>the</span>
           <span className={`${WORD} left-[18%] top-[58%] md:left-[28%]`}>
-            game<span className="text-volt">.</span>
+            game<span className="text-brand">.</span>
           </span>
         </h1>
 
@@ -45,9 +45,9 @@ export default function ChallengeHero() {
 
         <div className="absolute right-6 top-[14%] md:right-24">
           <div className="flex items-center justify-end gap-3">
-            <span className="hidden h-px w-24 rotate-[20deg] bg-volt/60 md:block" />
+            <span className="hidden h-px w-24 rotate-[20deg] bg-brand/60 md:block" />
             <span className="text-4xl font-medium tracking-tight md:text-5xl">
-              <span className="text-volt">+</span>200
+              <span className="text-brand">+</span>200
             </span>
           </div>
           <p className="mt-1 text-right text-legible text-xs text-foreground/80 md:text-sm">hackers building</p>
@@ -58,18 +58,18 @@ export default function ChallengeHero() {
         <div className="absolute bottom-20 left-6 md:bottom-24 md:left-20">
           <div className="flex items-center gap-3">
             <span className="text-4xl font-medium tracking-tight md:text-5xl">
-              <span className="text-volt">+</span>5m
+              <span className="text-brand">+</span>5m
             </span>
-            <span className="hidden h-px w-24 rotate-[-20deg] bg-volt/60 md:block" />
+            <span className="hidden h-px w-24 rotate-[-20deg] bg-brand/60 md:block" />
           </div>
           <p className="mt-1 text-legible text-xs text-foreground/80 md:text-sm">lkr prize pool</p>
         </div>
 
         <div className="absolute bottom-16 right-6 md:bottom-20 md:right-20">
           <div className="flex items-center justify-end gap-3">
-            <span className="hidden h-px w-24 rotate-[-20deg] bg-volt/60 md:block" />
+            <span className="hidden h-px w-24 rotate-[-20deg] bg-brand/60 md:block" />
             <span className="text-4xl font-medium tracking-tight md:text-5xl">
-              <span className="text-volt">+</span>20
+              <span className="text-brand">+</span>20
             </span>
           </div>
           <p className="mt-1 text-right text-legible text-xs text-foreground/80 md:text-sm">universities</p>

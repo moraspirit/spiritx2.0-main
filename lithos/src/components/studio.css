@@ -157,9 +157,6 @@
 }
 @media (min-width: 768px) { .studio-page .hero-headline { font-size: 28px; } }
 
-/* ===== CANVAS (hidden) ===== */
-.studio-page .reveal-canvas { display: none; position: absolute; inset: 0; pointer-events: none; }
-
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   .studio-page .splash { animation: splashHide 0.01s linear forwards; }

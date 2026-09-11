@@ -3,7 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHashRoute } from '../useHashRoute.ts';
 import { scrollToId } from '../scrollTo.ts';
-import { LOGO_PATH } from '../brand.ts';
+import BrandLogo from './BrandLogo.tsx';
 
 const TABS = [
   { label: 'about', href: '#/', route: '/' },
@@ -46,16 +46,12 @@ export default function SiteNav() {
       <nav aria-label="Primary" className="mx-auto flex max-w-7xl items-center justify-between gap-3">
         <a
           href="#/"
-          aria-label="Spirit X home"
-          className="flex items-center gap-2.5 rounded-full border border-border bg-card/80 py-2.5 pl-3.5 pr-4 backdrop-blur-md transition-colors hover:border-volt/40 sm:pr-5"
+          aria-label="Spirit X 2.0 home"
+          className="flex items-center rounded-full border border-border bg-card/80 px-4 py-1 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 sm:px-5"
         >
-          <svg viewBox="0 0 256 256" className="h-5 w-5 text-volt-ink" aria-hidden="true">
-            <path d={LOGO_PATH} fill="currentColor" />
-          </svg>
-          <span className="text-sm font-medium tracking-tight text-foreground">spirit x</span>
-          <span className="hidden rounded-full bg-volt/15 px-2 py-0.5 text-[11px] font-semibold tracking-wider text-volt-ink sm:inline">
-            2.0
-          </span>
+          {/* The letters fill only the middle third of the wordmark's height (the X spans it
+              all), so it needs this much height to read at nav size. */}
+          <BrandLogo className="h-8 w-auto sm:h-10" />
         </a>
 
         <div className="hidden items-center gap-1 rounded-full border border-border bg-card/80 p-1.5 backdrop-blur-md md:flex">
@@ -67,7 +63,7 @@ export default function SiteNav() {
               className={cn(
                 'rounded-full px-5 py-2 text-sm transition-colors',
                 i === activeIndex
-                  ? 'bg-volt font-medium text-primary-foreground'
+                  ? 'bg-brand font-medium text-primary-foreground'
                   : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
             >
@@ -80,7 +76,7 @@ export default function SiteNav() {
           <button
             type="button"
             onClick={register}
-            className="rounded-full bg-volt px-5 py-2.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-volt active:scale-95 sm:px-6 sm:py-3"
+            className="rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95 sm:px-6 sm:py-3"
           >
             register
           </button>
@@ -91,7 +87,7 @@ export default function SiteNav() {
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/80 text-foreground backdrop-blur-md transition-colors hover:border-volt/40 md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/80 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 md:hidden"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -114,7 +110,7 @@ export default function SiteNav() {
               className={cn(
                 'rounded-2xl px-5 py-3.5 text-base transition-colors',
                 i === activeIndex
-                  ? 'bg-volt font-medium text-primary-foreground'
+                  ? 'bg-brand font-medium text-primary-foreground'
                   : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
             >

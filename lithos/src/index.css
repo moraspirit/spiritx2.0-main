@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   /* Night Stadium palette — the single source of color for every route.
+     The accent is the Spirit X logo blue: the logo's light blue (#74CEDD) on dark
+     surfaces and its deep blue (#00558F) on light ones, mirroring the official
+     light-colour / dark-colour logo files.
      Dark is the brand default. `.stage-dark` pins it on media-led sections
-     (full-bleed photo/video heroes) so their copy stays legible in light mode. */
+     (full-bleed video heroes) so their copy stays legible in light mode. */
   :root,
   .stage-dark {
     color-scheme: dark;
@@ -17,7 +18,7 @@
     --card-foreground: 216 33% 97%;
     --popover: 218 24% 9%;
     --popover-foreground: 216 33% 97%;
-    --primary: 78 100% 62%;            /* #C6FF3D volt lime accent  */
+    --primary: 189 61% 66%;            /* #74CEDD Spirit X light blue */
     --primary-foreground: 220 30% 4%;
     --secondary: 219 21% 13%;          /* #1A1F28 raised surface    */
     --secondary-foreground: 216 33% 97%;
@@ -29,13 +30,13 @@
     --destructive-foreground: 0 0% 100%;
     --border: 219 20% 14%;             /* #1C212A hairlines         */
     --input: 219 20% 18%;
-    --ring: 78 100% 62%;
-    --volt-ink: 78 100% 62%;           /* volt used as text/indicator */
+    --ring: 189 61% 66%;
+    --brand-ink: 189 61% 66%;          /* brand blue for text, icons, indicators */
     --radius: 1rem;
   }
 
-  /* Light mode follows the visitor's OS setting. Volt fills stay bright;
-     text-sized accents switch to a deep lime that holds contrast on white. */
+  /* Light mode follows the visitor's OS setting and switches to the logo's deep
+     blue, which carries white button text and holds contrast as text on white. */
   @media (prefers-color-scheme: light) {
     :root {
       color-scheme: light;
@@ -45,8 +46,8 @@
       --card-foreground: 222 35% 7%;
       --popover: 0 0% 100%;
       --popover-foreground: 222 35% 7%;
-      --primary: 78 100% 62%;
-      --primary-foreground: 220 30% 4%;
+      --primary: 204 100% 28%;         /* #00558F Spirit X deep blue */
+      --primary-foreground: 0 0% 100%;
       --secondary: 220 16% 92%;        /* #E8EBEF                   */
       --secondary-foreground: 222 35% 7%;
       --muted: 220 16% 94%;
@@ -57,8 +58,8 @@
       --destructive-foreground: 0 0% 100%;
       --border: 220 14% 88%;           /* #DDE1E6                   */
       --input: 220 14% 84%;
-      --ring: 85 78% 27%;
-      --volt-ink: 85 78% 27%;          /* #4D7C0F                   */
+      --ring: 204 100% 28%;
+      --brand-ink: 204 100% 28%;
     }
   }
 
@@ -79,6 +80,7 @@ body {
   color: hsl(var(--foreground));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* clip (not hidden) so position: sticky on the tracks page keeps working */
@@ -92,7 +94,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid hsl(var(--volt-ink));
+  outline: 2px solid hsl(var(--brand-ink));
   outline-offset: 3px;
 }
 
@@ -124,13 +126,49 @@ body {
   }
 }
 
-/* Small volt label used above headings on every page. */
+/* Soft spotlight revealing the layer beneath; useSpotlight() moves it. */
+.spotlight-reveal {
+  --spot-x: -9999px;
+  --spot-y: -9999px;
+  --spot-r: 260px;
+  --spot-mask: radial-gradient(
+    circle var(--spot-r) at var(--spot-x) var(--spot-y),
+    #000 40%,
+    rgb(0 0 0 / 0.75) 60%,
+    rgb(0 0 0 / 0.4) 75%,
+    rgb(0 0 0 / 0.12) 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: var(--spot-mask);
+  mask-image: var(--spot-mask);
+}
+
+@media (max-width: 720px) {
+  .spotlight-reveal {
+    --spot-r: 170px;
+  }
+}
+
+/* Background video (AmbientVideo): no native chrome, and never iOS's start-playback
+   button over the poster when Low Power Mode refuses autoplay. */
+.ambient-video {
+  pointer-events: none;
+}
+.ambient-video::-webkit-media-controls,
+.ambient-video::-webkit-media-controls-panel,
+.ambient-video::-webkit-media-controls-overlay-play-button,
+.ambient-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+/* Small brand label used above headings on every page. */
 .eyebrow {
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: hsl(var(--volt-ink));
+  color: hsl(var(--brand-ink));
 }
 
 @keyframes heroReveal { 0%{opacity:0;transform:translateY(28px);filter:blur(12px)} 100%{opacity:1;transform:translateY(0);filter:blur(0)} }

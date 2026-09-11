@@ -78,13 +78,13 @@
   animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
   animation-delay:.04s;
 }
-.brand-mark{width:clamp(40px,3.4vw,56px);height:auto;color:hsl(var(--volt-ink))}
-.site-footer .brand-name{
-  font-weight:600;
-  letter-spacing:-.03em;
-  font-size:clamp(1.85rem,2.5vw,2.9rem);
-  line-height:1;
-  margin:0;
+/* Official wordmark: letters follow --ink, the X follows --brand-ink (see BrandLogo). */
+.brand-logo{display:block;height:clamp(40px,3.4vw,58px);width:auto;max-width:100%}
+
+/* Stacked video block (phones/tablets): reserve its 16:9 box so the lazy clip
+   doesn't shift the layout when it loads. */
+@media (max-width:1100px){
+  .footer-bg{aspect-ratio:16 / 9}
 }
 .brand-blurb{
   margin-top:clamp(1.15rem,2.4vh,1.9rem);
@@ -123,7 +123,7 @@
   font-weight:600;
   letter-spacing:.14em;
   text-transform:uppercase;
-  color:hsl(var(--volt-ink));
+  color:hsl(var(--brand-ink));
 }
 
 .link-list{
@@ -141,7 +141,7 @@
   cursor:pointer;
   transition:opacity .2s ease,transform .2s ease;
 }
-.link-list a:hover{color:hsl(var(--volt-ink));transform:translateX(2px)}
+.link-list a:hover{color:hsl(var(--brand-ink));transform:translateX(2px)}
 
 .footer-grid > .col:nth-child(2){--col-stagger:.16s}
 .footer-grid > .col:nth-child(3){--col-stagger:.24s}
@@ -237,7 +237,7 @@
   transition:opacity .2s ease,transform .2s ease;
   animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
 }
-.socials a:hover{color:hsl(var(--volt-ink));transform:translateY(-2px)}
+.socials a:hover{color:hsl(var(--brand-ink));transform:translateY(-2px)}
 .socials svg{width:26px;height:26px}
 .socials a:nth-child(1){animation-delay:.64s}
 .socials a:nth-child(2){animation-delay:.7s}
@@ -246,7 +246,7 @@
 
 .legal{display:flex;flex-direction:row;gap:clamp(1.15rem,2.6vw,3rem);flex-wrap:wrap}
 .legal a{color:inherit;text-decoration:none;cursor:pointer;animation:rise-in .72s cubic-bezier(.22,1,.36,1) both}
-.legal a:hover{color:hsl(var(--volt-ink));text-decoration:underline;text-underline-offset:3px}
+.legal a:hover{color:hsl(var(--brand-ink));text-decoration:underline;text-underline-offset:3px}
 .legal a:nth-child(1){animation-delay:.7s}
 .legal a:nth-child(2){animation-delay:.78s}
 .legal a:nth-child(3){animation-delay:.86s}

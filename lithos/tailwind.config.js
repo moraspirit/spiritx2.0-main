@@ -41,12 +41,12 @@ export default {
           DEFAULT: 'hsl(var(--card) / <alpha-value>)',
           foreground: 'hsl(var(--card-foreground) / <alpha-value>)',
         },
-        volt: 'hsl(var(--primary) / <alpha-value>)',
-        // Volt for text and thin indicators: deepens in light mode for contrast.
-        'volt-ink': 'hsl(var(--volt-ink) / <alpha-value>)',
+        brand: 'hsl(var(--primary) / <alpha-value>)',
+        // Brand blue for text and thin indicators: the logo's light blue on dark, deep blue on light.
+        'brand-ink': 'hsl(var(--brand-ink) / <alpha-value>)',
       },
       boxShadow: {
-        volt: '0 0 0 1px hsl(var(--primary) / .35), 0 10px 40px -10px hsl(var(--primary) / .5)',
+        brand: '0 0 0 1px hsl(var(--primary) / .35), 0 10px 40px -10px hsl(var(--primary) / .5)',
       },
     },
   },
