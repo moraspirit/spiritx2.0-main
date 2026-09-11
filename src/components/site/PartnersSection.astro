@@ -1,0 +1,102 @@
+---
+const partners = [
+  "UoM",
+  "UOC",
+  "UOP",
+  "UOK",
+  "UOR",
+  "SLIIT",
+  "NSBM",
+  "IIT",
+  "CINEC",
+  "KDU",
+  "OUSL",
+  "SUSL",
+  "UWU",
+  "EUSL",
+  "SEUSL",
+  "RUSL",
+  "Wayamba",
+  "Jaffna",
+  "Sabaragamuwa",
+  "APIIT",
+  "NIBM",
+  "ICBT",
+  "AIT",
+  "ESOFT",
+];
+---
+
+<section class="partners" id="partners" aria-labelledby="partners-heading">
+  <div class="partners-band">
+    <h2 id="partners-heading" class="visually-hidden">University & partner network</h2>
+    <div class="tilt-wrap">
+      <div class="logo-grid">
+        {
+          partners.map((name) => (
+            <div class="logo-tile">
+              <span>{name}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .partners {
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+
+  .partners-band {
+    padding-block: clamp(64px, 9vw, 110px);
+    background-image:
+      linear-gradient(rgba(19, 23, 26, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(19, 23, 26, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .tilt-wrap {
+    width: min(1400px, 160%);
+    margin-inline: auto;
+    transform: rotate(-8deg) skewX(-4deg);
+    transform-origin: center;
+  }
+
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(120px, 1fr));
+    gap: 14px;
+    padding-inline: 4vw;
+  }
+
+  .logo-tile {
+    aspect-ratio: 1.15;
+    display: grid;
+    place-items: center;
+    background: var(--color-surface-alt);
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-md);
+  }
+
+  .logo-tile span {
+    color: var(--color-primary);
+    font-size: clamp(12px, 1.2vw, 16px);
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 900px) {
+    .logo-grid {
+      grid-template-columns: repeat(3, minmax(90px, 1fr));
+    }
+    .tilt-wrap {
+      transform: rotate(-4deg);
+      width: 120%;
+    }
+  }
+</style>

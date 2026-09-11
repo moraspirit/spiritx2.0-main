@@ -30,10 +30,10 @@ export const MODELS: Record<string, ModelEntry> = {
   },
   dancer: {
     id: 'dancer',
-    name: '3D Samba Dancer',
+    name: 'Spirit X Mascot Robot',
     path: '/sambadanceboy.glb',
     scale: 1.0,
-    description: 'Animated dancing mascot in Splash section',
+    description: 'Animated mascot robot featured in the hero section',
   },
 };
 

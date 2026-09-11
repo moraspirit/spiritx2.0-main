@@ -1,0 +1,172 @@
+---
+import { MODELS } from "../../config/models";
+---
+
+<script>
+  import "@google/model-viewer";
+</script>
+
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-media" aria-hidden="true">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+  </div>
+
+  <div class="hero-stage" aria-hidden="true">
+    <model-viewer
+      class="hero-mascot"
+      src={MODELS.dancer.path}
+      environment-image="neutral"
+      shadow-intensity="0.8"
+      exposure="1.15"
+      disable-zoom
+      disable-pan
+      disable-tap
+      interaction-prompt="none"
+      animation-name="mixamo.com"
+      autoplay
+      camera-target="0m 1.05m 0m"
+      camera-orbit="12deg 80deg 2.05m"
+      field-of-view="36deg"
+      aria-hidden="true"
+      tabindex="-1"
+    ></model-viewer>
+  </div>
+
+  <div class="hero-fade" aria-hidden="true"></div>
+
+  <div class="hero-content container">
+    <p class="hero-kicker">MoraSpirit · University of Moratuwa · 2026</p>
+    <h1 id="hero-heading">Create Unforgettable Experiences</h1>
+    <p class="hero-lead">
+      Experience results-driven student innovation anytime, anywhere with Spirit X —
+      Sri Lanka&apos;s flagship inter-university hackathon.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-outline" href="/register">Register Now</a>
+      <a class="btn btn-ghost-light" href="/about">We Are Spirit X</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    min-height: calc(100vh - var(--nav-height));
+    min-height: calc(100svh - var(--nav-height));
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: #0a0c0e;
+  }
+
+  .hero-media,
+  .hero-stage,
+  .hero-fade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero-media {
+    z-index: 0;
+  }
+
+  .hero-stage {
+    z-index: 1;
+  }
+
+  .hero-fade {
+    z-index: 2;
+    background:
+      radial-gradient(ellipse at 50% 48%, rgba(10, 12, 14, 0.08) 0%, rgba(10, 12, 14, 0.42) 58%, rgba(10, 12, 14, 0.78) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(16, 19, 21, 0.55) 68%, rgb(19, 23, 26) 100%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(58, 235, 219, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(58, 235, 219, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 50% 45%, #000 22%, transparent 78%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 48%, rgba(58, 235, 219, 0.26), transparent 52%),
+      radial-gradient(ellipse at 32% 42%, rgba(1, 144, 233, 0.3), transparent 48%),
+      radial-gradient(ellipse at 68% 52%, rgba(123, 92, 255, 0.18), transparent 44%);
+  }
+
+  .hero-mascot {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    opacity: 0.88;
+    transform: scale(1.45);
+    transform-origin: center 58%;
+    --poster-color: transparent;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    width: min(100%, 920px);
+    padding-block: clamp(72px, 12vh, 140px);
+    text-align: center;
+  }
+
+  .hero-kicker {
+    margin-bottom: var(--space-md);
+    color: var(--color-accent);
+    font-size: var(--text-caption);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  }
+
+  h1 {
+    font-size: var(--text-display-xl);
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--color-ink);
+    text-wrap: balance;
+    text-shadow: 0 4px 28px rgba(0, 0, 0, 0.55);
+  }
+
+  .hero-lead {
+    margin: var(--space-xl) auto 0;
+    max-width: 640px;
+    font-size: var(--text-body-lg);
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-actions {
+    margin-top: var(--space-xxxl);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-md);
+  }
+
+  @media (max-width: 767px) {
+    .hero-mascot {
+      opacity: 0.7;
+      transform: scale(1.7);
+      transform-origin: center 52%;
+    }
+
+    h1 {
+      font-size: 36px;
+    }
+  }
+</style>

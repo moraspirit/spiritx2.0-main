@@ -6,6 +6,13 @@ dist/
 
 # dependencies
 node_modules/
+.pnpm-store/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Vercel CLI project link
+.vercel
 
 # logs
 npm-debug.log*

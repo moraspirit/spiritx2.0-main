@@ -1,0 +1,258 @@
+---
+const tracks = [
+  {
+    id: "ai",
+    title: "AI & Neural Autonomy",
+    body: "Autonomous agents, orbital LLMs, and real-time computer vision systems solving planetary challenges. Ship production-ready intelligence under pressure.",
+    badge: "Neural Nets · Deep Learning",
+    visual: "ai",
+  },
+  {
+    id: "web",
+    title: "Distributed Web & Mobile",
+    body: "Resilient decentralized protocols, edge computing architectures, and hyper-responsive interfaces that feel native everywhere fans and users live.",
+    badge: "Decentralized · Cloud Native",
+    visual: "web",
+  },
+  {
+    id: "spatial",
+    title: "Spatial & Immersive Tech",
+    body: "Spatial WebGL, 3D simulation engines, digital twins, and immersive VR/AR cockpits that turn spectators into participants.",
+    badge: "Spatial Web · 3D · AR/VR",
+    visual: "spatial",
+  },
+  {
+    id: "earth",
+    title: "Earth & Sustainability",
+    body: "Clean grid automation, climate telemetry algorithms, and circular economy hardware-software solutions with measurable planetary impact.",
+    badge: "Green Tech · Earth Observation",
+    visual: "earth",
+  },
+];
+---
+
+<section class="tracks" id="tracks" aria-labelledby="tracks-heading">
+  <div class="tracks-panel">
+    <div class="container tracks-layout">
+      <div class="tracks-copy">
+        <p class="eyebrow">Competition Tracks</p>
+        <h2 id="tracks-heading">{tracks[0].title}</h2>
+        <p class="tracks-body">{tracks[0].body}</p>
+        <a class="btn btn-outline" href="/register">Learn More</a>
+      </div>
+
+      <div class="tracks-visual" data-visual={tracks[0].visual} aria-hidden="true">
+        <div class="phone phone-left">
+          <div class="phone-screen">
+            <span class="beam"></span>
+          </div>
+        </div>
+        <div class="phone phone-right">
+          <div class="phone-screen raise">
+            <strong>BUILD</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="track-tabs" role="tablist" aria-label="Hackathon tracks">
+      {
+        tracks.map((track, index) => (
+          <button
+            class:list={["track-tab", { active: index === 0 }]}
+            type="button"
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+            data-index={index}
+          >
+            {track.title.split(" ")[0]}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ tracks }}>
+  const copyTitle = document.getElementById("tracks-heading");
+  const copyBody = document.querySelector(".tracks-body");
+  const visual = document.querySelector(".tracks-visual");
+  const tabs = Array.from(document.querySelectorAll(".track-tab"));
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const index = Number(tab.getAttribute("data-index") || 0);
+      const track = tracks[index];
+      if (!track || !copyTitle || !copyBody || !visual) return;
+
+      tabs.forEach((t) => {
+        t.classList.toggle("active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+
+      copyTitle.textContent = track.title;
+      copyBody.textContent = track.body;
+      visual.setAttribute("data-visual", track.visual);
+    });
+  });
+</script>
+
+<style>
+  .tracks {
+    background: var(--color-primary);
+    padding-bottom: var(--space-section);
+  }
+
+  .tracks-panel {
+    background: var(--grad-section-alt);
+    padding-block: clamp(56px, 8vw, 96px);
+  }
+
+  .tracks-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 6vw, 72px);
+    align-items: center;
+  }
+
+  .eyebrow {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: var(--space-md);
+  }
+
+  h2 {
+    font-size: var(--text-heading-md);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--color-ink);
+  }
+
+  .tracks-body {
+    margin: var(--space-lg) 0 var(--space-xxxl);
+    max-width: 460px;
+    font-size: var(--text-body-md);
+    font-weight: 300;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .tracks-visual {
+    position: relative;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .phone {
+    width: 150px;
+    height: 300px;
+    border-radius: 28px;
+    background: #0b0d10;
+    border: 3px solid #1c2228;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+    padding: 10px;
+  }
+
+  .phone-left {
+    transform: rotate(-8deg) translateX(18px);
+    z-index: 1;
+  }
+
+  .phone-right {
+    transform: rotate(8deg) translateX(-18px);
+    z-index: 2;
+  }
+
+  .phone-screen {
+    height: 100%;
+    border-radius: 20px;
+    background: radial-gradient(circle at 50% 20%, #fff8, transparent 35%), #111;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .beam {
+    position: absolute;
+    left: 50%;
+    top: 18%;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 40px 18px rgba(255, 255, 255, 0.85);
+  }
+
+  .raise {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #1a1a1a, #2a0a0a);
+  }
+
+  .raise strong {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff3b3b;
+    letter-spacing: 0.08em;
+  }
+
+  .tracks-visual[data-visual="web"] .beam {
+    box-shadow: 0 0 40px 18px rgba(58, 235, 219, 0.9);
+  }
+
+  .tracks-visual[data-visual="spatial"] .raise strong {
+    color: var(--color-accent);
+  }
+
+  .tracks-visual[data-visual="earth"] .raise strong {
+    color: #7dffb0;
+  }
+
+  .track-tabs {
+    margin-top: calc(-1 * var(--space-xl));
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    justify-content: center;
+  }
+
+  .track-tab {
+    min-height: 44px;
+    padding: 10px 22px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--color-surface-alt);
+    color: var(--color-primary);
+    font-size: var(--text-body-xs);
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .track-tab.active,
+  .track-tab:hover {
+    background: var(--color-accent);
+    color: var(--color-primary);
+  }
+
+  .track-tab:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .tracks-layout {
+      grid-template-columns: 1fr;
+    }
+    .tracks-visual {
+      min-height: 280px;
+    }
+    .phone {
+      width: 120px;
+      height: 240px;
+    }
+  }
+</style>
