@@ -154,6 +154,43 @@ body {
 .ambient-video {
   pointer-events: none;
 }
+
+/* Slow non-integer-period drift so the eye never locks onto the video cycle.
+   29s deliberately does not divide the ~6.3s loop length. */
+@keyframes ambientDrift {
+  0%,
+  100% {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate3d(-1.2%, -0.8%, 0);
+  }
+}
+.ambient-drift {
+  animation: ambientDrift 29s ease-in-out infinite;
+  will-change: transform;
+}
+@media (max-width: 720px) {
+  /* Gentler drift on phones so portrait crop stays filled without edge flash. */
+  @keyframes ambientDriftMobile {
+    0%,
+    100% {
+      transform: scale(1.04) translate3d(0, 0, 0);
+    }
+    50% {
+      transform: scale(1.08) translate3d(-0.6%, -0.4%, 0);
+    }
+  }
+  .ambient-drift {
+    animation-name: ambientDriftMobile;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient-drift {
+    animation: none;
+    transform: scale(1.04);
+  }
+}
 .ambient-video::-webkit-media-controls,
 .ambient-video::-webkit-media-controls-panel,
 .ambient-video::-webkit-media-controls-overlay-play-button,
@@ -169,6 +206,19 @@ body {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: hsl(var(--brand-ink));
+}
+
+/* MoraSpirit 360 chip: match opaque PNG backgrounds so edges disappear. */
+.organizer-badge {
+  background: #000;
+}
+@media (prefers-color-scheme: light) {
+  .organizer-badge {
+    background: #fff;
+  }
+  .stage-dark .organizer-badge {
+    background: #000;
+  }
 }
 
 @keyframes heroReveal { 0%{opacity:0;transform:translateY(28px);filter:blur(12px)} 100%{opacity:1;transform:translateY(0);filter:blur(0)} }

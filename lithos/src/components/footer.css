@@ -244,6 +244,23 @@
 .socials a:nth-child(3){animation-delay:.76s}
 .socials a:nth-child(4){animation-delay:.82s}
 
+.footer-domain{
+  margin:0;
+  font-size:.78rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:hsl(var(--muted-foreground));
+  word-break:break-word;
+}
+.footer-domain a{
+  color:hsl(var(--brand-ink));
+  text-decoration:none;
+  letter-spacing:.04em;
+  text-transform:none;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.footer-domain a:hover{text-decoration:underline;text-underline-offset:3px}
+
 .legal{display:flex;flex-direction:row;gap:clamp(1.15rem,2.6vw,3rem);flex-wrap:wrap}
 .legal a{color:inherit;text-decoration:none;cursor:pointer;animation:rise-in .72s cubic-bezier(.22,1,.36,1) both}
 .legal a:hover{color:hsl(var(--brand-ink));text-decoration:underline;text-underline-offset:3px}

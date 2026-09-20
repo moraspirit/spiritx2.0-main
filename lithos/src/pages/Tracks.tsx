@@ -10,7 +10,6 @@ import {
 import { cn } from '@/lib/utils';
 import SiteNav from '../components/SiteNav.tsx';
 import Footer from '../components/Footer.tsx';
-import { scrollToId } from '../scrollTo.ts';
 
 const TRACKS = [
   {
@@ -51,7 +50,9 @@ const STEPS = TRACKS.length + 1;
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-const register = () => scrollToId('nl-email', { focus: true });
+const register = () => {
+  window.location.hash = '#/register';
+};
 
 /** Scroll so track `i` sits fully on top of the stack. */
 function scrollToTrack(i: number) {

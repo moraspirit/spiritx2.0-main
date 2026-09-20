@@ -1,0 +1,34 @@
+
+RECORDS TO ADD / REPLACE IN CLOUDFLARE
+--------------------------------------
+
+# 1) Domain verification (TXT) — required once so Vercel can issue the cert.
+#    Host/name: _vercel   (Cloudflare will store this as _vercel.moraspirit.com)
+#    Type:      TXT
+#    Content:   vc-domain-verify=spiritx.moraspirit.com,2336c9146ab21135936d
+#    TTL:       Auto
+#    Proxy:     DNS only (grey cloud) — TXT is never proxied
+
+Type: TXT
+Name: _vercel
+Content: vc-domain-verify=spiritx.moraspirit.com,2336c9146ab21135936d
+TTL: Auto
+Proxy status: DNS only
+
+
+# 2) Subdomain CNAME — replace the existing spiritx record(s).
+#    Host/name: spiritx
+#    Type:      CNAME
+#    Target:    cname.vercel-dns.com
+#    TTL:       Auto
+#    Proxy:     DNS only (grey cloud)  ← critical
+
+Type: CNAME
+Name: spiritx
+Target: cname.vercel-dns.com
+TTL: Auto
+Proxy status: DNS only (MUST be grey cloud)
+
+
+
+

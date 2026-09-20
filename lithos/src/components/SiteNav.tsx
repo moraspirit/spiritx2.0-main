@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHashRoute } from '../useHashRoute.ts';
-import { scrollToId } from '../scrollTo.ts';
 import BrandLogo from './BrandLogo.tsx';
 
 const TABS = [
@@ -31,27 +30,20 @@ export default function SiteNav() {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  const register = () => {
+  const goRegister = () => {
     setOpen(false);
-    // Every route ends with the footer's signup; fall back to home just in case.
-    if (document.getElementById('nl-email')) {
-      scrollToId('nl-email', { focus: true });
-    } else {
-      window.location.hash = '#/';
-    }
+    window.location.hash = '#/register';
   };
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 sm:pt-6 md:px-10">
-      <nav aria-label="Primary" className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+    <header className="absolute inset-x-0 top-0 z-50 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6 md:px-10">
+      <nav aria-label="Primary" className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3">
         <a
           href="#/"
           aria-label="Spirit X 2.0 home"
-          className="flex items-center rounded-full border border-border bg-card/80 px-4 py-1 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 sm:px-5"
+          className="flex min-h-11 min-w-0 items-center rounded-full border border-border bg-card/80 px-3 py-1 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 sm:px-5"
         >
-          {/* The letters fill only the middle third of the wordmark's height (the X spans it
-              all), so it needs this much height to read at nav size. */}
-          <BrandLogo className="h-8 w-auto sm:h-10" />
+          <BrandLogo className="h-7 w-auto max-w-[42vw] sm:h-10 sm:max-w-none" />
         </a>
 
         <div className="hidden items-center gap-1 rounded-full border border-border bg-card/80 p-1.5 backdrop-blur-md md:flex">
@@ -72,11 +64,11 @@ export default function SiteNav() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <button
             type="button"
-            onClick={register}
-            className="rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95 sm:px-6 sm:py-3"
+            onClick={goRegister}
+            className="min-h-11 rounded-full bg-brand px-4 py-2.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95 sm:px-6 sm:py-3"
           >
             register
           </button>
@@ -87,7 +79,7 @@ export default function SiteNav() {
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="mobile-nav"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/80 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 md:hidden"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-card/80 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 md:hidden"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -117,6 +109,13 @@ export default function SiteNav() {
               {tab.label}
             </a>
           ))}
+          <button
+            type="button"
+            onClick={goRegister}
+            className="rounded-2xl bg-brand px-5 py-3.5 text-left text-base font-medium text-primary-foreground"
+          >
+            register
+          </button>
         </div>
       </div>
     </header>

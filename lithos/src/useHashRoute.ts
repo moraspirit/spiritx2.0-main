@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 /** Routes this app knows about. Anything else falls back to "/". */
-const ROUTES = ['/', '/tracks', '/experience', '/studio'] as const;
+const ROUTES = ['/', '/tracks', '/experience', '/studio', '/register'] as const;
 export type Route = (typeof ROUTES)[number];
 
 function normalize(hash: string): Route {
@@ -10,7 +10,7 @@ function normalize(hash: string): Route {
 }
 
 /**
- * Minimal hash router — two pages don't justify a routing dependency.
+ * Minimal hash router — a few pages don't justify a routing dependency.
  * In-page anchors are written as "#/..." so they never collide with this.
  */
 export function useHashRoute(): Route {

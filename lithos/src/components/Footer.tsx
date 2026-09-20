@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './footer.css';
 import AmbientVideo from './AmbientVideo.tsx';
 import BrandLogo from './BrandLogo.tsx';
+import OrganizerLockup from './OrganizerLockup.tsx';
 
 const POSTER = '/media/footer-tunnel.webp';
 const VIDEO = '/media/footer-tunnel.mp4';
@@ -10,6 +11,7 @@ const HOME = '#/';
 const EXPERIENCE = '#/experience';
 const STUDIO = '#/studio';
 const TRACKS = '#/tracks';
+const REGISTER = '#/register';
 
 const COLUMNS = [
   {
@@ -20,7 +22,7 @@ const COLUMNS = [
       { label: 'Tracks', href: TRACKS },
       { label: 'Experience', href: EXPERIENCE },
       { label: 'Stories', href: STUDIO },
-      { label: 'Register', href: EXPERIENCE },
+      { label: 'Register', href: REGISTER },
     ],
   },
   {
@@ -88,9 +90,11 @@ export default function Footer() {
               <BrandLogo className="brand-logo" label="Spirit X 2.0" />
             </div>
 
+            <OrganizerLockup size="md" className="mt-4" />
+
             <p className="brand-blurb">
-              Inter University Hackathon by MoraSpirit &mdash; 48 hours, 200+ hackers, 20+
-              universities, one stage.
+              Spirit X 2.0 — Inter University Hackathon by MoraSpirit 360. 48 hours, 200+ hackers,
+              20+ universities, one stage.
             </p>
 
             <ul className="contact-list">
@@ -178,6 +182,11 @@ export default function Footer() {
               </a>
             ))}
           </div>
+
+          <p className="footer-domain">
+            SPIRIT X 2.0 ·{' '}
+            <a href="https://spiritx.moraspirit.com">spiritx.moraspirit.com</a>
+          </p>
 
           <nav className="legal" aria-label="Legal">
             {LEGAL.map((l) => (
