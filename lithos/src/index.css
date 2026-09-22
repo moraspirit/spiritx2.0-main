@@ -68,6 +68,42 @@
   }
 }
 
+@layer components {
+  .liquid-glass {
+    position: relative;
+    overflow: hidden;
+    border: 0;
+    background: rgb(255 255 255 / 0.035);
+    background-blend-mode: luminosity;
+    box-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.14),
+      0 12px 40px rgb(0 0 0 / 0.12);
+    backdrop-filter: blur(10px) saturate(125%);
+    -webkit-backdrop-filter: blur(10px) saturate(125%);
+  }
+
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.45) 0%,
+      rgb(255 255 255 / 0.12) 24%,
+      transparent 45%,
+      transparent 62%,
+      rgb(255 255 255 / 0.15) 82%,
+      rgb(255 255 255 / 0.38) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
 html,
 body,
 #root {
@@ -99,8 +135,84 @@ body {
 }
 
 .hero-title {
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   line-height: 0.95;
+}
+
+.hero-display {
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-size: clamp(3.45rem, 10vw, 8.5rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+}
+
+.hero-display em {
+  color: rgb(255 255 255 / 0.72);
+  font-weight: 400;
+}
+
+@media (max-width: 420px) {
+  .hero-display {
+    font-size: clamp(3.15rem, 15vw, 4.15rem);
+  }
+}
+
+@media (max-height: 620px) and (orientation: landscape) {
+  .cosmos-hero-content {
+    transform: none;
+    padding-top: 5.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .cosmos-hero-organizer,
+  .cosmos-hero-stats {
+    display: none;
+  }
+
+  .hero-display {
+    font-size: clamp(3rem, 9vw, 5.5rem);
+  }
+}
+
+.hero-mobile-title {
+  font-size: 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .hero-mobile-title {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-mobile-title {
+    font-size: 4.5rem;
+  }
+}
+
+@media (max-width: 1023px) and (orientation: landscape) {
+  .hero-mobile-layout {
+    padding-top: max(4.25rem, calc(env(safe-area-inset-top) + 3.25rem));
+  }
+
+  .hero-mobile-title {
+    font-size: 2.75rem;
+  }
+
+  .hero-mobile-copy {
+    display: none;
+  }
+
+  .hero-mobile-stats {
+    max-width: 28rem;
+  }
+}
+
+@media (max-width: 640px) and (orientation: landscape) {
+  .hero-mobile-title {
+    font-size: 2.25rem;
+  }
 }
 
 /* Keeps copy readable when it sits over busy photo/video frames: a dark halo
@@ -218,6 +330,84 @@ body {
   }
   .stage-dark .organizer-badge {
     background: #000;
+  }
+}
+
+/* Gallery is a true theme surface (unlike video heroes, which intentionally
+   stay dark). Keep the same depth in both schemes without muddying light mode. */
+.gallery-section {
+  isolation: isolate;
+  background-color: hsl(var(--background));
+}
+
+.gallery-aurora {
+  background:
+    radial-gradient(ellipse at 50% 18%, hsl(var(--primary) / 0.12), transparent 55%),
+    radial-gradient(ellipse at 82% 88%, hsl(var(--brand-ink) / 0.12), transparent 48%);
+}
+
+.gallery-card {
+  box-shadow:
+    0 24px 70px rgb(0 0 0 / 0.46),
+    0 0 0 1px hsl(var(--foreground) / 0.035);
+}
+
+/* On the home page, light mode moves from the night-stadium hero into a
+   daylight gallery, then gently returns to the cinematic tunnel footer. */
+.home-theme-bridge {
+  position: relative;
+  z-index: 2;
+  height: 0;
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: light) {
+  .home-theme-bridge {
+    height: clamp(5rem, 11svh, 8rem);
+  }
+
+  .home-theme-bridge--into-gallery {
+    background:
+      radial-gradient(ellipse at 50% 0%, hsl(189 61% 66% / 0.12), transparent 64%),
+      linear-gradient(to bottom, hsl(220 30% 4%), hsl(220 24% 18%) 34%, hsl(var(--background)));
+  }
+
+  .home-theme-bridge--into-footer {
+    height: 0;
+  }
+
+  @media (min-width: 1101px) {
+    .home-theme-bridge--into-footer {
+      height: clamp(5rem, 11svh, 8rem);
+      background:
+        radial-gradient(ellipse at 50% 100%, hsl(189 61% 66% / 0.1), transparent 64%),
+        linear-gradient(to bottom, hsl(var(--background)), hsl(220 24% 18%) 66%, hsl(220 30% 4%));
+    }
+  }
+
+  .gallery-section {
+    background-image: linear-gradient(
+      180deg,
+      hsl(var(--background)) 0%,
+      hsl(210 35% 98%) 52%,
+      hsl(var(--background)) 100%
+    );
+  }
+
+  .gallery-aurora {
+    background:
+      radial-gradient(ellipse at 50% 18%, hsl(var(--primary) / 0.1), transparent 52%),
+      radial-gradient(ellipse at 84% 86%, hsl(189 61% 66% / 0.16), transparent 48%),
+      linear-gradient(90deg, transparent, hsl(var(--primary) / 0.025), transparent);
+  }
+
+  .gallery-card {
+    border-color: hsl(var(--border) / 0.95);
+    background: hsl(var(--card) / 0.88);
+    box-shadow:
+      0 22px 58px rgb(24 45 70 / 0.2),
+      0 2px 8px rgb(24 45 70 / 0.1),
+      0 0 0 1px rgb(255 255 255 / 0.8);
   }
 }
 

@@ -90,11 +90,11 @@ export default function Footer() {
               <BrandLogo className="brand-logo" label="Spirit X 2.0" />
             </div>
 
-            <OrganizerLockup size="md" className="mt-4" />
+            <OrganizerLockup size="md" forceDark className="mt-4" />
 
             <p className="brand-blurb">
-              Spirit X 2.0 — Inter University Hackathon by MoraSpirit 360. 48 hours, 200+ hackers,
-              20+ universities, one stage.
+              Spirit X 2.0 — the Inter University Hackathon organised by the University of
+              Moratuwa and MoraSpirit 360. 48 hours, 200+ hackers, one stage.
             </p>
 
             <ul className="contact-list">
@@ -106,12 +106,6 @@ export default function Footer() {
               </li>
               <li>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M7.6 1.4a1.6 1.6 0 0 0-2.1-.3L3.9 2.2A3.2 3.2 0 0 0 2.6 5.6c1 4 3.2 7.5 6.1 10.4 2.9 2.9 6.4 5.1 10.4 6.1a3.2 3.2 0 0 0 3.4-1.3l1.1-1.6a1.6 1.6 0 0 0-.3-2.1l-3.2-2.6a1.6 1.6 0 0 0-2 0l-1.4 1.1a17 17 0 0 1-5.3-5.3l1.1-1.4a1.6 1.6 0 0 0 0-2L7.6 1.4Z" />
-                </svg>
-                <a href="tel:+940000000000">+94 00000 00000</a>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5.4 6.5 11.7 6.8 12a1 1 0 0 0 1.4 0c.3-.3 6.8-6.6 6.8-12A7.5 7.5 0 0 0 12 2Zm0 10.2a2.7 2.7 0 1 1 0-5.4 2.7 2.7 0 0 1 0 5.4Z" />
                 </svg>
                 <span>University of Moratuwa, Sri Lanka</span>
@@ -120,7 +114,11 @@ export default function Footer() {
           </div>
 
           {COLUMNS.map((col) => (
-            <nav className="col" aria-label={col.title} key={col.title}>
+            <nav
+              className={`col ${col.title === 'Explore' ? 'footer-quick-links' : 'footer-secondary-col'}`}
+              aria-label={col.title}
+              key={col.title}
+            >
               <h2 className="col-title">{col.title}</h2>
               <ul className="link-list">
                 {col.links.map((link) => (

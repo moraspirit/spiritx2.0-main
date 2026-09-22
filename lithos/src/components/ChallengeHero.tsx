@@ -1,135 +1,194 @@
+import { useEffect, useRef, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import SiteNav from './SiteNav.tsx';
-import AmbientVideo from './AmbientVideo.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
+import { scrollToId } from '../scrollTo.ts';
 
-const LANDSCAPE = { src: '/media/home-snowboard.mp4', poster: '/media/home-snowboard-poster.webp' };
-// Centre 3:4 crop: upright phones and tablets only ever show the middle of the frame,
-// so they download about half the bytes for the same picture.
-const PORTRAIT = {
-  src: '/media/home-snowboard-portrait.mp4',
-  poster: '/media/home-snowboard-portrait-poster.webp',
+const LANDSCAPE = {
+  src: '/media/home-cosmos.mp4',
+  poster: '/media/home-cosmos-poster.webp',
 };
 
-const WORD = 'hero-title absolute block font-medium text-foreground text-[12.5vw] sm:text-[14vw] md:text-[13vw]';
+const PORTRAIT = {
+  src: '/media/home-cosmos-portrait.mp4',
+  poster: '/media/home-cosmos-portrait-poster.webp',
+};
+
+const STATS = [
+  { value: '200+', label: 'hackers' },
+  { value: 'LKR 5m', label: 'prize pool' },
+  { value: '20+', label: 'universities' },
+];
+
+/** The supplied film fades through black at its seam instead of visibly snapping. */
+function HeroLoopVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const frameRef = useRef<number | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const fadingOutRef = useRef(false);
+  const [cut] = useState(() =>
+    window.matchMedia('(max-aspect-ratio: 3/4)').matches ? PORTRAIT : LANDSCAPE
+  );
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    for (const attribute of [
+      'muted',
+      'playsinline',
+      'webkit-playsinline',
+      'disablepictureinpicture',
+      'disableremoteplayback',
+    ]) {
+      video.setAttribute(attribute, '');
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+      ?.saveData;
+    if (reduceMotion || saveData) return;
+
+    const fadeTo = (target: number, duration = 500) => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      const from = Number.parseFloat(video.style.opacity || '0');
+      const started = performance.now();
+
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - started) / duration);
+        video.style.opacity = String(from + (target - from) * progress);
+        if (progress < 1) frameRef.current = requestAnimationFrame(tick);
+      };
+
+      frameRef.current = requestAnimationFrame(tick);
+    };
+
+    const playAndReveal = () => {
+      video.play().then(() => fadeTo(1), () => {});
+    };
+
+    const onTimeUpdate = () => {
+      if (!video.duration || video.duration - video.currentTime > 0.55 || fadingOutRef.current) return;
+      fadingOutRef.current = true;
+      fadeTo(0);
+    };
+
+    const onEnded = () => {
+      video.style.opacity = '0';
+      timerRef.current = window.setTimeout(() => {
+        video.currentTime = 0;
+        fadingOutRef.current = false;
+        playAndReveal();
+      }, 100);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) video.pause();
+      else playAndReveal();
+    };
+
+    video.addEventListener('canplay', playAndReveal, { once: true });
+    video.addEventListener('timeupdate', onTimeUpdate);
+    video.addEventListener('ended', onEnded);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    if (video.readyState >= 3) playAndReveal();
+
+    return () => {
+      video.removeEventListener('canplay', playAndReveal);
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      video.removeEventListener('ended', onEnded);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+      video.pause();
+    };
+  }, []);
+
+  return (
+    <>
+      <img
+        src={cut.poster}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-bottom"
+      />
+      <video
+        ref={videoRef}
+        className="ambient-video absolute inset-0 h-full w-full object-cover object-bottom"
+        src={cut.src}
+        poster={cut.poster}
+        muted
+        autoPlay
+        playsInline
+        preload="metadata"
+        tabIndex={-1}
+        aria-hidden="true"
+        style={{ opacity: 0 }}
+      />
+    </>
+  );
+}
 
 export default function ChallengeHero() {
   return (
     <section
       id="hero"
-      className="stage-dark relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-background max-[360px]:min-h-[500px]"
+      className="stage-dark relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-black text-white max-sm:landscape:min-h-[430px]"
     >
-      <AmbientVideo
-        className="ambient-drift absolute inset-0 h-full w-full object-cover"
-        cut={LANDSCAPE}
-        portrait={PORTRAIT}
-      />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-28 bg-gradient-to-b from-background/80 to-transparent sm:h-40" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-56 bg-gradient-to-b from-transparent via-background/40 to-background sm:h-48" />
+      <HeroLoopVideo />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(2,7,12,.7)_0%,rgba(2,7,12,.08)_32%,rgba(2,7,12,.12)_62%,rgba(2,7,12,.82)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_center,transparent_0%,rgba(1,5,9,.12)_48%,rgba(1,5,9,.48)_100%)]" />
 
       <SiteNav />
 
-      {/* Scattered wordmark — desktop / tablet composition */}
-      <h1 className="pointer-events-none absolute inset-0 z-[2] hidden sm:block">
-        <span className={`${WORD} left-4 top-[18%] md:left-10`}>reinvent</span>
-        <span className={`${WORD} right-4 top-[38%] md:right-10`}>the</span>
-        <span className={`${WORD} left-[18%] top-[58%] md:left-[28%]`}>
-          game<span className="text-brand">.</span>
-        </span>
-      </h1>
+      <main className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
+        <OrganizerLockup
+          forceDark
+          size="md"
+          className="liquid-glass cosmos-hero-organizer mb-5 rounded-2xl px-4 py-2.5 sm:mb-7 sm:rounded-full sm:px-5"
+        />
 
-      {/* Phone wordmark — single stacked block, clears nav */}
-      <h1 className="pointer-events-none relative z-[2] mt-[max(5.5rem,calc(env(safe-area-inset-top)+4.75rem))] px-4 sm:hidden">
-        <span className="hero-title text-legible block text-[11vw] font-medium leading-[0.95] tracking-tight text-foreground">
-          reinvent
-        </span>
-        <span className="hero-title text-legible block text-[11vw] font-medium leading-[0.95] tracking-tight text-foreground">
-          the
-        </span>
-        <span className="hero-title text-legible block text-[11vw] font-medium leading-[0.95] tracking-tight text-foreground">
-          game<span className="text-brand">.</span>
-        </span>
-      </h1>
+        <h1 className="hero-display max-w-6xl text-balance text-white">
+          Reinvent <em>the game.</em>
+        </h1>
 
-      {/* Desktop floating copy */}
-      <div className="absolute left-6 top-[44%] z-[3] hidden max-w-[260px] sm:block md:left-10">
-        <OrganizerLockup forceDark className="mb-3" />
-        <p className="text-legible text-[15px] leading-snug text-foreground/90">
-          Spirit X 2.0 — 48 hours to rebuild how sri lanka plays and watches sport, built by
-          students from every campus
+        <p className="mt-4 max-w-[34rem] text-pretty text-sm leading-relaxed text-white/82 sm:mt-5 sm:text-base md:text-lg">
+          Forty-eight hours to turn audacious ideas into the technology that changes how Sri Lanka
+          plays and watches sport.
         </p>
-        <p className="mt-3 font-mono text-xs tracking-wide text-brand-ink/90">
-          spiritx.moraspirit.com
-        </p>
-      </div>
 
-      {/* Desktop stats */}
-      <div className="absolute right-6 top-[14%] z-[3] hidden sm:block md:right-24">
-        <div className="flex items-center justify-end gap-3">
-          <span className="hidden h-px w-24 rotate-[20deg] bg-brand/60 md:block" />
-          <span className="text-4xl font-medium tracking-tight md:text-5xl">
-            <span className="text-brand">+</span>200
-          </span>
+        <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row">
+          <a
+            href="#/tracks"
+            className="liquid-glass group flex min-h-14 items-center gap-5 rounded-full py-2 pl-6 pr-2 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
+          >
+            Explore the tracks
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-black transition-transform group-hover:translate-x-0.5">
+              <ArrowRight size={19} aria-hidden="true" />
+            </span>
+          </a>
+          <button
+            type="button"
+            onClick={() => scrollToId('moments')}
+            className="liquid-glass min-h-12 rounded-full px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
+          >
+            Relive Spirit X 1.0
+          </button>
         </div>
-        <p className="mt-1 text-right text-legible text-xs text-foreground/80 md:text-sm">
-          hackers building
-        </p>
-      </div>
+      </main>
 
-      <div className="absolute bottom-24 left-6 z-[3] hidden sm:block md:bottom-24 md:left-20">
-        <div className="flex items-center gap-3">
-          <span className="text-4xl font-medium tracking-tight md:text-5xl">
-            <span className="text-brand">+</span>5m
-          </span>
-          <span className="hidden h-px w-24 rotate-[-20deg] bg-brand/60 md:block" />
-        </div>
-        <p className="mt-1 text-legible text-xs text-foreground/80 md:text-sm">lkr prize pool</p>
-      </div>
-
-      <div className="absolute bottom-20 right-6 z-[3] hidden sm:block md:bottom-20 md:right-20">
-        <div className="flex items-center justify-end gap-3">
-          <span className="hidden h-px w-24 rotate-[-20deg] bg-brand/60 md:block" />
-          <span className="text-4xl font-medium tracking-tight md:text-5xl">
-            <span className="text-brand">+</span>20
-          </span>
-        </div>
-        <p className="mt-1 text-right text-legible text-xs text-foreground/80 md:text-sm">
-          universities
-        </p>
-      </div>
-
-      {/* Phone bottom sheet: organizer, copy, domain, stats — one composition */}
-      <div className="relative z-[3] mt-auto w-full px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
-        <div className="rounded-2xl border border-border/60 bg-background/70 p-3.5 backdrop-blur-md">
-          <OrganizerLockup forceDark className="mb-2.5 flex flex-wrap gap-x-2 gap-y-1" />
-          <p className="text-legible text-[13.5px] leading-snug text-foreground/90">
-            Spirit X 2.0 — 48 hours to rebuild how sri lanka plays and watches sport, built by
-            students from every campus
-          </p>
-          <p className="mt-2 font-mono text-[10px] tracking-wide text-brand-ink/90">
-            spiritx.moraspirit.com
-          </p>
-          <div className="mt-3.5 grid grid-cols-3 gap-2 border-t border-border/50 pt-3">
-            <div>
-              <p className="text-xl font-medium tracking-tight">
-                <span className="text-brand">+</span>200
-              </p>
-              <p className="text-[10px] leading-tight text-foreground/75">hackers</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl font-medium tracking-tight">
-                <span className="text-brand">+</span>5m
-              </p>
-              <p className="text-[10px] leading-tight text-foreground/75">lkr prize</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xl font-medium tracking-tight">
-                <span className="text-brand">+</span>20
-              </p>
-              <p className="text-[10px] leading-tight text-foreground/75">unis</p>
-            </div>
+      <dl className="liquid-glass cosmos-hero-stats absolute inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto grid max-w-xl grid-cols-3 divide-x divide-white/15 rounded-2xl px-2 py-3 text-center sm:inset-x-6 sm:bottom-[max(1.5rem,env(safe-area-inset-bottom))] sm:max-w-2xl sm:rounded-full sm:px-5">
+        {STATS.map((stat) => (
+          <div key={stat.label} className="min-w-0 px-2 sm:px-5">
+            <dt className="font-serif text-lg leading-none text-white sm:text-2xl">{stat.value}</dt>
+            <dd className="mt-1 truncate text-[9px] uppercase tracking-[0.12em] text-white/55 sm:text-[10px]">
+              {stat.label}
+            </dd>
           </div>
-        </div>
-      </div>
+        ))}
+      </dl>
     </section>
   );
 }
