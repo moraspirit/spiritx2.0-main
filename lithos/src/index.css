@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Home composition follows the system palette, including its media. */
+.hero-theme-scrim { background: linear-gradient(180deg,rgba(2,7,12,.65),rgba(2,7,12,.08) 40%,rgba(2,7,12,.12) 65%,rgba(2,7,12,.8)); }
+.challenge-intro { padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left)); background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background)); }
+.challenge-idea { padding: clamp(1.5rem,3vw,2.5rem); border: 1px solid hsl(var(--border)); border-radius: 1.5rem; background:hsl(var(--card)); transition: border-color .2s; }
+.challenge-idea:hover { border-color:hsl(var(--brand-ink)); }
+@media (prefers-color-scheme: light) and (max-width:359px) {
+  .adaptive-hero .hero-display { font-size:2.8rem !important; }
+  .adaptive-hero .cosmos-hero-organizer { margin-bottom:.75rem; }
+}
+@media (prefers-color-scheme: light) {
+  .adaptive-hero .hero-theme-scrim { background:linear-gradient(180deg,rgba(248,251,255,.15),rgba(248,251,255,.18) 40%,transparent 72%); }
+  .adaptive-hero .text-white { color:#102b40; }
+  .adaptive-hero .hero-display em { color:#00558f; }
+  .adaptive-hero .cosmos-hero-content > p { color:#254356; }
+  .adaptive-hero .cosmos-hero-stats dd { color:#385366; }
+  .adaptive-hero .liquid-glass { background:rgba(255,255,255,.82); border:1px solid rgba(38,85,112,.18); box-shadow:0 8px 30px rgba(30,65,90,.06); }
+  .adaptive-hero .liquid-glass::before { display:none; }
+  .adaptive-hero .cosmos-hero-stats > div { border-color:rgba(38,85,112,.2); }
+  .adaptive-hero .cosmos-hero-content { justify-content:flex-start; padding-top:clamp(7rem,16vh,11rem); transform:none; }
+  .adaptive-hero .hero-display { font-size:clamp(3.45rem,8vw,7rem); }
+  .adaptive-hero .cosmos-hero-organizer { margin-bottom:1.25rem; }
+}
+@media (prefers-color-scheme: light) and (max-width:640px) {
+  .adaptive-hero { min-height:720px; }
+  .adaptive-hero .cosmos-hero-content { padding-top:6rem; }
+  .adaptive-hero .hero-display { font-size:3.5rem; }
+  .adaptive-hero .cosmos-hero-content > p { max-width:28rem; font-size:13px; }
+  .adaptive-hero .cosmos-hero-content > div:last-child { flex-direction:row; gap:.5rem; margin-top:1rem; }
+  .adaptive-hero .cosmos-hero-content > div:last-child > a { padding: .65rem .9rem; font-size:11px; gap:.5rem; min-height:44px; }
+  .adaptive-hero .cosmos-hero-content > div:last-child > a > span { width:1.75rem; height:1.75rem; }
+}
+
 @layer base {
   /* Night Stadium palette — the single source of color for every route.
      The accent is the Spirit X logo blue: the logo's light blue (#74CEDD) on dark

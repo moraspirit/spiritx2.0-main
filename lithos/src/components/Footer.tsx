@@ -81,6 +81,7 @@ export default function Footer() {
     <footer className="site-footer" id="site-footer">
       <div className="footer-media" aria-hidden="true">
         <AmbientVideo className="footer-bg" cut={{ src: VIDEO, poster: POSTER }} lazy />
+        <img className="footer-daylight" src="/media/footer-daylight.webp" alt="" loading="lazy" />
       </div>
 
       <div className="footer-inner">
@@ -90,7 +91,7 @@ export default function Footer() {
               <BrandLogo className="brand-logo" label="Spirit X 2.0" />
             </div>
 
-            <OrganizerLockup size="md" forceDark className="mt-4" />
+            <OrganizerLockup size="md" className="footer-organizer mt-4" />
 
             <p className="brand-blurb">
               Spirit X 2.0 — the Inter University Hackathon organised by the University of

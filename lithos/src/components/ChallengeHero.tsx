@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import SiteNav from './SiteNav.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
-import { scrollToId } from '../scrollTo.ts';
 
 const LANDSCAPE = {
   src: '/media/home-cosmos.mp4',
@@ -120,7 +119,6 @@ function HeroLoopVideo() {
         src={cut.src}
         poster={cut.poster}
         muted
-        autoPlay
         playsInline
         preload="metadata"
         tabIndex={-1}
@@ -132,20 +130,26 @@ function HeroLoopVideo() {
 }
 
 export default function ChallengeHero() {
+  const [light, setLight] = useState(() => window.matchMedia('(prefers-color-scheme: light)').matches);
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-color-scheme: light)');
+    const update = () => setLight(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
   return (
     <section
       id="hero"
-      className="stage-dark relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-black text-white max-sm:landscape:min-h-[430px]"
+      className="adaptive-hero relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-background text-foreground max-sm:landscape:min-h-[430px]"
     >
-      <HeroLoopVideo />
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(2,7,12,.7)_0%,rgba(2,7,12,.08)_32%,rgba(2,7,12,.12)_62%,rgba(2,7,12,.82)_100%)]" />
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_center,transparent_0%,rgba(1,5,9,.12)_48%,rgba(1,5,9,.48)_100%)]" />
+      {light ? <img src="/media/hero-daylight.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-bottom" /> : <HeroLoopVideo />}
+      <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
 
       <SiteNav />
 
       <main className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
         <OrganizerLockup
-          forceDark
+          forceDark={!light}
           size="md"
           className="liquid-glass cosmos-hero-organizer mb-5 rounded-2xl px-4 py-2.5 sm:mb-7 sm:rounded-full sm:px-5"
         />
@@ -169,13 +173,12 @@ export default function ChallengeHero() {
               <ArrowRight size={19} aria-hidden="true" />
             </span>
           </a>
-          <button
-            type="button"
-            onClick={() => scrollToId('moments')}
+          <a
+            href="#/studio"
             className="liquid-glass min-h-12 rounded-full px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
           >
             Relive Spirit X 1.0
-          </button>
+          </a>
         </div>
       </main>
 
