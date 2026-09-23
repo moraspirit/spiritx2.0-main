@@ -135,15 +135,22 @@ function HeroLoopVideo() {
 
 function LightHeroImage() {
   return (
-    <picture>
-      <source media="(max-aspect-ratio: 3/4)" srcSet={LIGHT_PORTRAIT} />
-      <img
-        src={LIGHT_LANDSCAPE}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover object-bottom"
-      />
-    </picture>
+    <>
+      <picture>
+        <source media="(max-aspect-ratio: 3/4)" srcSet={LIGHT_PORTRAIT} />
+        <img
+          src={LIGHT_LANDSCAPE}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-bottom"
+        />
+      </picture>
+      <div className="hero-light-fx" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+    </>
   );
 }
 

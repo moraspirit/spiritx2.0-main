@@ -87,6 +87,11 @@ export default function Footer() {
           alt=""
           loading="lazy"
         />
+        <div className="footer-light-fx" aria-hidden="true">
+          <span className="footer-light-rail footer-light-rail-left" />
+          <span className="footer-light-rail footer-light-rail-right" />
+          <span className="footer-light-motes" />
+        </div>
       </div>
 
       <div className="footer-inner">

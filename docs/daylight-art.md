@@ -10,6 +10,8 @@ Assets:
 
 All three generations used their dark-mode counterpart as the reference. The prompts explicitly preserved the original camera, crop, subjects, architecture, perspective, and spatial relationships while changing only illumination and grading to pale cyan, cool daylight, silver-blue shadows, and dark-navy-compatible contrast. This keeps the hero and footer as the same components and compositions in both system themes.
 
+The light-mode files remain still reference relights. Motion parity is added non-destructively in the UI: layered gold dust and twinkle fields over the hero, plus perspective-clipped green guide-light pulses and motes over the tunnel. The overlays are disabled under `prefers-reduced-motion`, leaving the reference artwork intact.
+
 Higgsfield job IDs:
 
 - Landscape hero: `4809ed33-4fbc-452f-90b5-52c569ce9ff5`
