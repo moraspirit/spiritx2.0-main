@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './footer.css';
 import AmbientVideo from './AmbientVideo.tsx';
 import BrandLogo from './BrandLogo.tsx';
@@ -67,6 +67,96 @@ const SOCIALS = [
 
 const LEGAL = ['Privacy Policy', 'Terms & Conditions', 'Press Kit'];
 
+/** Brightens only the green pixels already in the daylight plate, so one beam travels. */
+function OriginalLinePulse() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const video = canvas?.parentElement?.querySelector('video');
+    if (!canvas || !video) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const width = 480;
+    const height = 270;
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const sample = document.createElement('canvas');
+    sample.width = width;
+    sample.height = height;
+    const sampleContext = sample.getContext('2d', { willReadFrequently: true });
+    if (!sampleContext) return;
+
+    let mask: Uint8Array | null = null;
+    let frame = 0;
+    let alive = true;
+    const yStart = Math.floor(height * 0.74);
+
+    function capture() {
+      if (video!.readyState < 2 || video!.videoWidth === 0) return;
+      sampleContext!.drawImage(video!, 0, 0, width, height);
+      const pixels = sampleContext!.getImageData(0, 0, width, height).data;
+      const next = new Uint8Array(width * height);
+      let count = 0;
+      for (let y = yStart; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const index = (y * width + x) * 4;
+          const red = pixels[index];
+          const green = pixels[index + 1];
+          const blue = pixels[index + 2];
+          if (green > 118 && green > red + 16 && green > blue + 8) {
+            next[y * width + x] = 1;
+            count++;
+          }
+        }
+      }
+      if (count > 30) mask = next;
+    }
+
+    function paint(now: number) {
+      if (!alive) return;
+      if (!mask) capture();
+      context!.clearRect(0, 0, width, height);
+      if (mask) {
+        const image = context!.createImageData(width, height);
+        const data = image.data;
+        const phase = (now % 3200) / 3200;
+        const span = height - yStart;
+        for (let y = yStart; y < height; y++) {
+          const along = (height - y) / span;
+          let distance = Math.abs(along - phase);
+          if (distance > 0.5) distance = 1 - distance;
+          const glow = Math.exp(-(distance * distance) / 0.01);
+          if (glow < 0.05) continue;
+          for (let x = 0; x < width; x++) {
+            if (!mask[y * width + x]) continue;
+            const index = (y * width + x) * 4;
+            data[index] = 210 * glow;
+            data[index + 1] = 255 * glow;
+            data[index + 2] = 120 * glow;
+            data[index + 3] = 255 * glow;
+          }
+        }
+        context!.putImageData(image, 0, 0);
+      }
+      frame = requestAnimationFrame(paint);
+    }
+
+    video.addEventListener('loadeddata', capture);
+    frame = requestAnimationFrame(paint);
+    return () => {
+      alive = false;
+      cancelAnimationFrame(frame);
+      video.removeEventListener('loadeddata', capture);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="footer-led-pulse" />;
+}
+
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -92,21 +182,7 @@ export default function Footer() {
     <footer className={light ? 'site-footer is-day' : 'site-footer'} id="site-footer" data-plate={light ? 'daylight' : 'night'}>
       <div className="footer-media" aria-hidden="true">
         <AmbientVideo key={light ? 'day' : 'night'} className="footer-bg" cut={light ? DAY : NIGHT} lazy />
-        <svg className="footer-led" viewBox="0 0 1280 720" aria-hidden="true">
-          <defs>
-            <filter id="footer-led-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="2.2" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <path className="footer-led-base" d="M130 720 L248 600 L380 508" />
-          <path className="footer-led-base" d="M1150 720 L998 600 L890 508" />
-          <path className="footer-led-run" d="M130 720 L248 600 L380 508" filter="url(#footer-led-glow)" />
-          <path className="footer-led-run footer-led-run-delay" d="M1150 720 L998 600 L890 508" filter="url(#footer-led-glow)" />
-        </svg>
+        {light ? <OriginalLinePulse /> : null}
       </div>
 
       <div className="footer-inner">
