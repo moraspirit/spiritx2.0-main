@@ -81,7 +81,12 @@ export default function Footer() {
     <footer className="site-footer" id="site-footer">
       <div className="footer-media" aria-hidden="true">
         <AmbientVideo className="footer-bg" cut={{ src: VIDEO, poster: POSTER }} lazy />
-        <img className="footer-daylight" src="/media/footer-daylight.webp" alt="" loading="lazy" />
+        <img
+          className="footer-daylight"
+          src="/media/footer-tunnel-light.webp"
+          alt=""
+          loading="lazy"
+        />
       </div>
 
       <div className="footer-inner">

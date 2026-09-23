@@ -13,6 +13,9 @@ const PORTRAIT = {
   poster: '/media/home-cosmos-portrait-poster.webp',
 };
 
+const LIGHT_LANDSCAPE = '/media/home-cosmos-light.webp';
+const LIGHT_PORTRAIT = '/media/home-cosmos-light-portrait.webp';
+
 const STATS = [
   { value: '200+', label: 'hackers' },
   { value: 'LKR 5m', label: 'prize pool' },
@@ -118,6 +121,7 @@ function HeroLoopVideo() {
         className="ambient-video absolute inset-0 h-full w-full object-cover object-bottom"
         src={cut.src}
         poster={cut.poster}
+        autoPlay
         muted
         playsInline
         preload="metadata"
@@ -126,6 +130,20 @@ function HeroLoopVideo() {
         style={{ opacity: 0 }}
       />
     </>
+  );
+}
+
+function LightHeroImage() {
+  return (
+    <picture>
+      <source media="(max-aspect-ratio: 3/4)" srcSet={LIGHT_PORTRAIT} />
+      <img
+        src={LIGHT_LANDSCAPE}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-bottom"
+      />
+    </picture>
   );
 }
 
@@ -142,7 +160,7 @@ export default function ChallengeHero() {
       id="hero"
       className="adaptive-hero relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-background text-foreground max-sm:landscape:min-h-[430px]"
     >
-      {light ? <img src="/media/hero-daylight.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-bottom" /> : <HeroLoopVideo />}
+      {light ? <LightHeroImage /> : <HeroLoopVideo />}
       <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
 
       <SiteNav />

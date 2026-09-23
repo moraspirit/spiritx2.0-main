@@ -1,13 +1,17 @@
-# Daylight art — 23 September 2026
+# Light-mode reference relights — 23 September 2026
 
-Provider: built-in image generation. Higgsfield CLI authentication worked but generation was rejected with `only_mcp_usage_on_trial_is_available` (Nano Banana 2 estimate: 2 credits).
+Provider: Higgsfield MCP, GPT Image 2.5 (`flare`, medium quality, 2K). The CLI OAuth token was limited to MCP trial usage, so the official Higgsfield MCP connector was used with the same selected Plus workspace. Three generations used three credits.
 
 Assets:
-- `lithos/public/media/hero-daylight.webp`
-- `lithos/public/media/footer-daylight.webp`
 
-Hero prompt:
-Wide 16:9 premium website hero background for university sports innovation, photorealistic surreal daylight scene. A young Sri Lankan athlete in white sportswear at bottom center gazing up, a delicate constellation of translucent ice blue particles arcing above him like creative thought. Bright pearl white sky fills upper two thirds as clean negative space for dark navy centered headline. Very subtle airy cyan atmosphere, horizon and sunlit stadium field confined to bottom quarter. Luminous natural daylight, refined editorial campaign photography. No text, no logos, no watermark. Keep figure small and centered for mobile crop. This is light-theme companion to a night cosmic hero.
+- `lithos/public/media/home-cosmos-light.webp`
+- `lithos/public/media/home-cosmos-light-portrait.webp`
+- `lithos/public/media/footer-tunnel-light.webp`
 
-Footer prompt:
-Create a photorealistic wide 16:9 website background for Spirit X university sports innovation. Bright daytime stadium viewed through an elegant pale concrete player tunnel, symmetrical architectural lines converging on a fresh green cricket field. Pearlescent white concrete, subtle pale sky blue shadows, soft morning sunlight. Upper 60 percent is very pale softly textured architecture with ample clean negative space for dark navy website text. Stadium and green field concentrated at lower center, no people, no text, no logos, no watermark. Sophisticated photographic realism, clean luminous exposure without washed out opacity.
+All three generations used their dark-mode counterpart as the reference. The prompts explicitly preserved the original camera, crop, subjects, architecture, perspective, and spatial relationships while changing only illumination and grading to pale cyan, cool daylight, silver-blue shadows, and dark-navy-compatible contrast. This keeps the hero and footer as the same components and compositions in both system themes.
+
+Higgsfield job IDs:
+
+- Landscape hero: `4809ed33-4fbc-452f-90b5-52c569ce9ff5`
+- Portrait hero: `071831c7-876f-486f-a5a5-b0cef05c7b07`
+- Footer tunnel: `c22609ed-e179-47cf-81bb-719a04012046`
