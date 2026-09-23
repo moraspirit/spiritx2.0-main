@@ -3,6 +3,7 @@ import './footer.css';
 import AmbientVideo from './AmbientVideo.tsx';
 import BrandLogo from './BrandLogo.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
+import LightFooterScene from './LightFooterScene.tsx';
 
 const POSTER = '/media/footer-tunnel.webp';
 const VIDEO = '/media/footer-tunnel.mp4';
@@ -81,17 +82,7 @@ export default function Footer() {
     <footer className="site-footer" id="site-footer">
       <div className="footer-media" aria-hidden="true">
         <AmbientVideo className="footer-bg" cut={{ src: VIDEO, poster: POSTER }} lazy />
-        <img
-          className="footer-daylight"
-          src="/media/footer-tunnel-light.webp"
-          alt=""
-          loading="lazy"
-        />
-        <div className="footer-light-fx" aria-hidden="true">
-          <span className="footer-light-rail footer-light-rail-left" />
-          <span className="footer-light-rail footer-light-rail-right" />
-          <span className="footer-light-motes" />
-        </div>
+        <LightFooterScene />
       </div>
 
       <div className="footer-inner">

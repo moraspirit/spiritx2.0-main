@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import SiteNav from './SiteNav.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
+import HeroDustCanvas from './HeroDustCanvas.tsx';
 
 const LANDSCAPE = {
   src: '/media/home-cosmos.mp4',
@@ -145,11 +146,7 @@ function LightHeroImage() {
           className="absolute inset-0 h-full w-full object-cover object-bottom"
         />
       </picture>
-      <div className="hero-light-fx" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
+      <HeroDustCanvas />
     </>
   );
 }
