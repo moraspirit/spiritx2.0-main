@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './footer.css';
 import AmbientVideo from './AmbientVideo.tsx';
 import BrandLogo from './BrandLogo.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
-import LightFooterScene from './LightFooterScene.tsx';
 
-const POSTER = '/media/footer-tunnel.webp';
-const VIDEO = '/media/footer-tunnel.mp4';
+const NIGHT = { src: '/media/footer-tunnel.mp4', poster: '/media/footer-tunnel.webp' };
+const DAY = { src: '/media/footer-daylight.mp4', poster: '/media/footer-daylight.webp' };
 
 const HOME = '#/';
 const EXPERIENCE = '#/experience';
@@ -71,6 +70,17 @@ const LEGAL = ['Privacy Policy', 'Terms & Conditions', 'Press Kit'];
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [light, setLight] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    const sync = () => setLight(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,10 +89,24 @@ export default function Footer() {
   };
 
   return (
-    <footer className="site-footer" id="site-footer">
+    <footer className={light ? 'site-footer is-day' : 'site-footer'} id="site-footer" data-plate={light ? 'daylight' : 'night'}>
       <div className="footer-media" aria-hidden="true">
-        <AmbientVideo className="footer-bg" cut={{ src: VIDEO, poster: POSTER }} lazy />
-        <LightFooterScene />
+        <AmbientVideo key={light ? 'day' : 'night'} className="footer-bg" cut={light ? DAY : NIGHT} lazy />
+        <svg className="footer-led" viewBox="0 0 1280 720" aria-hidden="true">
+          <defs>
+            <filter id="footer-led-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.2" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path className="footer-led-base" d="M130 720 L248 600 L380 508" />
+          <path className="footer-led-base" d="M1150 720 L998 600 L890 508" />
+          <path className="footer-led-run" d="M130 720 L248 600 L380 508" filter="url(#footer-led-glow)" />
+          <path className="footer-led-run footer-led-run-delay" d="M1150 720 L998 600 L890 508" filter="url(#footer-led-glow)" />
+        </svg>
       </div>
 
       <div className="footer-inner">
