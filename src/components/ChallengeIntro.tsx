@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Orbit, Radio, Layers } from 'lucide-react';
 import { type MotionValue, motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { cn } from '@/lib/utils';
+import OrganizerLockup from './OrganizerLockup.tsx';
 import { EASE_OUT, revealOnce, rise, stagger } from '../motion.ts';
 
 const ideas = [
@@ -72,7 +73,9 @@ export default function ChallengeIntro() {
         </motion.div>
 
         <div className="mt-12 grid gap-8 sm:mt-16 lg:mt-24 lg:grid-cols-12">
-          <span aria-hidden="true" className="intro-statement-rule hidden lg:col-span-4 lg:block" />
+          <motion.div {...revealOnce} variants={rise} className="intro-organisers lg:col-span-4 lg:pt-2">
+            <OrganizerLockup size="md" className="flex-col !items-start gap-y-3" />
+          </motion.div>
           <div className="lg:col-span-8">
             <ScrollStatement />
           </div>

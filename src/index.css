@@ -8,7 +8,6 @@
 .challenge-intro { padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left)); background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background)); }
 @media (max-width:359px) {
   .adaptive-hero .hero-display { font-size:2.8rem !important; }
-  .adaptive-hero .cosmos-hero-organizer { margin-bottom:.75rem; }
 }
 @media (prefers-color-scheme: light) {
   .adaptive-hero .hero-theme-scrim { background:linear-gradient(180deg,rgba(248,251,255,.2),rgba(248,251,255,.04) 42%,rgba(232,243,250,.18) 72%,rgba(233,241,247,.52)); }
@@ -185,6 +184,11 @@ body {
   line-height: 0.88;
 }
 
+/* The X of the event name takes the logo's brand blue. */
+.hero-display-x {
+  color: hsl(var(--brand-ink));
+}
+
 .hero-display em {
   color: rgb(255 255 255 / 0.72);
   font-weight: 400;
@@ -203,7 +207,6 @@ body {
     padding-bottom: 2.5rem;
   }
 
-  .cosmos-hero-organizer,
   .cosmos-hero-stats {
     display: none;
   }
@@ -538,12 +541,8 @@ body {
   letter-spacing: -0.035em;
 }
 
-/* A short brand-blue rule anchors the statement's left edge on wide screens. */
-.intro-statement-rule {
-  height: 1px;
-  margin-top: 1.1rem;
-  background: linear-gradient(to right, hsl(var(--brand-ink)), hsl(var(--brand-ink) / 0) 70%);
-}
+/* Organiser credit, stacked beside the statement (divider only makes sense in a row). */
+.intro-organisers .h-4.w-px { display: none; }
 
 /* Idea rows: number / title / detail, hairline-ruled, no cards. */
 .intro-idea {

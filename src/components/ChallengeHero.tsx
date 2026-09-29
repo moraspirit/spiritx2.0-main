@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
-import OrganizerLockup from './OrganizerLockup.tsx';
+import { ArrowRight, FileText } from 'lucide-react';
+import { REGISTER_HREF } from '@/lib/api';
+
+/** Drop the booklet PDF at this path under public/ (it 404s until then). */
+const DELEGATE_BOOKLET = '/spirit-x-2.0-delegate-booklet.pdf';
 import HeroDustCanvas from './HeroDustCanvas.tsx';
 import { usePrefersLight } from '../usePrefersLight.ts';
 
@@ -171,14 +174,8 @@ export default function ChallengeHero() {
       <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
 
       <div className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
-        <OrganizerLockup
-          forceDark={!light}
-          size="md"
-          className="liquid-glass cosmos-hero-organizer mb-5 rounded-2xl px-4 py-2.5 sm:mb-7 sm:rounded-full sm:px-5"
-        />
-
         <h1 className="hero-display max-w-6xl text-balance text-white">
-          Reinvent <em>the game.</em>
+          Spirit <span className="hero-display-x">X</span> <em>2.0</em>
         </h1>
 
         <p className="mt-4 max-w-[34rem] text-pretty text-sm leading-relaxed text-white/82 sm:mt-5 sm:text-base md:text-lg">
@@ -188,19 +185,23 @@ export default function ChallengeHero() {
 
         <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row">
           <a
-            href="#tracks"
+            href={REGISTER_HREF}
             className="liquid-glass group flex min-h-14 items-center gap-5 rounded-full py-2 pl-6 pr-2 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
           >
-            Explore the tracks
+            Registrations
             <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-black transition-transform group-hover:translate-x-0.5">
               <ArrowRight size={19} aria-hidden="true" />
             </span>
           </a>
           <a
-            href="#moments"
-            className="liquid-glass min-h-12 rounded-full px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
+            href={DELEGATE_BOOKLET}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="liquid-glass group flex min-h-12 items-center gap-2.5 rounded-full px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
           >
-            Relive Spirit X 1.0
+            <FileText size={17} strokeWidth={1.75} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
+            Delegate booklet
+            <span className="sr-only">(PDF, opens in a new tab)</span>
           </a>
         </div>
       </div>
