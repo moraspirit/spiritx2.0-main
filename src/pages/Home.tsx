@@ -6,6 +6,7 @@ import HeroSection from '../components/HeroSection.tsx';
 import StudioShowcase from '../components/StudioShowcase.tsx';
 import SpiritGallery from '../components/SpiritGallery.tsx';
 import RegisterSection from '../components/RegisterSection.tsx';
+import ContactSection from '../components/ContactSection.tsx';
 import Footer from '../components/Footer.tsx';
 
 /** The whole story on one scroll. Section ids match SECTIONS in useHashRoute.ts. */
@@ -22,6 +23,7 @@ export default function Home() {
         <SpiritGallery />
       </div>
       <RegisterSection />
+      <ContactSection />
       <Footer />
     </div>
   );

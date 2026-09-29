@@ -602,3 +602,87 @@ body {
   .intro-idea.is-active .intro-idea-title,
   .intro-idea:hover .intro-idea-title { transform: none; }
 }
+
+/* ---------- Contact (ContactSection) ---------- */
+.contact-section {
+  scroll-margin-top: 4rem;
+  padding: clamp(4rem, 9vw, 7.5rem) max(1.25rem, env(safe-area-inset-left));
+  background: hsl(var(--background));
+}
+
+.contact-title {
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: hsl(var(--brand-ink));
+}
+
+/* Centered profile cards: one column on phones, three across from tablet up. */
+.contact-cards {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 22rem;
+  margin-inline: auto;
+}
+@media (min-width: 768px) {
+  .contact-cards {
+    max-width: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+  }
+}
+.contact-card {
+  min-width: 0;
+  padding: 2rem 1.5rem 1.75rem;
+  text-align: center;
+  border-radius: 1rem;
+  background: hsl(var(--card));
+  box-shadow: inset 0 0 0 1px hsl(var(--border));
+  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: inset 0 0 0 1px hsl(var(--brand-ink) / 0.45);
+}
+
+.contact-avatar {
+  position: relative;
+  width: 8.5rem;
+  height: 8.5rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 9999px;
+  background:
+    radial-gradient(ellipse at 30% 20%, hsl(189 61% 66% / 0.35), transparent 60%),
+    linear-gradient(160deg, hsl(204 100% 22%), hsl(220 30% 6%));
+  box-shadow: 0 0 0 1px hsl(var(--foreground) / 0.18), 0 0 0 6px hsl(var(--card)), 0 0 0 7px hsl(var(--brand-ink) / 0.25);
+}
+.contact-initials {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  color: rgb(245 247 250 / 0.9);
+}
+
+.contact-link {
+  display: inline-flex;
+  min-height: 32px;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  color: hsl(var(--foreground) / 0.85);
+  transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.contact-link svg { flex: none; color: hsl(var(--brand-ink)); }
+.contact-link:hover { color: hsl(var(--brand-ink)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-card { transition: none; }
+  .contact-card:hover { transform: none; }
+}
