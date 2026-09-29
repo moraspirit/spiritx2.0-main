@@ -186,10 +186,10 @@ export default function ChallengeHero() {
         <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row">
           <a
             href={REGISTER_HREF}
-            className="liquid-glass group flex min-h-14 items-center gap-5 rounded-full py-2 pl-6 pr-2 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
+            className="group flex min-h-14 items-center gap-5 rounded-full bg-brand py-2 pl-6 pr-2 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-[0.98]"
           >
             Registrations
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-black transition-transform group-hover:translate-x-0.5">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-primary-foreground text-brand-ink transition-transform group-hover:translate-x-0.5">
               <ArrowRight size={19} aria-hidden="true" />
             </span>
           </a>

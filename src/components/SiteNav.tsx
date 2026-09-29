@@ -12,13 +12,14 @@ const TABS = [
   { id: 'about', label: 'about' },
   { id: 'tracks', label: 'tracks' },
   { id: 'timeline', label: 'timeline' },
+  { id: 'prizes', label: 'prizes' },
   { id: 'experience', label: 'experience' },
   { id: 'stories', label: 'stories' },
   { id: 'contact', label: 'contact' },
 ] as const;
 
 // The hero counts as "about", so the pill is already on when the page opens.
-const SPY_IDS = ['hero', 'about', 'tracks', 'timeline', 'experience', 'stories', 'register', 'contact'] as const;
+const SPY_IDS = ['hero', 'about', 'tracks', 'timeline', 'prizes', 'experience', 'stories', 'register', 'contact'] as const;
 
 const PILL_TRANSITION = { duration: 0.5, ease: EASE_OUT };
 
@@ -88,7 +89,7 @@ export default function SiteNav({ route }: { route: Route }) {
                 href={`#${tab.id}`}
                 aria-current={isActive ? 'location' : undefined}
                 className={cn(
-                  'relative rounded-full px-4 py-2 text-sm transition-colors duration-300 xl:px-5',
+                  'relative rounded-full px-3 py-2 text-sm transition-colors duration-300 xl:px-5',
                   isActive ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >

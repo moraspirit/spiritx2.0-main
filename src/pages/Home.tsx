@@ -2,6 +2,7 @@ import ChallengeHero from '../components/ChallengeHero.tsx';
 import ChallengeIntro from '../components/ChallengeIntro.tsx';
 import TracksSection from '../components/TracksSection.tsx';
 import TimelineSection from '../components/TimelineSection.tsx';
+import PrizesSection from '../components/PrizesSection.tsx';
 import HeroSection from '../components/HeroSection.tsx';
 import StudioShowcase from '../components/StudioShowcase.tsx';
 import SpiritGallery from '../components/SpiritGallery.tsx';
@@ -17,6 +18,7 @@ export default function Home() {
       <ChallengeIntro />
       <TracksSection />
       <TimelineSection />
+      <PrizesSection />
       <HeroSection />
       <div id="stories">
         <StudioShowcase />
