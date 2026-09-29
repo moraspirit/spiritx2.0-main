@@ -6,8 +6,6 @@
 .hero-theme-scrim { background: linear-gradient(180deg,rgba(2,7,12,.65),rgba(2,7,12,.08) 40%,rgba(2,7,12,.12) 65%,rgba(2,7,12,.8)); }
 .hero-dust-canvas { display:none; }
 .challenge-intro { padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left)); background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background)); }
-.challenge-idea { padding: clamp(1.5rem,3vw,2.5rem); border: 1px solid hsl(var(--border)); border-radius: 1.5rem; background:hsl(var(--card)); transition: border-color .2s; }
-.challenge-idea:hover { border-color:hsl(var(--brand-ink)); }
 @media (max-width:359px) {
   .adaptive-hero .hero-display { font-size:2.8rem !important; }
   .adaptive-hero .cosmos-hero-organizer { margin-bottom:.75rem; }
@@ -530,4 +528,77 @@ body {
   .timeline-here-ring,
   .timeline-here-dot { animation: none; }
   .timeline-static-item .timeline-when { font-size: clamp(3rem, 6vw, 4rem); }
+}
+
+/* ---------- About: typographic statement (ChallengeIntro) ---------- */
+.intro-display {
+  font-size: clamp(2.75rem, 7.4vw, 6rem);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+/* A short brand-blue rule anchors the statement's left edge on wide screens. */
+.intro-statement-rule {
+  height: 1px;
+  margin-top: 1.1rem;
+  background: linear-gradient(to right, hsl(var(--brand-ink)), hsl(var(--brand-ink) / 0) 70%);
+}
+
+/* Idea rows: number / title / detail, hairline-ruled, no cards. */
+.intro-idea {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1.25rem;
+  row-gap: 1.25rem;
+  padding-block: clamp(2rem, 5svh, 3.25rem);
+  border-top: 1px solid hsl(var(--border));
+}
+.intro-idea-side { grid-column: 2; max-width: 28rem; }
+@media (min-width: 1024px) {
+  .intro-idea {
+    grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 24rem);
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+  .intro-idea-side { grid-column: 3; }
+}
+.intro-idea-num {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  line-height: 0.85;
+  color: hsl(var(--foreground) / 0.28);
+  transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.intro-idea-title {
+  font-size: clamp(1.85rem, 3.6vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: hsl(var(--foreground) / 0.6);
+  transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.intro-idea-arrow {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: hsl(var(--foreground) / 0.06);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.5s cubic-bezier(0.22, 1, 0.36, 1), color 0.5s;
+}
+.intro-idea.is-active .intro-idea-num,
+.intro-idea:hover .intro-idea-num { color: hsl(var(--brand-ink)); }
+.intro-idea.is-active .intro-idea-title,
+.intro-idea:hover .intro-idea-title { color: hsl(var(--foreground)); transform: translateX(0.35rem); }
+.intro-idea:hover .intro-idea-arrow {
+  transform: translate(2px, -2px) scale(1.05);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-idea-title { transition: color 0.3s; }
+  .intro-idea.is-active .intro-idea-title,
+  .intro-idea:hover .intro-idea-title { transform: none; }
 }
