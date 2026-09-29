@@ -128,8 +128,8 @@ export default function SpiritGallery() {
       id="moments"
       ref={trackRef}
       aria-labelledby="moments-heading"
-      className="gallery-section relative bg-background text-foreground"
-      style={{ height: '320vh' }}
+      className="gallery-section relative isolate bg-background text-foreground"
+      style={{ height: '240vh' }}
     >
       <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden">
         <div
@@ -137,7 +137,7 @@ export default function SpiritGallery() {
           className="gallery-aurora pointer-events-none absolute inset-0"
         />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pt-8 md:px-10">
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-4 pt-[max(4.75rem,calc(env(safe-area-inset-top)+4rem))] sm:px-6 sm:pt-28 md:px-10">
           <p className="font-mono text-[11px] tracking-[0.18em] text-brand-ink/90 uppercase">
             spirit x 1.0
           </p>
@@ -164,7 +164,7 @@ export default function SpiritGallery() {
         </div>
 
         <div className="relative z-0 min-h-0 w-full flex-1">
-          <CircularGallery items={GALLERY} radius={560} scrollTrackRef={trackRef} />
+          <CircularGallery items={GALLERY} radius={560} scrollDegrees={180} scrollTrackRef={trackRef} />
         </div>
 
         <p className="relative z-10 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-center text-[10px] text-foreground/40 sm:text-[11px]">

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
-import SiteNav from './SiteNav.tsx';
-import { scrollToId } from '../scrollTo.ts';
+import { useInView } from 'motion/react';
+import { cn } from '@/lib/utils';
+import { REGISTER_HREF } from '@/lib/api';
 import { type ThemedArt, themedArtStyle } from '../themedArt.ts';
 import { useSpotlight } from '../useSpotlight.ts';
 
@@ -15,13 +16,21 @@ const REVEAL_ART: ThemedArt = {
 };
 
 export default function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
   useSpotlight(revealRef);
+  // Entrance choreography waits until the chapter is actually on screen.
+  const inView = useInView(sectionRef, { once: true, amount: 0.35 });
 
   return (
     <section
-      id="hero"
-      className="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-background"
+      id="experience"
+      ref={sectionRef}
+      aria-labelledby="experience-title"
+      className={cn(
+        'reveal-scope relative isolate h-[100svh] min-h-[560px] w-full overflow-hidden bg-background',
+        inView && 'in-view'
+      )}
     >
       <div
         className="hero-zoom themed-art absolute inset-0 z-10 bg-cover bg-center bg-no-repeat"
@@ -40,7 +49,7 @@ export default function HeroSection() {
         <p className="eyebrow hero-anim hero-fade" style={{ animationDelay: '0.1s' }}>
           the spirit x experience
         </p>
-        <h1 className="hero-title mt-4 text-foreground">
+        <h2 id="experience-title" className="hero-title mt-4 text-foreground">
           <span
             className="hero-anim hero-reveal block text-5xl font-light sm:text-7xl md:text-8xl"
             style={{ animationDelay: '0.25s' }}
@@ -53,7 +62,7 @@ export default function HeroSection() {
           >
             experiences
           </span>
-        </h1>
+        </h2>
       </div>
 
       <div
@@ -74,16 +83,13 @@ export default function HeroSection() {
           48 hours. 200+ hackers. 20+ universities. Built by students, open to every undergraduate
           in Sri Lanka.
         </p>
-        <button
-          type="button"
-          onClick={() => scrollToId('nl-email', { focus: true })}
-          className="rounded-full bg-brand px-7 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
+        <a
+          href={REGISTER_HREF}
+          className="inline-flex min-h-11 items-center rounded-full bg-brand px-7 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
         >
           register now
-        </button>
+        </a>
       </div>
-
-      <SiteNav />
     </section>
   );
 }

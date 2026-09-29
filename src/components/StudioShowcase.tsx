@@ -1,6 +1,7 @@
 import { useRef } from 'react';
-import { ArrowUpRight } from 'lucide-react';
-import SiteNav from './SiteNav.tsx';
+import { ArrowDown } from 'lucide-react';
+import { useInView } from 'motion/react';
+import { cn } from '@/lib/utils';
 import { type ThemedArt, themedArtStyle } from '../themedArt.ts';
 import { useSpotlight } from '../useSpotlight.ts';
 import './studio.css';
@@ -17,28 +18,18 @@ const REVEAL_ART: ThemedArt = {
 const HEADLINE =
   'Every podium moment starts as a prototype — the stories behind 48 hours of student-built sports tech.';
 
+/** Stories chapter opener: the big word rises and the headline writes itself in once on screen. */
 export default function StudioShowcase() {
+  const pageRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   useSpotlight(layerRef);
+  const inView = useInView(pageRef, { once: true, amount: 0.35 });
 
   return (
-    <div className="studio-page">
-      <div className="splash" aria-hidden="true">
-        <div className="splash-row splash-row-top">
-          {Array.from({ length: 5 }, (_, i) => (
-            <div className="splash-box" key={`t${i}`} />
-          ))}
-        </div>
-        <div className="splash-row splash-row-bottom">
-          {Array.from({ length: 5 }, (_, i) => (
-            <div className="splash-box" key={`b${i}`} />
-          ))}
-        </div>
-      </div>
-
-      <main className="hero">
+    <div ref={pageRef} className={cn('studio-page', inView && 'in-view')}>
+      <section className="hero" aria-labelledby="stories-title">
         <div className="hero-big-text creator-text-animate" aria-hidden="true">
-          <h2>stories</h2>
+          <p>stories</p>
         </div>
 
         <div
@@ -54,32 +45,27 @@ export default function StudioShowcase() {
 
         <div className="hero-content">
           <div className="hero-content-inner">
-            <div className="flex flex-col gap-3">
-              <p className="eyebrow">spirit x · stories</p>
-              <h1 className="hero-headline">
-                {HEADLINE.split(' ').map((word, i) => (
-                  <span
-                    className="word-reveal"
-                    style={{ animationDelay: `${1 + i * 0.05}s` }}
-                    key={`${word}-${i}`}
-                  >
-                    {word}
-                  </span>
-                ))}
-              </h1>
-            </div>
-            <a href="#/tracks" className="cta-btn cta-animate">
+            <h2 id="stories-title" className="hero-headline">
+              {HEADLINE.split(' ').map((word, i) => (
+                <span
+                  className="word-reveal"
+                  style={{ animationDelay: `${0.35 + i * 0.04}s` }}
+                  key={`${word}-${i}`}
+                >
+                  {word}
+                </span>
+              ))}
+            </h2>
+            <a href="#moments" className="cta-btn cta-animate">
               <span className="cta-btn-bg" />
-              <span className="cta-btn-text">explore the tracks</span>
+              <span className="cta-btn-text">relive spirit x 1.0</span>
               <span className="cta-btn-circle">
-                <ArrowUpRight size={20} strokeWidth={2} />
+                <ArrowDown size={20} strokeWidth={2} />
               </span>
             </a>
           </div>
         </div>
-
-        <SiteNav />
-      </main>
+      </section>
     </div>
   );
 }

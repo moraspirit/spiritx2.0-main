@@ -5,31 +5,16 @@
   background: hsl(var(--background));
   color: hsl(var(--foreground));
   overflow-x: clip;
+  isolation: isolate;
 }
 
-/* ===== SPLASH ===== */
-.studio-page .splash {
-  position: fixed; inset: 0;
-  width: 100vw; height: 100vh;
-  z-index: 9999;
-  pointer-events: none;
-  overflow: hidden;
-  animation: splashHide 0.3s ease forwards;
-  animation-delay: 1.35s;
+/* Entrances wait for .in-view (added by StudioShowcase once the chapter is on screen). */
+.studio-page:not(.in-view) .hero-image-animate,
+.studio-page:not(.in-view) .word-reveal,
+.studio-page:not(.in-view) .cta-animate,
+.studio-page:not(.in-view) .creator-text-animate {
+  animation-play-state: paused;
 }
-.studio-page .splash-row { display: flex; width: 100%; height: 50%; }
-.studio-page .splash-box { width: 20%; height: 100%; background: hsl(var(--primary)); }
-.studio-page .splash-row-top .splash-box { animation: splashTop 1s cubic-bezier(0.96,-0.02,0.38,1.01) forwards; }
-.studio-page .splash-row-bottom .splash-box { animation: splashBottom 1s cubic-bezier(0.96,-0.02,0.38,1.01) forwards; }
-.studio-page .splash-box:nth-child(1) { animation-delay: 0s; }
-.studio-page .splash-box:nth-child(2) { animation-delay: 0.05s; }
-.studio-page .splash-box:nth-child(3) { animation-delay: 0.1s; }
-.studio-page .splash-box:nth-child(4) { animation-delay: 0.15s; }
-.studio-page .splash-box:nth-child(5) { animation-delay: 0.2s; }
-
-@keyframes splashTop { from { transform: translateY(0%); } to { transform: translateY(-100%); } }
-@keyframes splashBottom { from { transform: translateY(0%); } to { transform: translateY(100%); } }
-@keyframes splashHide { to { opacity: 0; visibility: hidden; } }
 
 /* ===== HERO IMAGE ENTRANCE ===== */
 @keyframes heroImageIn {
@@ -37,8 +22,7 @@
   to { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 .studio-page .hero-image-animate {
-  animation: heroImageIn 1.2s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
-  animation-delay: 1s;
+  animation: heroImageIn 1.2s cubic-bezier(0.22,1,0.36,1) forwards;
   opacity: 0;
 }
 
@@ -61,8 +45,8 @@
 }
 .studio-page .cta-animate {
   opacity: 0;
-  animation: slideUpScale 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
-  animation-delay: 1s;
+  animation: slideUpScale 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation-delay: 0.7s;
 }
 
 /* ===== CTA BUTTON ===== */
@@ -98,7 +82,7 @@
 .studio-page .creator-text-animate {
   transform: translateY(330px);
   animation: creatorSlideUp 1s cubic-bezier(0.16,1,0.3,1) forwards;
-  animation-delay: 1.5s;
+  animation-delay: 0.25s;
 }
 
 /* ===== HERO ===== */
@@ -113,7 +97,7 @@
   pointer-events: none; width: 100%; text-align: center;
 }
 @media (min-width: 768px) { .studio-page .hero-big-text { bottom: -40px; } }
-.studio-page .hero-big-text h2 {
+.studio-page .hero-big-text p {
   margin: 0; font-weight: 600; color: hsl(var(--secondary)); line-height: 80%;
   letter-spacing: -0.04em; white-space: nowrap;
   font-size: clamp(120px, 28vw, 560px);
@@ -159,8 +143,6 @@
 
 /* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
-  .studio-page .splash { animation: splashHide 0.01s linear forwards; }
-  .studio-page .splash-box { animation: none !important; }
   .studio-page .hero-image-animate,
   .studio-page .word-reveal,
   .studio-page .cta-animate,

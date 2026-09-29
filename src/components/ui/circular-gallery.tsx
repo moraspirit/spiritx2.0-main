@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useInView } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export interface GalleryItem {
@@ -16,8 +17,10 @@ interface CircularGalleryProps extends React.HTMLAttributes<HTMLDivElement> {
   items: GalleryItem[];
   /** Distance of cards from the carousel centre (px). */
   radius?: number;
-  /** Auto-spin when the visitor is not scrubbing. */
+  /** Auto-spin (degrees per frame) when the visitor is not scrubbing. */
   autoRotateSpeed?: number;
+  /** Degrees the carousel turns across the full scroll track. Lower = calmer scrubbing. */
+  scrollDegrees?: number;
   /**
    * Tall scroll track that drives rotation. When set, progress is measured
    * against this element instead of the whole document — correct for a mid-page gallery.
@@ -25,22 +28,38 @@ interface CircularGalleryProps extends React.HTMLAttributes<HTMLDivElement> {
   scrollTrackRef?: React.RefObject<HTMLElement | null>;
 }
 
+/** Fraction of the remaining distance covered per frame: scroll input glides instead of snapping. */
+const FOLLOW = 0.075;
+/** Auto-spin resumes this long after the last scroll event. */
+const IDLE_MS = 400;
+
 const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
   (
-    { items, className, radius = 560, autoRotateSpeed = 0.025, scrollTrackRef, ...props },
+    {
+      items,
+      className,
+      radius = 560,
+      autoRotateSpeed = 0.025,
+      scrollDegrees = 360,
+      scrollTrackRef,
+      ...props
+    },
     ref
   ) => {
     const [rotation, setRotation] = React.useState(0);
-    const [isScrolling, setIsScrolling] = React.useState(false);
     const [activeRadius, setActiveRadius] = React.useState(radius);
     const [card, setCard] = React.useState({ w: 280, h: 360 });
-    const scrollTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-    const animationFrameRef = React.useRef<number | null>(null);
-    const reduceMotion = React.useRef(false);
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    // The loop re-renders every card each frame, so it only runs while on screen.
+    const onScreen = useInView(rootRef);
+
+    // Rotation = eased scroll angle + accumulated auto-spin, so neither resets the other.
+    const scrollTarget = React.useRef(0);
+    const eased = React.useRef<number | null>(null);
+    const autoOffset = React.useRef(0);
+    const lastScroll = React.useRef(0);
 
     React.useEffect(() => {
-      reduceMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
       const syncSize = () => {
         const w = window.innerWidth;
         if (w < 480) {
@@ -64,57 +83,57 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
 
     React.useEffect(() => {
       const handleScroll = () => {
-        setIsScrolling(true);
-        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-
         const track = scrollTrackRef?.current;
-        let scrollRotation: number;
-
+        let progress: number;
         if (track) {
           const rect = track.getBoundingClientRect();
-          const trackTop = window.scrollY + rect.top;
           const travel = Math.max(1, track.offsetHeight - window.innerHeight);
-          const progress = Math.min(1, Math.max(0, (window.scrollY - trackTop) / travel));
-          scrollRotation = progress * 360;
+          progress = Math.min(1, Math.max(0, -rect.top / travel));
         } else {
           const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-          const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
-          scrollRotation = progress * 360;
+          progress = scrollable > 0 ? window.scrollY / scrollable : 0;
         }
-
-        setRotation(scrollRotation);
-        scrollTimeoutRef.current = setTimeout(() => setIsScrolling(false), 150);
+        scrollTarget.current = progress * scrollDegrees;
+        lastScroll.current = performance.now();
+        // First reading: start in place rather than spinning in from 0.
+        if (eased.current === null) {
+          eased.current = scrollTarget.current;
+          setRotation(eased.current);
+        }
       };
 
       window.addEventListener('scroll', handleScroll, { passive: true });
       handleScroll();
-      return () => {
-        window.removeEventListener('scroll', handleScroll);
-        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      };
-    }, [scrollTrackRef]);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, [scrollTrackRef, scrollDegrees]);
 
     React.useEffect(() => {
-      if (reduceMotion.current) return;
+      if (!onScreen) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let frame = 0;
 
-      const autoRotate = () => {
-        if (!isScrolling) {
-          setRotation((prev) => prev + autoRotateSpeed);
-        }
-        animationFrameRef.current = requestAnimationFrame(autoRotate);
+      const tick = (now: number) => {
+        const current = eased.current ?? scrollTarget.current;
+        // Reduced motion: follow the scroll exactly, no easing and no auto-spin.
+        eased.current = reduceMotion ? scrollTarget.current : current + (scrollTarget.current - current) * FOLLOW;
+        if (!reduceMotion && now - lastScroll.current > IDLE_MS) autoOffset.current += autoRotateSpeed;
+        setRotation(eased.current + autoOffset.current);
+        frame = requestAnimationFrame(tick);
       };
 
-      animationFrameRef.current = requestAnimationFrame(autoRotate);
-      return () => {
-        if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-      };
-    }, [isScrolling, autoRotateSpeed]);
+      frame = requestAnimationFrame(tick);
+      return () => cancelAnimationFrame(frame);
+    }, [onScreen, autoRotateSpeed]);
 
     const anglePerItem = 360 / items.length;
 
     return (
       <div
-        ref={ref}
+        ref={(node) => {
+          rootRef.current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        }}
         role="region"
         aria-label="Spirit X circular gallery"
         className={cn('relative flex h-full w-full items-center justify-center', className)}

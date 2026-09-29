@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import OrganizerLockup from './OrganizerLockup.tsx';
 import { scrollToId } from '../scrollTo.ts';
+import { registrationOpen } from '../lib/api.ts';
+import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 /** Registration opens at midnight Sri Lanka time on 1 Nov 2026. */
 export const REGISTRATION_OPENS_AT = new Date('2026-11-01T00:00:00+05:30');
@@ -22,11 +25,17 @@ function computeRemaining(now: number): Remaining {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+type RegisterPanelProps = {
+  /** h1 on the standalone register page, h2 as a section of home. */
+  titleAs?: 'h1' | 'h2';
+};
+
 /**
  * Coming-soon panel: live countdown to 1 Nov 2026 + MoraSpirit 360 credit.
- * Degrades to a static date under prefers-reduced-motion.
+ * Degrades to a static date under prefers-reduced-motion. Once registration
+ * opens it becomes a call-to-action to the form page instead.
  */
-export default function RegisterPanel() {
+export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelProps) {
   const [reduceMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
@@ -38,25 +47,63 @@ export default function RegisterPanel() {
     return () => window.clearInterval(id);
   }, [reduceMotion]);
 
-  return (
-    <div className="mx-auto flex w-full max-w-xl flex-col items-center px-4 py-8 text-center sm:px-5 sm:py-14">
-      <OrganizerLockup forceDark size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
+  if (registrationOpen) {
+    return (
+      <motion.div
+        {...revealOnce}
+        variants={stagger(0.1)}
+        className="mx-auto flex w-full max-w-xl flex-col items-center px-4 py-8 text-center sm:px-5 sm:py-14"
+      >
+        <motion.div variants={rise}>
+          <OrganizerLockup forceDark size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
+        </motion.div>
+        <motion.div variants={rise}>
+          <Title className="hero-title text-balance text-[2rem] font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            registration <span className="text-brand">is open</span>
+          </Title>
+        </motion.div>
+        <motion.p variants={rise} className="mt-4 max-w-md text-legible text-sm leading-relaxed text-foreground/85 sm:text-base">
+          Teams of two to four undergraduates. Register your team, then send your proposal PDF from the same page.
+        </motion.p>
+        <motion.a
+          variants={rise}
+          href="#/register"
+          className="mt-8 inline-flex min-h-12 items-center rounded-full bg-brand px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
+        >
+          register your team
+        </motion.a>
+      </motion.div>
+    );
+  }
 
-      <p className="eyebrow mb-3">Spirit X 2.0</p>
-      <h1 className="hero-title text-[2rem] font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
-        registration <span className="text-brand">coming soon</span>
-      </h1>
-      <p className="mt-4 max-w-md text-legible text-sm leading-relaxed text-foreground/85 sm:text-base">
-        Team registration opens 1 November 2026. Leave your email in the footer and we&rsquo;ll ping
+  return (
+    <motion.div
+      {...revealOnce}
+      variants={stagger(0.1)}
+      className="mx-auto flex w-full max-w-xl flex-col items-center px-4 py-8 text-center sm:px-5 sm:py-14"
+    >
+      <motion.div variants={rise}>
+        <OrganizerLockup forceDark size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
+      </motion.div>
+
+      <motion.div variants={rise}>
+        <p className="eyebrow mb-3">Spirit X 2.0</p>
+        <Title className="hero-title text-balance text-[2rem] font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+          registration <span className="text-brand">coming soon</span>
+        </Title>
+      </motion.div>
+      <motion.p variants={rise} className="mt-4 max-w-md text-legible text-sm leading-relaxed text-foreground/85 sm:text-base">
+        Team registration opens 1 November 2026. Leave your email below and we&rsquo;ll ping
         you the moment the portal goes live.
-      </p>
+      </motion.p>
 
       {reduceMotion || remaining.done ? (
-        <p className="mt-8 font-mono text-sm tracking-wide text-brand-ink">
+        <motion.p variants={rise} className="mt-8 font-mono text-sm tracking-wide text-brand-ink">
           {remaining.done ? 'Registration is opening — refresh shortly.' : 'Opens 1 November 2026'}
-        </p>
+        </motion.p>
       ) : (
-        <div
+        <motion.div
+          variants={stagger(0.07)}
           className="mt-8 grid w-full max-w-md grid-cols-4 gap-1.5 sm:gap-3"
           role="timer"
           aria-live="polite"
@@ -70,7 +117,8 @@ export default function RegisterPanel() {
               ['secs', remaining.seconds],
             ] as const
           ).map(([label, value]) => (
-            <div
+            <motion.div
+              variants={lift}
               key={label}
               className="rounded-xl border border-border/70 bg-card/70 px-1.5 py-2.5 backdrop-blur-md sm:rounded-2xl sm:px-3 sm:py-4"
             >
@@ -80,22 +128,23 @@ export default function RegisterPanel() {
               <div className="mt-1 text-[9px] uppercase tracking-[0.12em] text-muted-foreground sm:text-[10px] sm:tracking-[0.16em]">
                 {label}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
-      <p className="mt-6 break-all font-mono text-xs tracking-wide text-brand-ink/90">
+      <motion.p variants={rise} className="mt-6 break-all font-mono text-xs tracking-wide text-brand-ink/90">
         spiritx.moraspirit.com
-      </p>
+      </motion.p>
 
-      <button
+      <motion.button
+        variants={rise}
         type="button"
         onClick={() => scrollToId('nl-email', { focus: true })}
         className="mt-8 min-h-11 rounded-full bg-brand px-7 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
       >
         notify me
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 }

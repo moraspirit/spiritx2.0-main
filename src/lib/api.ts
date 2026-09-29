@@ -6,6 +6,8 @@
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 export const registrationOpen = import.meta.env.VITE_REGISTRATION_OPEN === 'true';
+/** Every "register" CTA: the form page once open, otherwise the countdown section on home. */
+export const REGISTER_HREF = registrationOpen ? '#/register' : '#register';
 export const turnstileSiteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined) ?? '';
 export const apiConfigured = Boolean(API_BASE);
 

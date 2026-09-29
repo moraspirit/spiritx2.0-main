@@ -106,8 +106,19 @@ export default function HeroDustCanvas() {
     resize();
     draw(previous);
 
+    // Stop the loop while the hero is scrolled away; resume without a time jump.
+    const visibility = new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(frame);
+      if (entry.isIntersecting && !reduceMotion.matches) {
+        previous = performance.now();
+        frame = requestAnimationFrame(draw);
+      }
+    });
+    visibility.observe(canvas);
+
     return () => {
       observer.disconnect();
+      visibility.disconnect();
       cancelAnimationFrame(frame);
     };
   }, []);

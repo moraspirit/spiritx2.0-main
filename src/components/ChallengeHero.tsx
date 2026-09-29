@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import SiteNav from './SiteNav.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
 import HeroDustCanvas from './HeroDustCanvas.tsx';
+import { usePrefersLight } from '../usePrefersLight.ts';
 
 const LANDSCAPE = {
   src: '/media/home-cosmos.mp4',
@@ -87,10 +87,18 @@ function HeroLoopVideo() {
       }, 100);
     };
 
-    const onVisibilityChange = () => {
-      if (document.hidden) video.pause();
+    // Plays only while the hero is on screen and the tab is visible.
+    let onScreen = true;
+    const sync = () => {
+      if (document.hidden || !onScreen) video.pause();
       else playAndReveal();
     };
+    const onVisibilityChange = sync;
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      sync();
+    });
+    observer.observe(video);
 
     video.addEventListener('canplay', playAndReveal, { once: true });
     video.addEventListener('timeupdate', onTimeUpdate);
@@ -103,6 +111,7 @@ function HeroLoopVideo() {
       video.removeEventListener('timeupdate', onTimeUpdate);
       video.removeEventListener('ended', onEnded);
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      observer.disconnect();
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
       if (timerRef.current) window.clearTimeout(timerRef.current);
       video.pause();
@@ -152,24 +161,16 @@ function LightHeroImage() {
 }
 
 export default function ChallengeHero() {
-  const [light, setLight] = useState(() => window.matchMedia('(prefers-color-scheme: light)').matches);
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-color-scheme: light)');
-    const update = () => setLight(query.matches);
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
+  const light = usePrefersLight();
   return (
     <section
       id="hero"
-      className="adaptive-hero relative flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-background text-foreground max-sm:landscape:min-h-[430px]"
+      className="adaptive-hero relative isolate flex h-[100svh] min-h-[560px] w-full flex-col overflow-hidden bg-background text-foreground max-sm:landscape:min-h-[430px]"
     >
       {light ? <LightHeroImage /> : <HeroLoopVideo />}
       <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
 
-      <SiteNav />
-
-      <main className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
+      <div className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
         <OrganizerLockup
           forceDark={!light}
           size="md"
@@ -187,7 +188,7 @@ export default function ChallengeHero() {
 
         <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row">
           <a
-            href="#/tracks"
+            href="#tracks"
             className="liquid-glass group flex min-h-14 items-center gap-5 rounded-full py-2 pl-6 pr-2 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
           >
             Explore the tracks
@@ -196,13 +197,13 @@ export default function ChallengeHero() {
             </span>
           </a>
           <a
-            href="#/studio"
+            href="#moments"
             className="liquid-glass min-h-12 rounded-full px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/[.07]"
           >
             Relive Spirit X 1.0
           </a>
         </div>
-      </main>
+      </div>
 
       <dl className="liquid-glass cosmos-hero-stats absolute inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto grid max-w-xl grid-cols-3 divide-x divide-white/15 rounded-2xl px-2 py-3 text-center sm:inset-x-6 sm:bottom-[max(1.5rem,env(safe-area-inset-bottom))] sm:max-w-2xl sm:rounded-full sm:px-5">
         {STATS.map((stat) => (

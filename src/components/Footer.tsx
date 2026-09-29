@@ -3,25 +3,30 @@ import './footer.css';
 import AmbientVideo from './AmbientVideo.tsx';
 import BrandLogo from './BrandLogo.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
+import { usePrefersLight } from '../usePrefersLight.ts';
+import { REGISTER_HREF } from '../lib/api.ts';
 
 const NIGHT = { src: '/media/footer-tunnel.mp4', poster: '/media/footer-tunnel.webp' };
 const DAY = { src: '/media/footer-daylight.mp4', poster: '/media/footer-daylight.webp' };
 
 const HOME = '#/';
-const EXPERIENCE = '#/experience';
-const STUDIO = '#/studio';
-const TRACKS = '#/tracks';
-const REGISTER = '#/register';
+const ABOUT = '#about';
+const TRACKS = '#tracks';
+const TIMELINE = '#timeline';
+const EXPERIENCE = '#experience';
+const STORIES = '#stories';
+const REGISTER = REGISTER_HREF;
 
 const COLUMNS = [
   {
     title: 'Explore',
     links: [
       { label: 'Home', href: HOME },
-      { label: 'About', href: HOME },
+      { label: 'About', href: ABOUT },
       { label: 'Tracks', href: TRACKS },
+      { label: 'Timeline', href: TIMELINE },
       { label: 'Experience', href: EXPERIENCE },
-      { label: 'Stories', href: STUDIO },
+      { label: 'Stories', href: STORIES },
       { label: 'Register', href: REGISTER },
     ],
   },
@@ -38,7 +43,7 @@ const COLUMNS = [
   {
     title: 'Experience',
     links: [
-      { label: '48-Hour Sprint', href: EXPERIENCE },
+      { label: '48-Hour Sprint', href: TIMELINE },
       { label: 'Mentorship', href: EXPERIENCE },
       { label: 'Live Finals', href: EXPERIENCE },
       { label: 'Prize Pool', href: EXPERIENCE },
@@ -116,8 +121,17 @@ function OriginalLinePulse() {
       if (count > 30) mask = next;
     }
 
+    // Only paint while the footer is on screen.
+    let visible = false;
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      cancelAnimationFrame(frame);
+      if (visible && alive) frame = requestAnimationFrame(paint);
+    });
+    observer.observe(canvas);
+
     function paint(now: number) {
-      if (!alive) return;
+      if (!alive || !visible) return;
       if (!mask) capture();
       context!.clearRect(0, 0, width, height);
       if (mask) {
@@ -146,9 +160,9 @@ function OriginalLinePulse() {
     }
 
     video.addEventListener('loadeddata', capture);
-    frame = requestAnimationFrame(paint);
     return () => {
       alive = false;
+      observer.disconnect();
       cancelAnimationFrame(frame);
       video.removeEventListener('loadeddata', capture);
     };
@@ -160,17 +174,7 @@ function OriginalLinePulse() {
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
-  const [light, setLight] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches,
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: light)');
-    const sync = () => setLight(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
+  const light = usePrefersLight();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -8,8 +8,8 @@ import {
   useContainerScrollContext,
 } from '@/components/ui/animated-cards-stack';
 import { cn } from '@/lib/utils';
-import SiteNav from '../components/SiteNav.tsx';
-import Footer from '../components/Footer.tsx';
+import { REGISTER_HREF } from '@/lib/api';
+import { revealOnce, rise, stagger } from '../motion.ts';
 
 const TRACKS = [
   {
@@ -49,10 +49,6 @@ const STACK_ID = 'track-stack';
 const STEPS = TRACKS.length + 1;
 
 const pad = (n: number) => String(n).padStart(2, '0');
-
-const register = () => {
-  window.location.hash = '#/register';
-};
 
 /** Scroll so track `i` sits fully on top of the stack. */
 function scrollToTrack(i: number) {
@@ -190,14 +186,13 @@ function TrackStack() {
                   <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={register}
+                <a
+                  href={REGISTER_HREF}
                   className="group -my-3 inline-flex items-center gap-2 py-3 text-sm font-medium text-foreground transition-colors hover:text-brand-ink"
                 >
                   register for this track
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-                </button>
+                </a>
               </CardTransformed>
             ))}
           </CardsContainer>
@@ -209,40 +204,46 @@ function TrackStack() {
   );
 }
 
-export default function Tracks() {
+export default function TracksSection() {
   return (
-    <div className="relative min-h-screen bg-background">
-      <SiteNav />
+    <section id="tracks" aria-labelledby="tracks-title" className="relative isolate bg-background px-5 pb-12 pt-24 sm:px-8 sm:pt-32">
+      <motion.div {...revealOnce} variants={stagger(0.1)} className="mx-auto max-w-2xl text-center">
+        <motion.p variants={rise} className="eyebrow">4 tracks · 48 hours</motion.p>
+        <motion.h2
+          variants={rise}
+          id="tracks-title"
+          className="hero-title mt-4 text-5xl font-medium text-foreground sm:text-6xl md:text-7xl"
+        >
+          competition tracks<span className="text-brand-ink">.</span>
+        </motion.h2>
+        <motion.p variants={rise} className="mx-auto mt-5 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Four frontiers, 48 hours. Pick the one you want to reshape &mdash; every track is open
+          to every undergraduate in Sri Lanka.
+        </motion.p>
+      </motion.div>
 
-      <section className="px-5 pb-12 pt-28 sm:px-8 sm:pt-36">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow">4 tracks · 48 hours</p>
-          <h1 className="hero-title mt-4 text-5xl font-medium text-foreground sm:text-6xl md:text-7xl">
-            competition tracks<span className="text-brand-ink">.</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Four frontiers, 48 hours. Pick the one you want to reshape &mdash; every track is open
-            to every undergraduate in Sri Lanka.
-          </p>
-        </div>
+      <ContainerScroll id={STACK_ID} className="h-[300vh]">
+        <TrackStack />
+      </ContainerScroll>
 
-        <ContainerScroll id={STACK_ID} className="h-[300vh]">
-          <TrackStack />
-        </ContainerScroll>
-
-        <div className="mx-auto max-w-xl pb-8 text-center">
-          <p className="text-muted-foreground">Picked your frontier?</p>
-          <button
-            type="button"
-            onClick={register}
-            className="mt-5 rounded-full bg-brand px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
+      <motion.div {...revealOnce} variants={rise} className="mx-auto max-w-xl pb-8 text-center">
+        <p className="text-muted-foreground">Picked your frontier? Here&rsquo;s when it all happens.</p>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href={REGISTER_HREF}
+            className="inline-flex min-h-11 items-center rounded-full bg-brand px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
           >
             register your team
-          </button>
+          </a>
+          <a
+            href="#timeline"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-3.5 text-sm font-medium text-foreground transition-colors hover:text-brand-ink"
+          >
+            see the timeline
+            <ArrowRight size={16} className="rotate-90" />
+          </a>
         </div>
-      </section>
-
-      <Footer />
-    </div>
+      </motion.div>
+    </section>
   );
 }
