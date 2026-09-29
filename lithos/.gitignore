@@ -1,9 +1,0 @@
-node_modules
-dist
-.vercel
-.env*
-!.env.example
-.mobile-shots
-.og-build/og-raw.png
-
-.og-build/

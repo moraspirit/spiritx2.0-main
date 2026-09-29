@@ -1,552 +1,93 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Spirit X 2.0 — Footer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-
-:root{
-  --ink:#175A67;
-  --ink-soft:#2A707C;
-  --cream:#EAE3DE;
-  --max:1440px;
-  --fs-nav:clamp(.9rem,.55vw + .75rem,1.02rem);
-}
-
-html,body{background:var(--cream)}
-body{
-  margin:0;
-  font-family:Poppins,"Helvetica Neue",Arial,sans-serif;
-  font-weight:300;
-  color:var(--ink);
-  font-size:var(--fs-nav);
-}
-
-.sr-only{
-  position:absolute;
-  width:1px;height:1px;
-  padding:0;margin:-1px;
-  overflow:hidden;
-  clip:rect(0 0 0 0);
-  clip-path:inset(50%);
-  white-space:nowrap;
-  border:0;
-}
-
-/* ---------- SHELL ---------- */
-.site-footer{
-  position:relative;
-  isolation:isolate;
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-  min-height:100svh;
-  overflow:hidden;
-  overflow-wrap:break-word;
-  background:var(--cream);
-  color:var(--ink);
-  padding:
-    clamp(2.25rem,4.5vh,4rem)
-    max(clamp(1.25rem,4vw,4.5rem), env(safe-area-inset-right))
-    max(clamp(1.5rem,3vh,2.75rem), env(safe-area-inset-bottom))
-    max(clamp(1.25rem,4vw,4.5rem), env(safe-area-inset-left));
-}
-
-.footer-media{
-  position:absolute;
-  inset:0;
-  z-index:-2;
-  pointer-events:none;
-}
-
-.footer-bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center bottom;
-  pointer-events:none;
-  animation:fade-in 1.35s ease both;
-}
-
-.footer-inner{
-  position:relative;
-  width:100%;
-  max-width:var(--max);
-  margin:0 auto;
-  flex:1;
-  display:flex;
-  flex-direction:column;
-}
-
-/* ---------- GRID ---------- */
-.footer-grid{
-  display:grid;
-  align-items:start;
-  gap:clamp(1.5rem,3vw,3.25rem);
-  grid-template-columns:minmax(240px,1.45fr) repeat(3,minmax(130px,.85fr)) minmax(260px,1.25fr);
-}
-
-/* ---------- BRAND ---------- */
-.brand-lockup{
-  display:flex;
-  align-items:center;
-  gap:clamp(.65rem,1vw,1rem);
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:.04s;
-}
-.brand-mark{width:clamp(52px,4.4vw,74px);height:auto}
-.brand-name{
-  font-family:"Cormorant Garamond",Georgia,serif;
-  font-weight:500;
-  font-size:clamp(1.85rem,2.5vw,2.9rem);
-  line-height:1;
-  margin:0;
-}
-.brand-blurb{
-  margin-top:clamp(1.15rem,2.4vh,1.9rem);
-  max-width:24ch;
-  line-height:1.62;
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:.12s;
-}
-
-.contact-list{
-  list-style:none;
-  padding:0;
-  margin-top:clamp(1.15rem,2.4vh,1.9rem);
-  margin-bottom:0;
-  display:flex;
-  flex-direction:column;
-  gap:clamp(.6rem,1.2vh,.95rem);
-}
-.contact-list li{
-  display:flex;
-  align-items:center;
-  gap:.85rem;
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-}
-.contact-list li:nth-child(1){animation-delay:.2s}
-.contact-list li:nth-child(2){animation-delay:.28s}
-.contact-list li:nth-child(3){animation-delay:.36s}
-.contact-list svg{width:19px;height:19px;flex:none}
-.contact-list a{color:inherit;text-decoration:none}
-.contact-list a:hover{text-decoration:underline;text-underline-offset:3px}
-
-/* ---------- COLUMNS ---------- */
-.col-title{
-  margin:0 0 clamp(1.15rem,2.4vh,1.85rem);
-  font-size:clamp(.95rem,.5vw + .8rem,1.12rem);
-  font-weight:600;
-  letter-spacing:.055em;
-  text-transform:uppercase;
-}
-
-.link-list{
-  list-style:none;
-  padding:0;
-  margin:0;
-  display:flex;
-  flex-direction:column;
-  gap:clamp(.62rem,1.35vh,1.05rem);
-}
-.link-list a{
-  display:inline-block;
-  color:inherit;
-  text-decoration:none;
-  transition:opacity .2s ease,transform .2s ease;
-}
-.link-list a:hover{opacity:.62;transform:translateX(2px)}
-
-.footer-grid > .col:nth-child(2){--col-stagger:.16s}
-.footer-grid > .col:nth-child(3){--col-stagger:.24s}
-.footer-grid > .col:nth-child(4){--col-stagger:.32s}
-
-.col .col-title{
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:var(--col-stagger,.2s);
-}
-.col .link-list li{animation:rise-in .72s cubic-bezier(.22,1,.36,1) both}
-.col .link-list li:nth-child(1){animation-delay:calc(var(--col-stagger,.2s) + .08s)}
-.col .link-list li:nth-child(2){animation-delay:calc(var(--col-stagger,.2s) + .16s)}
-.col .link-list li:nth-child(3){animation-delay:calc(var(--col-stagger,.2s) + .24s)}
-.col .link-list li:nth-child(4){animation-delay:calc(var(--col-stagger,.2s) + .32s)}
-.col .link-list li:nth-child(5){animation-delay:calc(var(--col-stagger,.2s) + .4s)}
-.col .link-list li:nth-child(6){animation-delay:calc(var(--col-stagger,.2s) + .48s)}
-
-/* ---------- NEWSLETTER ---------- */
-.newsletter .col-title{
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:.4s;
-}
-.newsletter p{
-  margin:0 0 clamp(1rem,2.2vh,1.6rem);
-  max-width:32ch;
-  line-height:1.62;
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:.48s;
-}
-
-.subscribe{
-  display:flex;
-  flex-direction:row;
-  width:100%;
-  max-width:380px;
-  border:1px solid var(--ink);
-  background:rgba(255,255,255,.4);
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:.56s;
-}
-.subscribe input{
-  flex:1;
-  min-width:0;
-  border:0;
-  outline:0;
-  background:transparent;
-  padding:.95rem 1.05rem;
-  font-family:inherit;
-  font-size:var(--fs-nav);
-  color:var(--ink);
-}
-.subscribe input::placeholder{color:var(--ink-soft);opacity:.85}
-.subscribe input:focus-visible{box-shadow:inset 0 0 0 2px rgba(23,90,103,.25)}
-.subscribe button{
-  width:clamp(56px,4vw,66px);
-  border:0;
-  background:var(--ink);
-  color:var(--cream);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  transition:background .2s ease;
-}
-.subscribe button:hover{background:#0F454F}
-.subscribe button svg{width:22px;height:22px}
-
-/* ---------- BOTTOM BAR ---------- */
-.footer-bottom{
-  margin-top:auto;
-  padding-top:clamp(2.5rem,6vh,4.5rem);
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  justify-content:space-between;
-  gap:1.25rem 2rem;
-  flex-wrap:wrap;
-}
-
-.socials{
-  display:flex;
-  flex-direction:row;
-  gap:clamp(.9rem,1.5vw,1.5rem);
-}
-.socials a{
-  color:inherit;
-  display:inline-flex;
-  transition:opacity .2s ease,transform .2s ease;
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-}
-.socials a:hover{opacity:.65;transform:translateY(-2px)}
-.socials svg{width:26px;height:26px}
-.socials a:nth-child(1){animation-delay:.64s}
-.socials a:nth-child(2){animation-delay:.7s}
-.socials a:nth-child(3){animation-delay:.76s}
-.socials a:nth-child(4){animation-delay:.82s}
-
-.legal{
-  display:flex;
-  flex-direction:row;
-  gap:clamp(1.15rem,2.6vw,3rem);
-  flex-wrap:wrap;
-}
-.legal a{
-  color:inherit;
-  text-decoration:none;
-  animation:rise-in .72s cubic-bezier(.22,1,.36,1) both;
-}
-.legal a:hover{text-decoration:underline;text-underline-offset:3px}
-.legal a:nth-child(1){animation-delay:.7s}
-.legal a:nth-child(2){animation-delay:.78s}
-.legal a:nth-child(3){animation-delay:.86s}
-
-/* ---------- KEYFRAMES ---------- */
-@keyframes rise-in{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-@keyframes fade-in{from{opacity:0}to{opacity:1}}
-
-/* ---------- <=1100px ---------- */
-@media (max-width:1100px){
-  .footer-grid{
-    grid-template-columns:1fr 1fr 1fr;
-    row-gap:clamp(2rem,4vh,2.75rem);
-  }
-  .brand,.newsletter{grid-column:1 / -1}
-  .brand-blurb{max-width:42ch}
-}
-
-/* ---------- <=720px : phones ---------- */
-@media (max-width:720px){
-  .site-footer{
-    height:auto;
-    min-height:100svh;
-    padding-right:0;
-    padding-bottom:0;
-    padding-left:0;
-    overflow-x:hidden;
-    overflow-y:visible;
-  }
-  .footer-inner{
-    order:0;
-    padding-right:max(clamp(1.25rem,4vw,4.5rem), env(safe-area-inset-right));
-    padding-left:max(clamp(1.25rem,4vw,4.5rem), env(safe-area-inset-left));
-    padding-bottom:clamp(1.25rem,3vh,2rem);
-  }
-  .footer-media{
-    position:relative;
-    inset:auto;
-    order:1;
-    flex-shrink:0;
-    width:100%;
-    height:auto;
-    margin-top:auto;
-    z-index:0;
-  }
-  .footer-bg{
-    position:relative;
-    inset:auto;
-    width:100%;
-    height:auto;
-    max-width:100%;
-    object-fit:contain;
-    object-position:center bottom;
-    transform:none;
-    display:block;
-  }
-  .footer-grid{
-    grid-template-columns:1fr 1fr;
-    gap:clamp(1.75rem,5vw,2.25rem);
-  }
-  .brand-blurb{max-width:34ch}
-  .footer-bottom{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:1.5rem;
-    padding-top:clamp(2rem,7vh,3rem);
-    padding-bottom:clamp(1.25rem,3vh,2rem);
-  }
-  .legal{gap:1.1rem 1.5rem}
-
-  .link-list{gap:.2rem}
-  .link-list a{padding:.55rem 0}
-  .contact-list{gap:.25rem}
-  .contact-list a,.contact-list span{padding:.4rem 0}
-  .legal a{padding:.45rem 0}
-  .socials a{padding:.3rem;margin:-.3rem}
-  .socials svg{width:28px;height:28px}
-  .subscribe input{font-size:16px;padding:1rem 1.05rem}
-}
-
-/* ---------- <=440px ---------- */
-@media (max-width:440px){
-  :root{--fs-nav:.92rem}
-  .footer-grid{gap:1.35rem 1.25rem}
-  .col-title{margin-bottom:.85rem}
-  .brand-blurb,.newsletter p{max-width:none}
-  .subscribe{max-width:none}
-}
-
-/* ---------- <=359px ---------- */
-@media (max-width:359px){
-  .footer-grid{grid-template-columns:1fr}
-}
-
-/* ---------- 721-1100px : tablets ---------- */
-@media (min-width:721px) and (max-width:1100px){
-  .site-footer{
-    height:auto;
-    min-height:100svh;
-    padding-right:0;
-    padding-bottom:0;
-    padding-left:0;
-    overflow-x:hidden;
-    overflow-y:visible;
-  }
-  .footer-inner{
-    order:0;
-    padding-right:max(clamp(1.25rem,4vw,4.5rem), env(safe-area-inset-right));
-    padding-left:max(clamp(1.25rem,4vw,4.5rem), env(safe-area-inset-left));
-    padding-bottom:clamp(1.25rem,3vh,2rem);
-  }
-  .footer-media{
-    position:relative;
-    inset:auto;
-    order:1;
-    flex-shrink:0;
-    width:100%;
-    height:auto;
-    margin-top:auto;
-    z-index:0;
-  }
-  .footer-bg{
-    position:relative;
-    inset:auto;
-    width:100%;
-    height:auto;
-    max-width:100%;
-    object-fit:contain;
-    object-position:center bottom;
-    transform:none;
-    display:block;
-  }
-}
-
-/* ---------- soft seam: mobile + tablet only ---------- */
-@media (max-width:1100px){
-  .footer-media::after{
-    content:"";
-    position:absolute;
-    left:0;
-    right:0;
-    top:0;
-    height:clamp(52px,16vw,120px);
-    pointer-events:none;
-    z-index:1;
-    background:linear-gradient(to bottom,#EAE3DE 0%,rgba(234,227,222,.65) 38%,rgba(234,227,222,0) 100%);
-  }
-}
-
-/* ---------- REDUCED MOTION ---------- */
-@media (prefers-reduced-motion:reduce){
-  .footer-bg{display:none;animation:none}
-  .site-footer{
-    background-color:#EAE3DE;
-    background-image:url("https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4f690bd1-881a-4192-82f2-d714d34c8fb9.png");
-    background-position:center bottom;
-    background-size:cover;
-    background-repeat:no-repeat;
-  }
-  @media (max-width:1100px){
-    .site-footer{background-size:100% auto}
-  }
-  .footer-media::after{content:none}
-  .brand-lockup,.brand-blurb,.contact-list li,.col .col-title,.col .link-list li,
-  .newsletter .col-title,.newsletter p,.subscribe,.socials a,.legal a{animation:none}
-  .link-list a:hover,.socials a:hover{transform:none}
-}
-</style>
-</head>
-<body>
-
-<footer class="site-footer">
-  <div class="footer-media" aria-hidden="true">
-    <video class="footer-bg" autoplay muted loop playsinline preload="auto" poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4f690bd1-881a-4192-82f2-d714d34c8fb9.png">
-      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260901_122529_931c22c8-8d2d-47c0-ad51-b97f56a91e42.mp4" type="video/mp4">
-    </video>
-  </div>
-
-  <div class="footer-inner">
-    <div class="footer-grid">
-
-      <div class="brand">
-        <div class="brand-lockup">
-          <svg class="brand-mark" viewBox="0 0 96 120" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <ellipse cx="48" cy="60" rx="45" ry="57"/>
-            <path d="M48 88V46" stroke-linecap="round"/>
-            <path d="M48 58c-8-2-14-8-16-16 9 0 15 5 16 16Zm0 0c8-2 14-8 16-16-9 0-15 5-16 16Z"/>
-            <path d="M48 74c-9-2-15-8-17-17 10 0 16 6 17 17Zm0 0c9-2 15-8 17-17-10 0-16 6-17 17Z"/>
-            <path d="M48 46c-6-3-9-9-8-16 6 3 9 9 8 16Zm0 0c6-3 9-9 8-16-6 3-9 9-8 16Z"/>
-            <path d="M30 44c-5 1-9-1-12-5 5-2 9-1 12 5Zm36 0c5 1 9-1 12-5-5-2-9-1-12 5Z"/>
-          </svg>
-          <p class="brand-name">Spirit X 2.0</p>
-        </div>
-
-        <p class="brand-blurb">Inter University Hackathon by MoraSpirit — 48 hours, 200+ hackers, 20+ universities, one stage.</p>
-
-        <ul class="contact-list">
-          <li>
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13Zm2.7-.5L12 10.7 19.3 5H4.7ZM20 6.9l-7.4 5.8a1 1 0 0 1-1.2 0L4 6.9v11.6c0 .3.2.5.5.5h15c.3 0 .5-.2.5-.5V6.9Z"/></svg>
-            <a href="mailto:hello@moraspirit.com">hello@moraspirit.com</a>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.6 2.4a1.6 1.6 0 0 0-2.1-.3L3.9 3.2A3.2 3.2 0 0 0 2.6 6.6c1 4 3.2 7.5 6.1 10.4 2.9 2.9 6.4 5.1 10.4 6.1a3.2 3.2 0 0 0 3.4-1.3l1.1-1.6a1.6 1.6 0 0 0-.3-2.1l-3.2-2.6a1.6 1.6 0 0 0-2 0l-1.4 1.1a17 17 0 0 1-5.3-5.3l1.1-1.4a1.6 1.6 0 0 0 0-2L7.6 2.4Z" transform="translate(0 -1)"/></svg>
-            <a href="tel:+940000000000">+94 00000 00000</a>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5.4 6.5 11.7 6.8 12a1 1 0 0 0 1.4 0c.3-.3 6.8-6.6 6.8-12A7.5 7.5 0 0 0 12 2Zm0 10.2a2.7 2.7 0 1 1 0-5.4 2.7 2.7 0 0 1 0 5.4Z"/></svg>
-            <span>University of Moratuwa, Sri Lanka</span>
-          </li>
-        </ul>
-      </div>
-
-      <nav class="col" aria-label="Explore">
-        <h2 class="col-title">Explore</h2>
-        <ul class="link-list">
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/tracks">Tracks</a></li>
-          <li><a href="/experience">Experience</a></li>
-          <li><a href="/stories">Stories</a></li>
-          <li><a href="/register">Register</a></li>
-        </ul>
-      </nav>
-
-      <nav class="col" aria-label="Tracks">
-        <h2 class="col-title">Tracks</h2>
-        <ul class="link-list">
-          <li><a href="/tracks">AI &amp; Neural Autonomy</a></li>
-          <li><a href="/tracks">Distributed Web &amp; Mobile</a></li>
-          <li><a href="/tracks">Spatial &amp; Immersive Tech</a></li>
-          <li><a href="/tracks">Earth &amp; Sustainability</a></li>
-          <li><a href="/#partners">Partners</a></li>
-        </ul>
-      </nav>
-
-      <nav class="col" aria-label="Experience">
-        <h2 class="col-title">Experience</h2>
-        <ul class="link-list">
-          <li><a href="/experience">48-Hour Sprint</a></li>
-          <li><a href="/experience">Mentorship</a></li>
-          <li><a href="/experience">Live Finals</a></li>
-          <li><a href="/experience">Where&rsquo;s My Team</a></li>
-        </ul>
-      </nav>
-
-      <div class="newsletter">
-        <h2 class="col-title">The Dispatch</h2>
-        <p>Sign up for early notice on registration, track drops, mentor line-ups &amp; finals updates.</p>
-        <form class="subscribe" action="/register" method="get">
-          <label class="sr-only" for="nl-email">Email address</label>
-          <input id="nl-email" type="email" name="email" placeholder="Leave your email" autocomplete="email" required>
-          <button type="submit" aria-label="Subscribe">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
-          </button>
-        </form>
-      </div>
-
-    </div>
-
-    <div class="footer-bottom">
-      <div class="socials">
-        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8A26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15.1V8.9l5.2 3.1L10 15.1Z"/></svg></a>
-        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.3 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .3-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.3-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.3 2.2-.4 1.3-.1 1.7-.1 4.8-.1Zm0 3.9a5.9 5.9 0 1 0 0 11.8 5.9 5.9 0 0 0 0-11.8Zm0 9.7a3.8 3.8 0 1 1 0-7.6 3.8 3.8 0 0 1 0 7.6Zm7.5-9.9a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0Z"/></svg></a>
-        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg></a>
-        <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.3l-4.9-6.4L4.9 21H1.8l7.3-8.3L1.5 3h6.4l4.4 5.9L17.5 3Zm-1.1 16.1h1.7L7.7 4.8H5.9l10.5 14.3Z"/></svg></a>
-      </div>
-
-      <nav class="legal" aria-label="Legal">
-        <a href="/about">Privacy Policy</a>
-        <a href="/about">Terms &amp; Conditions</a>
-        <a href="/about">Press Kit</a>
-      </nav>
-    </div>
-  </div>
-</footer>
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07090D" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F6F8" />
+    <meta
+      name="description"
+      content="Spirit X 2.0 — Sri Lanka’s flagship inter-university hackathon organised by the University of Moratuwa and MoraSpirit 360. 48 hours, 200+ hackers, 20+ universities."
+    />
+    <link rel="canonical" href="https://spiritx.moraspirit.com/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Spirit X 2.0" />
+    <meta property="og:title" content="Spirit X 2.0 · Inter University Hackathon 2026" />
+    <meta
+      property="og:description"
+      content="Reinvent the game. Organised by the University of Moratuwa and MoraSpirit 360 — 48 hours of student sport innovation."
+    />
+    <meta property="og:url" content="https://spiritx.moraspirit.com/" />
+    <meta property="og:image" content="https://spiritx.moraspirit.com/og-spiritx-v2.jpg" />
+    <meta property="og:image:secure_url" content="https://spiritx.moraspirit.com/og-spiritx-v2.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Spirit X 2.0 — Inter University Hackathon by the University of Moratuwa and MoraSpirit 360" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Spirit X 2.0 · Inter University Hackathon 2026" />
+    <meta
+      name="twitter:description"
+      content="Reinvent the game. Organised by the University of Moratuwa and MoraSpirit 360."
+    />
+    <meta name="twitter:image" content="https://spiritx.moraspirit.com/og-spiritx-v2.jpg" />
+    <meta name="twitter:image:alt" content="Spirit X 2.0 — Inter University Hackathon by the University of Moratuwa and MoraSpirit 360" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Readex+Pro:wght@300;400;500;600;700&display=swap"
+    />
+    <title>Spirit X 2.0 · Inter University Hackathon 2026</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://moraspirit.com/#organization",
+            "name": "MoraSpirit 360",
+            "url": "https://moraspirit.com",
+            "logo": "https://spiritx.moraspirit.com/brand/moraspirit360-dark.png"
+          },
+          {
+            "@type": "CollegeOrUniversity",
+            "@id": "https://uom.lk/#organization",
+            "name": "University of Moratuwa",
+            "url": "https://uom.lk/"
+          },
+          {
+            "@type": "Event",
+            "name": "Spirit X 2.0",
+            "url": "https://spiritx.moraspirit.com/",
+            "description": "Sri Lanka’s flagship inter-university hackathon — 48 hours of sport innovation by students.",
+            "eventStatus": "https://schema.org/EventScheduled",
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+            "startDate": "2026-11-01",
+            "organizer": [
+              { "@id": "https://uom.lk/#organization" },
+              { "@id": "https://moraspirit.com/#organization" }
+            ],
+            "location": {
+              "@type": "Place",
+              "name": "University of Moratuwa",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Moratuwa",
+                "addressCountry": "LK"
+              }
+            },
+            "image": ["https://spiritx.moraspirit.com/og-spiritx-v2.jpg"]
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
