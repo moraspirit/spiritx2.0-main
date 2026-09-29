@@ -1,5 +1,6 @@
 import { Mail, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
+import SectionBackdrop from './SectionBackdrop.tsx';
 import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Chair = {
@@ -62,6 +63,7 @@ function Avatar({ chair }: { chair: Chair }) {
 export default function ContactSection() {
   return (
     <section id="contact" aria-labelledby="contact-title" className="contact-section relative isolate">
+      <SectionBackdrop src="/media/gallery/10.webp" tone="duotone" position="50% 30%" veil={0.86} cropWatermark />
       <div className="mx-auto max-w-5xl">
         <motion.div {...revealOnce} variants={stagger(0.1)} className="text-center">
           <motion.h2 variants={rise} id="contact-title" className="contact-title">

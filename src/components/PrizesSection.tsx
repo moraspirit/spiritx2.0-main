@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Trophy } from 'lucide-react';
 import { animate, motion, useInView, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
+import SectionBackdrop from './SectionBackdrop.tsx';
 import { EASE_OUT, lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Prize = {
@@ -76,7 +77,8 @@ export default function PrizesSection() {
   // Podium order on wide screens: 2nd · 1st · 3rd. Phones read 1st → 3rd.
   return (
     <section id="prizes" aria-labelledby="prizes-title" className="prizes-section relative isolate">
-      <div aria-hidden="true" className="prizes-glow pointer-events-none absolute inset-0 -z-10" />
+      <SectionBackdrop src="/media/gallery/02.webp" tone="duotone" position="50% 35%" veil={0.84} cropWatermark />
+      <div aria-hidden="true" className="prizes-glow pointer-events-none absolute inset-0 -z-[1]" />
       <div className="mx-auto max-w-6xl">
         <motion.div {...revealOnce} variants={stagger(0.1)} className="text-center">
           <motion.h2 variants={rise} id="prizes-title" className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl">

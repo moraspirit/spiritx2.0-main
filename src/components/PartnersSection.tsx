@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import OrganizerBadge from './OrganizerBadge.tsx';
+import SectionBackdrop from './SectionBackdrop.tsx';
 import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Partner = {
@@ -83,6 +84,7 @@ function PartnerTile({ partner, featured }: { partner: Partner; featured?: boole
 export default function PartnersSection() {
   return (
     <section id="partners" aria-labelledby="partners-title" className="partners-section relative isolate">
+      <SectionBackdrop src="/media/bg/partners-stadium-streaks.webp" position="50% 55%" veil={0.74} />
       <div className="mx-auto max-w-6xl">
         <motion.div {...revealOnce} variants={stagger(0.1)} className="max-w-2xl">
           <motion.h2 variants={rise} id="partners-title" className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl">

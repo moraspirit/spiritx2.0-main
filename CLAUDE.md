@@ -44,6 +44,8 @@ Vite public env vars (see `.env.example`, typed in `src/vite-env.d.ts`, read in 
 - Components that need to *swap elements* per theme (`ChallengeHero`: video vs still image + `HeroDustCanvas`; `Footer`: night tunnel vs daylight video + `OriginalLinePulse`; `TimelineSection`: stadium clip only in dark) use `usePrefersLight()`.
 - `Footer` in day mode (`.site-footer.is-day`) re-pins light-on-dark tokens because its media is always dark-ish.
 
+**Section atmosphere** — plain sections get a `SectionBackdrop` (photo + page-colour veil whose edges fade into neighbours; `tone="duotone"` tints daylight event photos Spirit X blue; `sticky` for pinned sections like Tracks). Light mode raises the veil a lot for night photos (they turn grey otherwise). About's floodlight beams and the Prizes spotlight are pure CSS (`.challenge-intro::before`, `.prizes-glow`). Stock backgrounds in `public/media/bg/` are from Unsplash (free licence).
+
 **Styling** — mostly Tailwind utilities. Larger bespoke sections have plain CSS imported by the component: `src/components/footer.css` (`.site-footer`), `src/components/studio.css` (scoped under `.studio-page`). Shared global classes (`.eyebrow`, `.liquid-glass`, `.hero-display`, `.text-legible`, `.spotlight-reveal`, `.ambient-video`, hero keyframes) are in `src/index.css`. Fonts: Readex Pro (sans) and Instrument Serif (`.hero-display`, `font-serif`), both loaded from Google Fonts in `index.html`. Import alias `@/` → `src/` (configured in both `vite.config.ts` and `tsconfig.app.json`).
 
 **Motion conventions** — every animation must degrade under `prefers-reduced-motion` (CSS media query or a `matchMedia` check in the effect), and background videos also stop under Save-Data. Follow the existing patterns:

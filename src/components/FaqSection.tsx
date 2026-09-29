@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
+import SectionBackdrop from './SectionBackdrop.tsx';
 import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Faq = { topic: string; q: string; a: string };
@@ -85,6 +86,7 @@ export default function FaqSection() {
 
   return (
     <section id="faq" aria-labelledby="faq-title" className="faq-section relative isolate">
+      <SectionBackdrop src="/media/bg/faq-floodlights-fog.webp" position="50% 40%" veil={0.62} />
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
         <motion.div {...revealOnce} variants={stagger(0.1)} className="lg:sticky lg:top-28 lg:self-start">
           <motion.h2 variants={rise} id="faq-title" className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl">
