@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 export type Route = '/' | '/register';
 
 /** Home sections, in page order. The nav, scroll-spy and footer all key off these ids. */
-export const SECTIONS = ['about', 'tracks', 'timeline', 'prizes', 'experience', 'stories', 'register', 'contact'] as const;
+export const SECTIONS = ['about', 'tracks', 'timeline', 'prizes', 'experience', 'stories', 'partners', 'register', 'faq', 'contact'] as const;
 export type SectionId = (typeof SECTIONS)[number];
 
 /** Pre-single-page links ("#/tracks") still land on the matching section. */

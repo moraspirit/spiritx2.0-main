@@ -770,3 +770,163 @@ body {
   .prize-card { transition: none; }
   .prize-card:hover { transform: none; }
 }
+
+/* ---------- FAQ (FaqSection) ---------- */
+.faq-section {
+  scroll-margin-top: 4rem;
+  padding: clamp(4.5rem, 9vw, 7.5rem) max(1.25rem, env(safe-area-inset-left));
+  background: hsl(var(--background));
+}
+.faq-list { border-top: 1px solid hsl(var(--border)); }
+.faq-item { border-bottom: 1px solid hsl(var(--border)); }
+
+.faq-trigger {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 0.25rem;
+  text-align: left;
+}
+.faq-topic {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--brand-ink));
+}
+.faq-question {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: hsl(var(--foreground) / 0.8);
+  transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-trigger:hover .faq-question,
+.faq-item.is-open .faq-question { color: hsl(var(--foreground)); }
+
+.faq-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-top: 0.25rem;
+  border-radius: 9999px;
+  color: hsl(var(--foreground));
+  background: hsl(var(--foreground) / 0.06);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s, color 0.4s;
+}
+.faq-item.is-open .faq-icon {
+  transform: rotate(45deg);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Height animates via grid rows (0fr -> 1fr), no measuring. */
+.faq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-item.is-open .faq-panel { grid-template-rows: 1fr; }
+.faq-answer {
+  max-width: 60ch;
+  padding: 0 3.75rem 1.5rem 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: hsl(var(--muted-foreground));
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-item.is-open .faq-answer { opacity: 1; transform: none; transition-delay: 0.08s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-panel, .faq-answer, .faq-icon { transition: none; }
+  .faq-answer { transform: none; }
+}
+
+/* ---------- Partners (PartnersSection) ---------- */
+.partners-section {
+  scroll-margin-top: 4rem;
+  padding: clamp(4.5rem, 9vw, 7.5rem) max(1.25rem, env(safe-area-inset-left));
+  background: hsl(var(--background));
+}
+
+/* Each tier: label on the left, logos on the right (stacked on phones). */
+.partner-tier {
+  display: grid;
+  gap: 1rem;
+  padding-block: 1.75rem;
+  border-top: 1px solid hsl(var(--border));
+}
+@media (min-width: 900px) {
+  .partner-tier { grid-template-columns: 12rem minmax(0, 1fr); gap: 2.5rem; align-items: start; }
+}
+.partner-tier-label {
+  padding-top: 0.35rem;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--brand-ink));
+}
+
+.partner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: 0.75rem;
+}
+.partner-grid.is-featured { grid-template-columns: minmax(0, 26rem); }
+
+.partner-tile-inner {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: 1.25rem;
+  border-radius: 0.875rem;
+  background: hsl(var(--card));
+  box-shadow: inset 0 0 0 1px hsl(var(--border));
+  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+a.partner-tile-inner:hover,
+.partner-tile-inner:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 1px hsl(var(--brand-ink) / 0.4);
+}
+.is-featured .partner-tile-inner { padding: 1.75rem; }
+
+.partner-mark {
+  display: flex;
+  height: 3.5rem;
+  align-items: center;
+}
+.is-featured .partner-mark { height: 5rem; }
+.partner-logo {
+  max-height: 100%;
+  max-width: 10rem;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.8;
+  transition: filter 0.4s, opacity 0.4s;
+}
+.partner-tile-inner:hover .partner-logo { filter: none; opacity: 1; }
+/* Stand-in until a real logo is supplied. */
+.partner-wordmark {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: hsl(var(--foreground) / 0.55);
+}
+.is-featured .partner-wordmark { font-size: 2.25rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-tile-inner { transition: none; }
+  .partner-tile-inner:hover { transform: none; }
+}

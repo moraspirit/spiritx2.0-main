@@ -15,6 +15,8 @@ const CONTACT_EMAIL = 'hello@moraspirit.com';
 /** Only what's still useful at the very bottom; the fixed nav covers the sections. */
 const LINKS = [
   { label: 'Register', href: REGISTER_HREF },
+  { label: 'Partners', href: '#partners' },
+  { label: 'FAQ', href: '#faq' },
   { label: 'Contact', href: '#contact' },
   { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
 ];

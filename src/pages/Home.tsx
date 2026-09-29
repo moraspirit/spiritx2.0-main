@@ -6,7 +6,9 @@ import PrizesSection from '../components/PrizesSection.tsx';
 import HeroSection from '../components/HeroSection.tsx';
 import StudioShowcase from '../components/StudioShowcase.tsx';
 import SpiritGallery from '../components/SpiritGallery.tsx';
+import PartnersSection from '../components/PartnersSection.tsx';
 import RegisterSection from '../components/RegisterSection.tsx';
+import FaqSection from '../components/FaqSection.tsx';
 import ContactSection from '../components/ContactSection.tsx';
 import Footer from '../components/Footer.tsx';
 
@@ -24,7 +26,9 @@ export default function Home() {
         <StudioShowcase />
         <SpiritGallery />
       </div>
+      <PartnersSection />
       <RegisterSection />
+      <FaqSection />
       <ContactSection />
       <Footer />
     </div>
