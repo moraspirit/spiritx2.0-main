@@ -4,6 +4,7 @@ import { REGISTER_HREF } from '@/lib/api';
 
 /** Drop the booklet PDF at this path under public/ (it 404s until then). */
 const DELEGATE_BOOKLET = '/spirit-x-2.0-delegate-booklet.pdf';
+import BrandLogo from './BrandLogo.tsx';
 import HeroDustCanvas from './HeroDustCanvas.tsx';
 import { usePrefersLight } from '../usePrefersLight.ts';
 
@@ -174,8 +175,12 @@ export default function ChallengeHero() {
       <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
 
       <div className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
-        <h1 className="hero-display max-w-6xl text-balance text-white">
-          Spirit <span className="hero-display-x">X</span> <em>2.0</em>
+        <h1 className="flex max-w-6xl items-center justify-center text-white">
+          <span className="sr-only">Spirit X 2.0</span>
+          <BrandLogo
+            className="h-16 w-auto max-w-[85vw] drop-shadow-md sm:h-24 md:h-32 lg:h-36"
+            label="Spirit X 2.0"
+          />
         </h1>
 
         <p className="mt-4 max-w-[34rem] text-pretty text-sm leading-relaxed text-white/82 sm:mt-5 sm:text-base md:text-lg">
