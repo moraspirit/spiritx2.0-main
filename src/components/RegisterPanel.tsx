@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import { useTheme } from '../theme.tsx';
 import OrganizerLockup from './OrganizerLockup.tsx';
 import { scrollToId } from '../scrollTo.ts';
 import { registrationOpen } from '../lib/api.ts';
@@ -36,6 +37,7 @@ type RegisterPanelProps = {
  * opens it becomes a call-to-action to the form page instead.
  */
 export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelProps) {
+  const { isDark } = useTheme();
   const [reduceMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
@@ -55,7 +57,7 @@ export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelPr
         className="mx-auto flex w-full max-w-xl flex-col items-center px-4 py-8 text-center sm:px-5 sm:py-14"
       >
         <motion.div variants={rise}>
-          <OrganizerLockup forceDark size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
+          <OrganizerLockup forceDark={isDark} size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
         </motion.div>
         <motion.div variants={rise}>
           <Title className="hero-title text-balance text-[2rem] font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
@@ -83,7 +85,7 @@ export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelPr
       className="mx-auto flex w-full max-w-xl flex-col items-center px-4 py-8 text-center sm:px-5 sm:py-14"
     >
       <motion.div variants={rise}>
-        <OrganizerLockup forceDark size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
+        <OrganizerLockup forceDark={isDark} size="md" className="mb-5 flex flex-wrap justify-center gap-x-2 gap-y-1" />
       </motion.div>
 
       <motion.div variants={rise}>
