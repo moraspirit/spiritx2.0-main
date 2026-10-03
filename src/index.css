@@ -2,44 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Home composition follows the system palette, including its media. */
-.hero-theme-scrim { background: linear-gradient(180deg,rgba(2,7,12,.65),rgba(2,7,12,.08) 40%,rgba(2,7,12,.12) 65%,rgba(2,7,12,.8)); }
-.hero-dust-canvas { display:none; }
-.challenge-intro { padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left)); background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background)); }
+/* Home composition follows the active theme palette. Default is Light. */
+.hero-theme-scrim {
+  background: linear-gradient(180deg,rgba(248,251,255,.2),rgba(248,251,255,.04) 42%,rgba(232,243,250,.18) 72%,rgba(233,241,247,.52));
+}
+.hero-dust-canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: .9;
+  -webkit-mask-image: linear-gradient(to bottom,transparent 5%,#000 21%,#000 88%,transparent 100%);
+  mask-image: linear-gradient(to bottom,transparent 5%,#000 21%,#000 88%,transparent 100%);
+}
+.challenge-intro {
+  padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left));
+  background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background));
+}
 @media (max-width:359px) {
   .adaptive-hero .hero-display { font-size:2.8rem !important; }
 }
-@media (prefers-color-scheme: light) {
-  .adaptive-hero .hero-theme-scrim { background:linear-gradient(180deg,rgba(248,251,255,.2),rgba(248,251,255,.04) 42%,rgba(232,243,250,.18) 72%,rgba(233,241,247,.52)); }
-  .adaptive-hero .text-white { color:#102b40; }
-  .adaptive-hero .hero-display em { color:#00558f; }
-  .adaptive-hero .cosmos-hero-content > p { color:#254356; }
-  .adaptive-hero .cosmos-hero-stats dd { color:#385366; }
-  .adaptive-hero .liquid-glass { background:rgba(255,255,255,.62); border:1px solid rgba(38,85,112,.16); box-shadow:0 10px 36px rgba(30,65,90,.08); backdrop-filter:blur(14px) saturate(115%); -webkit-backdrop-filter:blur(14px) saturate(115%); }
-  .adaptive-hero .cosmos-hero-stats > div { border-color:rgba(38,85,112,.2); }
-  .hero-dust-canvas {
-    display:block;
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:2;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    opacity:.9;
-    -webkit-mask-image:linear-gradient(to bottom,transparent 5%,#000 21%,#000 88%,transparent 100%);
-    mask-image:linear-gradient(to bottom,transparent 5%,#000 21%,#000 88%,transparent 100%);
-  }
+
+.adaptive-hero .text-white { color: #102b40; }
+.adaptive-hero .hero-display em { color: #00558f; }
+.adaptive-hero .cosmos-hero-content > p { color: #254356; }
+.adaptive-hero .cosmos-hero-stats dd { color: #385366; }
+.adaptive-hero .liquid-glass {
+  background: rgba(255,255,255,.62);
+  border: 1px solid rgba(38,85,112,.16);
+  box-shadow: 0 10px 36px rgba(30,65,90,.08);
+  backdrop-filter: blur(14px) saturate(115%);
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
+}
+.adaptive-hero .cosmos-hero-stats > div { border-color: rgba(38,85,112,.2); }
+
+/* Dark mode overrides for hero */
+.dark .hero-theme-scrim {
+  background: linear-gradient(180deg,rgba(2,7,12,.65),rgba(2,7,12,.08) 40%,rgba(2,7,12,.12) 65%,rgba(2,7,12,.8));
+}
+.dark .hero-dust-canvas {
+  display: none;
+}
+.dark .adaptive-hero .text-white {
+  color: #fff;
+}
+.dark .adaptive-hero .hero-display em {
+  color: hsl(var(--brand-ink));
+}
+.dark .adaptive-hero .cosmos-hero-content > p {
+  color: hsl(var(--muted-foreground));
+}
+.dark .adaptive-hero .cosmos-hero-stats dd {
+  color: hsl(var(--foreground));
+}
+.dark .adaptive-hero .liquid-glass {
+  background: rgb(255 255 255 / 0.035);
+  border: 0;
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.14),
+    0 12px 40px rgb(0 0 0 / 0.12);
+  backdrop-filter: blur(10px) saturate(125%);
+  -webkit-backdrop-filter: blur(10px) saturate(125%);
+}
+.dark .adaptive-hero .cosmos-hero-stats > div {
+  border-color: hsl(var(--border) / 0.75);
 }
 
 @layer base {
-  /* Night Stadium palette — the single source of color for every route.
-     The accent is the Spirit X logo blue: the logo's light blue (#74CEDD) on dark
-     surfaces and its deep blue (#00558F) on light ones, mirroring the official
-     light-colour / dark-colour logo files.
-     Dark is the brand default. `.stage-dark` pins it on media-led sections
-     (full-bleed video heroes) so their copy stays legible in light mode. */
-  :root,
+  /* Default palette is Light Mode.
+     The accent is the Spirit X logo deep blue (#00558F) on light,
+     and light blue (#74CEDD) on dark. */
+  :root {
+    color-scheme: light;
+    --background: 220 20% 97%;       /* #F5F6F8 cool off-white    */
+    --foreground: 222 35% 7%;        /* #0C111A                   */
+    --card: 0 0% 100%;
+    --card-foreground: 222 35% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 35% 7%;
+    --primary: 204 100% 28%;         /* #00558F Spirit X deep blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 16% 92%;        /* #E8EBEF                   */
+    --secondary-foreground: 222 35% 7%;
+    --muted: 220 16% 94%;
+    --muted-foreground: 219 12% 38%; /* #555E6D                   */
+    --accent: 220 16% 92%;
+    --accent-foreground: 222 35% 7%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 14% 88%;           /* #DDE1E6                   */
+    --input: 220 14% 84%;
+    --ring: 204 100% 28%;
+    --brand-ink: 204 100% 28%;
+    --radius: 1rem;
+  }
+
+  /* Night Stadium palette — applied via .dark class or on .stage-dark pinned sections */
+  .dark,
   .stage-dark {
     color-scheme: dark;
     --background: 220 30% 4%;          /* #07090D near-black navy   */
@@ -63,34 +126,6 @@
     --ring: 189 61% 66%;
     --brand-ink: 189 61% 66%;          /* brand blue for text, icons, indicators */
     --radius: 1rem;
-  }
-
-  /* Light mode follows the visitor's OS setting and switches to the logo's deep
-     blue, which carries white button text and holds contrast as text on white. */
-  @media (prefers-color-scheme: light) {
-    :root {
-      color-scheme: light;
-      --background: 220 20% 97%;       /* #F5F6F8 cool off-white    */
-      --foreground: 222 35% 7%;        /* #0C111A                   */
-      --card: 0 0% 100%;
-      --card-foreground: 222 35% 7%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 222 35% 7%;
-      --primary: 204 100% 28%;         /* #00558F Spirit X deep blue */
-      --primary-foreground: 0 0% 100%;
-      --secondary: 220 16% 92%;        /* #E8EBEF                   */
-      --secondary-foreground: 222 35% 7%;
-      --muted: 220 16% 94%;
-      --muted-foreground: 219 12% 38%; /* #555E6D                   */
-      --accent: 220 16% 92%;
-      --accent-foreground: 222 35% 7%;
-      --destructive: 0 72% 51%;
-      --destructive-foreground: 0 0% 100%;
-      --border: 220 14% 88%;           /* #DDE1E6                   */
-      --input: 220 14% 84%;
-      --ring: 204 100% 28%;
-      --brand-ink: 204 100% 28%;
-    }
   }
 
   .stage-dark {
@@ -256,27 +291,23 @@ body {
   }
 }
 
-/* Keeps copy readable when it sits over busy photo/video frames: a dark halo
-   behind light text, a light halo behind dark text. */
+/* Keeps copy readable when it sits over busy photo/video frames: a light halo behind dark text in light mode, dark halo in dark mode. */
 .text-legible {
+  text-shadow: 0 1px 14px rgb(255 255 255 / 0.85), 0 0 2px rgb(255 255 255 / 0.6);
+}
+
+.dark .text-legible,
+.stage-dark .text-legible {
   text-shadow: 0 1px 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.5);
 }
 
 /* Hero art with a daytime twin: set --art-dark / --art-light via themedArtStyle(). */
 .themed-art {
-  background-image: var(--art-dark);
+  background-image: var(--art-light, var(--art-dark));
 }
 
-@media (prefers-color-scheme: light) {
-  .text-legible {
-    text-shadow: 0 1px 14px rgb(255 255 255 / 0.85), 0 0 2px rgb(255 255 255 / 0.6);
-  }
-  .stage-dark .text-legible {
-    text-shadow: 0 1px 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.5);
-  }
-  .themed-art {
-    background-image: var(--art-light, var(--art-dark));
-  }
+.dark .themed-art {
+  background-image: var(--art-dark);
 }
 
 /* Soft spotlight revealing the layer beneath; useSpotlight() moves it. */
@@ -363,15 +394,11 @@ body {
 
 /* MoraSpirit 360 chip: match opaque PNG backgrounds so edges disappear. */
 .organizer-badge {
-  background: #000;
+  background: #fff;
 }
-@media (prefers-color-scheme: light) {
-  .organizer-badge {
-    background: #fff;
-  }
-  .stage-dark .organizer-badge {
-    background: #000;
-  }
+.dark .organizer-badge,
+.stage-dark .organizer-badge {
+  background: #000;
 }
 
 /* Gallery is a true theme surface (unlike video heroes, which intentionally
@@ -379,77 +406,80 @@ body {
 .gallery-section {
   isolation: isolate;
   background-color: hsl(var(--background));
+  background-image: linear-gradient(
+    180deg,
+    hsl(var(--background)) 0%,
+    hsl(210 35% 98%) 52%,
+    hsl(var(--background)) 100%
+  );
 }
 
 .gallery-aurora {
+  background:
+    radial-gradient(ellipse at 50% 18%, hsl(var(--primary) / 0.1), transparent 52%),
+    radial-gradient(ellipse at 84% 86%, hsl(189 61% 66% / 0.16), transparent 48%),
+    linear-gradient(90deg, transparent, hsl(var(--primary) / 0.025), transparent);
+}
+
+.gallery-card {
+  border-color: hsl(var(--border) / 0.95);
+  background: hsl(var(--card) / 0.88);
+  box-shadow:
+    0 22px 58px rgb(24 45 70 / 0.2),
+    0 2px 8px rgb(24 45 70 / 0.1),
+    0 0 0 1px rgb(255 255 255 / 0.8);
+}
+
+/* On the home page, light mode moves from the hero into a
+   daylight gallery, then gently returns to the cinematic tunnel footer. */
+.home-theme-bridge {
+  position: relative;
+  z-index: 2;
+  height: clamp(5rem, 11svh, 8rem);
+  pointer-events: none;
+}
+
+.home-theme-bridge--into-gallery {
+  background:
+    radial-gradient(ellipse at 50% 0%, hsl(189 61% 66% / 0.12), transparent 64%),
+    linear-gradient(to bottom, hsl(220 30% 4%), hsl(220 24% 18%) 34%, hsl(var(--background)));
+}
+
+.home-theme-bridge--into-footer {
+  height: 0;
+}
+
+@media (min-width: 1101px) {
+  .home-theme-bridge--into-footer {
+    height: clamp(5rem, 11svh, 8rem);
+    background:
+      radial-gradient(ellipse at 50% 100%, hsl(189 61% 66% / 0.1), transparent 64%),
+      linear-gradient(to bottom, hsl(var(--background)), hsl(220 24% 18%) 66%, hsl(220 30% 4%));
+  }
+}
+
+.dark .home-theme-bridge {
+  height: 0;
+  display: none;
+}
+
+.dark .gallery-section {
+  background-image: none;
+  background-color: hsl(var(--background));
+}
+
+.dark .gallery-aurora {
   background:
     radial-gradient(ellipse at 50% 18%, hsl(var(--primary) / 0.12), transparent 55%),
     radial-gradient(ellipse at 82% 88%, hsl(var(--brand-ink) / 0.12), transparent 48%);
 }
 
-.gallery-card {
+.dark .gallery-card {
   box-shadow:
     0 24px 70px rgb(0 0 0 / 0.46),
     0 0 0 1px hsl(var(--foreground) / 0.035);
-}
-
-/* On the home page, light mode moves from the night-stadium hero into a
-   daylight gallery, then gently returns to the cinematic tunnel footer. */
-.home-theme-bridge {
-  position: relative;
-  z-index: 2;
-  height: 0;
-  pointer-events: none;
-}
-
-@media (prefers-color-scheme: light) {
-  .home-theme-bridge {
-    height: clamp(5rem, 11svh, 8rem);
-  }
-
-  .home-theme-bridge--into-gallery {
-    background:
-      radial-gradient(ellipse at 50% 0%, hsl(189 61% 66% / 0.12), transparent 64%),
-      linear-gradient(to bottom, hsl(220 30% 4%), hsl(220 24% 18%) 34%, hsl(var(--background)));
-  }
-
-  .home-theme-bridge--into-footer {
-    height: 0;
-  }
-
-  @media (min-width: 1101px) {
-    .home-theme-bridge--into-footer {
-      height: clamp(5rem, 11svh, 8rem);
-      background:
-        radial-gradient(ellipse at 50% 100%, hsl(189 61% 66% / 0.1), transparent 64%),
-        linear-gradient(to bottom, hsl(var(--background)), hsl(220 24% 18%) 66%, hsl(220 30% 4%));
-    }
-  }
-
-  .gallery-section {
-    background-image: linear-gradient(
-      180deg,
-      hsl(var(--background)) 0%,
-      hsl(210 35% 98%) 52%,
-      hsl(var(--background)) 100%
-    );
-  }
-
-  .gallery-aurora {
-    background:
-      radial-gradient(ellipse at 50% 18%, hsl(var(--primary) / 0.1), transparent 52%),
-      radial-gradient(ellipse at 84% 86%, hsl(189 61% 66% / 0.16), transparent 48%),
-      linear-gradient(90deg, transparent, hsl(var(--primary) / 0.025), transparent);
-  }
-
-  .gallery-card {
-    border-color: hsl(var(--border) / 0.95);
-    background: hsl(var(--card) / 0.88);
-    box-shadow:
-      0 22px 58px rgb(24 45 70 / 0.2),
-      0 2px 8px rgb(24 45 70 / 0.1),
-      0 0 0 1px rgb(255 255 255 / 0.8);
-  }
+  background: hsl(var(--card) / 0.7);
+  border-color: hsl(var(--border) / 0.75);
 }
 
 @keyframes heroReveal { 0%{opacity:0;transform:translateY(28px);filter:blur(12px)} 100%{opacity:1;transform:translateY(0);filter:blur(0)} }
@@ -484,6 +514,13 @@ body {
 /* Floodlit wash over the stadium clip (dark) / a cool daylight haze (light). */
 .timeline-scrim {
   background:
+    radial-gradient(ellipse at 16% 38%, hsl(var(--primary) / 0.08), transparent 55%),
+    radial-gradient(ellipse at 86% 88%, hsl(189 61% 66% / 0.22), transparent 50%),
+    linear-gradient(180deg, hsl(var(--background)), hsl(210 35% 98%) 50%, hsl(var(--background)));
+}
+
+.dark .timeline-scrim {
+  background:
     radial-gradient(ellipse at 18% 42%, hsl(var(--brand-ink) / 0.12), transparent 58%),
     linear-gradient(
       to bottom,
@@ -492,14 +529,6 @@ body {
       hsl(var(--background) / 0.6) 72%,
       hsl(var(--background)) 100%
     );
-}
-@media (prefers-color-scheme: light) {
-  .timeline-scrim {
-    background:
-      radial-gradient(ellipse at 16% 38%, hsl(var(--primary) / 0.08), transparent 55%),
-      radial-gradient(ellipse at 86% 88%, hsl(189 61% 66% / 0.22), transparent 50%),
-      linear-gradient(180deg, hsl(var(--background)), hsl(210 35% 98%) 50%, hsl(var(--background)));
-  }
 }
 
 /* Outlined step numeral drifting behind the stage. */
@@ -975,18 +1004,30 @@ a.partner-tile-inner:hover,
     hsl(var(--background)) 100%
   );
 }
-@media (prefers-color-scheme: light) {
-  .section-backdrop-img { filter: grayscale(0.4); }
-  .is-duotone .section-backdrop-img { filter: grayscale(1) contrast(1.05) brightness(1.1); }
-  .section-backdrop-veil {
-    background: linear-gradient(
-      to bottom,
-      hsl(var(--background)) 0%,
-      hsl(var(--background) / var(--bd-veil-light)) 22%,
-      hsl(var(--background) / var(--bd-veil-light)) 78%,
-      hsl(var(--background)) 100%
-    );
-  }
+.section-backdrop-img { filter: grayscale(0.4); }
+.is-duotone .section-backdrop-img { filter: grayscale(1) contrast(1.05) brightness(1.1); }
+.section-backdrop-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background)) 0%,
+    hsl(var(--background) / var(--bd-veil-light)) 22%,
+    hsl(var(--background) / var(--bd-veil-light)) 78%,
+    hsl(var(--background)) 100%
+  );
+}
+
+.dark .section-backdrop-img { filter: none; }
+.dark .is-duotone .section-backdrop-img { filter: grayscale(1) contrast(1.15) brightness(0.9); }
+.dark .section-backdrop-veil {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background)) 0%,
+    hsl(var(--background) / var(--bd-veil)) 22%,
+    hsl(var(--background) / var(--bd-veil)) 78%,
+    hsl(var(--background)) 100%
+  );
 }
 
 /* Pinned frames: an even veil in the frame, with the fades at the section's own ends instead. */
@@ -994,10 +1035,8 @@ a.partner-tile-inner:hover,
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 18svh, #000 calc(100% - 18svh), transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 18svh, #000 calc(100% - 18svh), transparent 100%);
 }
-.has-sticky .section-backdrop-veil { background: hsl(var(--background) / var(--bd-veil)); }
-@media (prefers-color-scheme: light) {
-  .has-sticky .section-backdrop-veil { background: hsl(var(--background) / var(--bd-veil-light)); }
-}
+.has-sticky .section-backdrop-veil { background: hsl(var(--background) / var(--bd-veil-light)); }
+.dark .has-sticky .section-backdrop-veil { background: hsl(var(--background) / var(--bd-veil)); }
 
 /* About: two stadium floodlight beams falling from the top corners. */
 .challenge-intro::before {

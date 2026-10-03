@@ -3,9 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07090D" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F6F8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F5F6F8" />
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('spiritx-theme');
+          if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', '#07090D');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta
       name="description"
       content="Spirit X 2.0 — Sri Lanka’s flagship inter-university hackathon organised by the University of Moratuwa and MoraSpirit 360. 48 hours, 200+ hackers, 20+ universities."

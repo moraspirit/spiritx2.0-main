@@ -1,3 +1,5 @@
+import { useTheme } from '../theme.tsx';
+
 type OrganizerBadgeProps = {
   /** Visual size of the chip. */
   size?: 'sm' | 'md' | 'lg';
@@ -22,41 +24,24 @@ export default function OrganizerBadge({
   forceDark = false,
 }: OrganizerBadgeProps) {
   const dim = SIZE[size];
-
-  if (forceDark) {
-    return (
-      <span
-        className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-black ring-1 ring-white/15 ${dim} ${className}`}
-        title="MoraSpirit 360"
-      >
-        <img
-          src="/brand/moraspirit360-dark.png"
-          alt="MoraSpirit 360"
-          className="h-full w-full object-cover"
-          width={56}
-          height={56}
-          decoding="async"
-        />
-      </span>
-    );
-  }
+  const { isDark } = useTheme();
+  const showDark = forceDark || isDark;
 
   return (
     <span
-      className={`organizer-badge inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-border/60 ${dim} ${className}`}
+      className={`organizer-badge inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full ${
+        showDark ? 'bg-black ring-1 ring-white/15' : 'bg-white ring-1 ring-border/60'
+      } ${dim} ${className}`}
       title="MoraSpirit 360"
     >
-      <picture>
-        <source media="(prefers-color-scheme: light)" srcSet="/brand/moraspirit360-light.png" />
-        <img
-          src="/brand/moraspirit360-dark.png"
-          alt="MoraSpirit 360"
-          className="h-full w-full object-cover"
-          width={56}
-          height={56}
-          decoding="async"
-        />
-      </picture>
+      <img
+        src={showDark ? '/brand/moraspirit360-dark.png' : '/brand/moraspirit360-light.png'}
+        alt="MoraSpirit 360"
+        className="h-full w-full object-cover"
+        width={56}
+        height={56}
+        decoding="async"
+      />
     </span>
   );
 }
