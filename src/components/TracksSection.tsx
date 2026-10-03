@@ -208,7 +208,7 @@ function TrackStack() {
 export default function TracksSection() {
   return (
     <section id="tracks" aria-labelledby="tracks-title" className="relative isolate bg-background px-5 pb-12 pt-24 sm:px-8 sm:pt-32">
-      <SectionBackdrop src="/media/home-innovation-poster.webp" position="50% 72%" veil={0.5} sticky />
+      <SectionBackdrop src="/media/home-innovation-poster.webp" position="50% 72%" veil={0.5} veilLight={0.72} sticky />
       <motion.div {...revealOnce} variants={stagger(0.1)} className="mx-auto max-w-2xl text-center">
         <motion.p variants={rise} className="eyebrow">4 tracks · 48 hours</motion.p>
         <motion.h2
