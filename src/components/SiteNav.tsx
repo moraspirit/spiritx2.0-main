@@ -168,10 +168,6 @@ export default function SiteNav({ route }: { route: Route }) {
               </a>
             );
           })}
-          <div className="my-1 flex items-center justify-between rounded-2xl bg-secondary/50 px-5 py-3 border border-border/40">
-            <span className="text-sm font-medium text-foreground">Theme</span>
-            <ThemeToggle />
-          </div>
           <a
             href={REGISTER_HREF}
             onClick={() => setOpen(false)}
