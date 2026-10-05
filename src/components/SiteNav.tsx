@@ -7,6 +7,7 @@ import type { Route } from '../useHashRoute.ts';
 import { useScrollSpy } from '../useScrollSpy.ts';
 import { EASE_OUT } from '../motion.ts';
 import BrandLogo from './BrandLogo.tsx';
+import ThemeToggle from './ThemeToggle.tsx';
 
 const TABS = [
   { id: 'about', label: 'about' },
@@ -105,9 +106,13 @@ export default function SiteNav({ route }: { route: Route }) {
               </a>
             );
           })}
+          <div className="mx-1 h-4 w-px bg-border/80" aria-hidden="true" />
+          <ThemeToggle className="ml-0.5" />
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <ThemeToggle variant="icon" className="lg:hidden" />
+
           <a
             href={REGISTER_HREF}
             aria-current={registerCurrent ? 'location' : undefined}

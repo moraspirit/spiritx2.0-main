@@ -9,6 +9,8 @@ type SectionBackdropProps = {
   position?: string;
   /** Page-colour veil over the photo, 0–1. Higher = quieter. */
   veil?: number;
+  /** Custom veil opacity in light mode, 0–1. */
+  veilLight?: number;
   /** Spirit X 1.0 photos carry a watermark strip along the bottom; zoom it out of frame. */
   cropWatermark?: boolean;
   /** Keep the photo pinned in view while a tall (pinned) section scrolls past. */
@@ -26,15 +28,23 @@ export default function SectionBackdrop({
   tone = 'natural',
   position = 'center',
   veil = 0.82,
+  veilLight,
   cropWatermark = false,
   sticky = false,
   className,
 }: SectionBackdropProps) {
+  const customProps: Record<string, string | number> = {
+    '--bd-veil': veil,
+  };
+  if (veilLight !== undefined) {
+    customProps['--bd-veil-light'] = veilLight;
+  }
+
   return (
     <div
       aria-hidden="true"
       className={cn('section-backdrop', tone === 'duotone' && 'is-duotone', sticky && 'has-sticky', className)}
-      style={{ '--bd-veil': veil } as CSSProperties}
+      style={customProps as CSSProperties}
     >
       <div className={cn('section-backdrop-frame', sticky && 'is-sticky')}>
         <img
