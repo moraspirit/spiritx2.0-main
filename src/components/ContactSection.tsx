@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback, type MouseEvent as ReactMouseEvent } from 'react';
 import { ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
-import { cn } from '@/lib/utils';
 import SectionBackdrop from './SectionBackdrop.tsx';
 import { lift, revealOnce, rise, stagger } from '../motion.ts';
 

@@ -6,7 +6,7 @@ import PrizesAnnouncedLaterSection from '../components/PrizesAnnouncedLaterSecti
 // Kept for when official prize pool is announced:
 // import PrizesSection from '../components/PrizesSection.tsx';
 import HeroSection from '../components/HeroSection.tsx';
-import StudioShowcase from '../components/StudioShowcase.tsx';
+
 import SpiritGallery from '../components/SpiritGallery.tsx';
 import PartnersSection from '../components/PartnersSection.tsx';
 import RegisterSection from '../components/RegisterSection.tsx';
@@ -25,7 +25,7 @@ export default function Home() {
       <PrizesAnnouncedLaterSection />
       <HeroSection />
       <div id="stories">
-        <StudioShowcase />
+  
         <SpiritGallery />
       </div>
       <PartnersSection />
