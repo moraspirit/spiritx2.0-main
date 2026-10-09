@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, FileText } from 'lucide-react';
 import { REGISTER_HREF } from '@/lib/api';
 
-/** Drop the booklet PDF at this path under public/ (it 404s until then). */
-const DELEGATE_BOOKLET = '/spirit-x-2.0-delegate-booklet.pdf';
-import BrandLogo from './BrandLogo.tsx';
+import Spirit3DLogo from './Spirit3DLogo.tsx';
 import HeroDustCanvas from './HeroDustCanvas.tsx';
 import { usePrefersLight } from '../usePrefersLight.ts';
+
+/** Drop the booklet PDF at this path under public/ (it 404s until then). */
+const DELEGATE_BOOKLET = '/spirit-x-2.0-delegate-booklet.pdf';
 
 const LANDSCAPE = {
   src: '/media/home-cosmos.mp4',
@@ -174,13 +175,10 @@ export default function ChallengeHero() {
       {light ? <LightHeroImage /> : <HeroLoopVideo />}
       <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
 
-      <div className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[5%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[8%] sm:px-6 sm:pb-28 sm:pt-32">
-        <h1 className="flex max-w-6xl items-center justify-center text-white">
+      <div className="cosmos-hero-content relative z-10 flex flex-1 -translate-y-[3%] flex-col items-center justify-center px-4 pb-24 pt-28 text-center sm:-translate-y-[5%] sm:px-6 sm:pb-28 sm:pt-32">
+        <h1 className="flex w-full max-w-7xl items-center justify-center text-white overflow-visible px-2 sm:px-4">
           <span className="sr-only">Spirit X 2.0</span>
-          <BrandLogo
-            className="h-16 w-auto max-w-[85vw] drop-shadow-md sm:h-24 md:h-32 lg:h-36"
-            label="Spirit X 2.0"
-          />
+          <Spirit3DLogo className="h-48 w-full max-w-full sm:h-64 md:h-80 lg:h-96 xl:h-[28rem]" />
         </h1>
 
         <p className="mt-4 max-w-[34rem] text-pretty text-sm leading-relaxed text-white/82 sm:mt-5 sm:text-base md:text-lg">
