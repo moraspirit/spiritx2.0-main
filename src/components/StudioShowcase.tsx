@@ -16,7 +16,7 @@ const REVEAL_ART: ThemedArt = {
 };
 
 const HEADLINE =
-  'Every podium moment starts as a prototype — the stories behind 48 hours of student-built sports tech.';
+  'Every podium moment starts as a prototype — the stories behind student-built sports tech.';
 
 /** Stories chapter opener: the big word rises and the headline writes itself in once on screen. */
 export default function StudioShowcase() {

@@ -80,7 +80,7 @@ export default function HeroSection() {
         style={{ animationDelay: '0.85s' }}
       >
         <p className="text-legible text-xs leading-relaxed sm:text-sm">
-          48 hours. 200+ hackers. 20+ universities. Built by students, open to every undergraduate
+          200+ hackers. 20+ universities. Built by students, open to every undergraduate
           in Sri Lanka.
         </p>
         <a

@@ -91,7 +91,7 @@ export default function ChallengeIntro() {
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.05 * i }}
             >
-              <a href="#tracks" className={cn('intro-idea group', i === active && 'is-active')}>
+              <a href="#challenge" className={cn('intro-idea group', i === active && 'is-active')}>
                 <span className="intro-idea-num" aria-hidden="true">0{i + 1}</span>
                 <div className="min-w-0">
                   <p className="flex items-center gap-2.5 text-[10px] uppercase tracking-widest text-brand-ink">
@@ -103,7 +103,7 @@ export default function ChallengeIntro() {
                 <div className="intro-idea-side">
                   <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{copy}</p>
                   <span className="mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-medium text-foreground">
-                    Explore the tracks
+                    Explore the challenge
                     <span className="intro-idea-arrow">
                       <ArrowUpRight size={16} />
                     </span>

@@ -10,38 +10,56 @@ type Faq = { topic: string; q: string; a: string };
 /** Answers marked MOCK are placeholders until the organisers confirm them. */
 const FAQS: Faq[] = [
   {
+    topic: 'About',
+    q: 'What is Spirit X 2.0?',
+    a: 'A two-stage inter-university hackathon by MoraSpirit where undergraduates turn real problems in sport into practical digital solutions. Where sports meets technology.',
+  },
+  {
     topic: 'Eligibility',
     q: 'Who can take part in Spirit X 2.0?',
-    a: 'Any undergraduate currently enrolled at a university or higher-education institute in Sri Lanka. Every track is open to every faculty — you don’t need to be a computing student.',
+    a: 'Undergraduates from state and private universities in Sri Lanka who are below 30 years of age as of 1 January 2027. Each participant can represent only one team.',
   },
   {
     topic: 'Teams',
     q: 'How many people can be in a team?',
-    // MOCK: same-university rule unconfirmed.
-    a: 'Teams of two to four undergraduates. The team leader counts as member one, and all members should be from the same university.',
+    a: 'Three or four. All team members must be from the same university, and the team leader counts as member one.',
   },
   {
     topic: 'Fees',
     q: 'Is there a registration fee?',
-    // MOCK
+    // MOCK: not in the booklet.
     a: 'No. Registering and competing in Spirit X 2.0 is completely free.',
   },
   {
-    topic: 'Proposal',
-    q: 'What do we need to submit?',
-    a: 'One proposal PDF per team, up to 10 MB, describing the problem, your solution and why your team can build it. Resubmissions aren’t allowed, so send your final version.',
+    topic: 'Registering',
+    q: 'Who registers the team?',
+    a: 'Only one team member should submit the registration form on behalf of the whole team, and only one submission per team is allowed.',
   },
   {
-    topic: 'Tracks',
-    q: 'Do we have to choose a track?',
-    // MOCK
-    a: 'Yes — pick the one track your idea fits best when you submit your proposal. Every track competes for the same podium prizes, plus a best-idea award in each track.',
+    topic: 'The challenge',
+    q: 'What should we build?',
+    a: 'Pick a real problem within the sports domain, such as sports, fitness, athletics or sports management, and build a working web or mobile solution around it. What matters most is a meaningful problem and a solution with real value.',
+  },
+  {
+    topic: 'Directions',
+    q: 'Do we have to choose a category?',
+    a: 'No. The directions on this page are ideas to spark yours, not fixed categories. Choose the problem you care about.',
+  },
+  {
+    topic: 'Proposal',
+    q: 'What do we need to submit first?',
+    a: 'One proposal per team, up to 10 MB, describing the problem and your proposed solution. Only the proposals are evaluated to choose who moves on to the development stage.',
+  },
+  {
+    topic: 'Prototype',
+    q: 'What happens after the proposal?',
+    a: 'Selected teams build a functional prototype and submit it as a repository link, along with a demo video of up to 10 minutes showing the key features. Prototypes are judged against the competition criteria.',
   },
   {
     topic: 'Finale',
-    q: 'Where and when is the grand finale?',
-    // MOCK: date TBA.
-    a: 'The 48-hour grand finale takes place at the University of Moratuwa. Confirmed dates for every stage appear in the timeline above as they’re announced.',
+    q: 'Where is the final evaluation day?',
+    // Venue and date announced later per the booklet.
+    a: 'Finalists present and demo their solutions in person to the judging panel at the University of Moratuwa. The venue and final date will be announced later; the timeline above shows every confirmed date.',
   },
 ];
 

@@ -32,7 +32,7 @@ const MILESTONES: Milestone[] = [
     when: '1 Nov',
     date: '2026-11-01T00:00:00+05:30',
     title: 'Registration opens',
-    body: 'Form a team of two to four undergraduates and claim your place on the Spirit X stage.',
+    body: 'Form a team of three or four undergraduates from the same university and claim your place on the Spirit X stage.',
   },
   {
     id: 'proposals-open',

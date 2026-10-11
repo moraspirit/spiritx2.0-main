@@ -20,7 +20,7 @@ const PODIUM: Prize[] = [
 ];
 
 /** MOCK — extra awards and perks shown under the podium. */
-const EXTRAS = ['Best idea in each track', 'Most popular idea', 'Mentorship from industry leaders', 'Finalist certificates'];
+const EXTRAS = ['Best idea award', 'Most popular idea', 'Mentorship from industry leaders', 'Finalist certificates'];
 
 const lkr = (n: number) => `LKR ${Math.round(n).toLocaleString('en-US')}`;
 

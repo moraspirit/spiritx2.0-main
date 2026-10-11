@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, Box, Brain, Globe, Leaf } from 'lucide-react';
+import { Activity, ArrowRight, BarChart3, CalendarDays, ClipboardList, HeartPulse, MonitorSmartphone } from 'lucide-react';
 import { motion, useMotionValueEvent, useTransform } from 'motion/react';
 import {
   CardTransformed,
@@ -14,33 +14,55 @@ import { revealOnce, rise, stagger } from '../motion.ts';
 
 const TRACKS = [
   {
-    id: 'ai',
-    Icon: Brain,
-    badge: 'Neural Nets · Deep Learning',
-    title: 'AI & Neural Autonomy',
-    body: 'Autonomous agents, orbital LLMs, and real-time computer vision systems solving planetary challenges. Ship production-ready intelligence under pressure.',
+    id: 'performance',
+    Icon: Activity,
+    badge: 'Training · Performance',
+    title: 'Athlete & Team Performance',
+    body: 'Help athletes and teams train smarter, track their progress and perform at their best.',
   },
   {
-    id: 'web',
-    Icon: Globe,
-    badge: 'Decentralized · Cloud Native',
-    title: 'Distributed Web & Mobile',
-    body: 'Resilient decentralized protocols, edge computing architectures, and hyper-responsive interfaces that feel native everywhere fans and users live.',
+    id: 'fitness',
+    Icon: HeartPulse,
+    badge: 'Health · Recovery',
+    title: 'Fitness & Wellness',
+    body: 'Make staying active, recovering well and looking after wellbeing easier for everyone.',
   },
   {
-    id: 'spatial',
-    Icon: Box,
-    badge: 'Spatial Web · 3D · AR/VR',
-    title: 'Spatial & Immersive Tech',
-    body: 'Spatial WebGL, 3D simulation engines, digital twins, and immersive VR/AR cockpits that turn spectators into participants.',
+    id: 'management',
+    Icon: ClipboardList,
+    badge: 'Clubs · Operations',
+    title: 'Sports Management',
+    body: 'Streamline how clubs, teams and associations are run, from rosters to resources.',
   },
   {
-    id: 'earth',
-    Icon: Leaf,
-    badge: 'Green Tech · Earth Observation',
-    title: 'Earth & Sustainability',
-    body: 'Clean grid automation, climate telemetry algorithms, and circular economy hardware-software solutions with measurable planetary impact.',
+    id: 'events',
+    Icon: CalendarDays,
+    badge: 'Tournaments · Logistics',
+    title: 'Event & Competition Management',
+    body: 'Simplify running fixtures, tournaments and events for organisers and participants alike.',
   },
+  {
+    id: 'analytics',
+    Icon: BarChart3,
+    badge: 'Data · Insight',
+    title: 'Sports Data & Analytics',
+    body: 'Turn match and training data into insight that changes decisions on and off the field.',
+  },
+  {
+    id: 'digital',
+    Icon: MonitorSmartphone,
+    badge: 'Fans · Engagement',
+    title: 'Digital Experiences',
+    body: 'Bring sport closer to the people who play, follow and love it, on the screen in their hand.',
+  },
+];
+
+const STEPS_PATH = [
+  { title: 'Identify', body: 'Find a meaningful problem within the sports domain.' },
+  { title: 'Ideate', body: 'Develop an innovative and practical approach to solving it.' },
+  { title: 'Propose', body: 'Present your concept for evaluation.' },
+  { title: 'Build', body: 'Turn your selected idea into a functional prototype.' },
+  { title: 'Showcase', body: 'Present and demonstrate the finished solution at the final evaluation.' },
 ];
 
 const STACK_ID = 'track-stack';
@@ -86,7 +108,7 @@ function TrackIndex({ active }: { active: number }) {
   return (
     <div className="hidden lg:block">
       <p className="eyebrow">
-        track {pad(active + 1)} of {pad(TRACKS.length)}
+        direction {pad(active + 1)} of {pad(TRACKS.length)}
       </p>
 
       <div className="relative mt-8 pl-8">
@@ -120,7 +142,7 @@ function TrackIndex({ active }: { active: number }) {
       </div>
 
       <p className="mt-8 max-w-sm text-sm leading-relaxed text-muted-foreground">
-        Scroll to flip through every track, or jump straight to the one you&rsquo;re here for.
+        Scroll through the directions, or jump to the one that sparks an idea. They&rsquo;re starting points, not categories.
       </p>
     </div>
   );
@@ -191,7 +213,7 @@ function TrackStack() {
                   href={REGISTER_HREF}
                   className="group -my-3 inline-flex items-center gap-2 py-3 text-sm font-medium text-foreground transition-colors hover:text-brand-ink"
                 >
-                  register for this track
+                  register your team
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                 </a>
               </CardTransformed>
@@ -207,20 +229,21 @@ function TrackStack() {
 
 export default function TracksSection() {
   return (
-    <section id="tracks" aria-labelledby="tracks-title" className="relative isolate bg-background px-5 pb-12 pt-24 sm:px-8 sm:pt-32">
+    <section id="challenge" aria-labelledby="tracks-title" className="relative isolate bg-background px-5 pb-12 pt-24 sm:px-8 sm:pt-32">
       <SectionBackdrop src="/media/home-innovation-poster.webp" position="50% 72%" veil={0.5} veilLight={0.72} sticky />
       <motion.div {...revealOnce} variants={stagger(0.1)} className="mx-auto max-w-2xl text-center">
-        <motion.p variants={rise} className="eyebrow">4 tracks · 48 hours</motion.p>
+        <motion.p variants={rise} className="eyebrow">the spirit x challenge</motion.p>
         <motion.h2
           variants={rise}
           id="tracks-title"
           className="hero-title mt-4 text-5xl font-medium text-foreground sm:text-6xl md:text-7xl"
         >
-          competition tracks<span className="text-brand-ink">.</span>
+          explore the possibilities<span className="text-brand-ink">.</span>
         </motion.h2>
         <motion.p variants={rise} className="mx-auto mt-5 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Four frontiers, 48 hours. Pick the one you want to reshape &mdash; every track is open
-          to every undergraduate in Sri Lanka.
+          Find a real problem in sports, fitness, athletics or sports management and build the
+          technology around it. These directions are ideas to spark yours &mdash; you don&rsquo;t have to
+          pick one.
         </motion.p>
       </motion.div>
 
@@ -228,8 +251,26 @@ export default function TracksSection() {
         <TrackStack />
       </ContainerScroll>
 
+      <motion.div {...revealOnce} variants={stagger(0.08)} className="mx-auto mt-4 max-w-5xl pb-20">
+        <motion.h3 variants={rise} className="text-center text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+          from problem to solution
+        </motion.h3>
+        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {STEPS_PATH.map((step, i) => (
+            <motion.li key={step.title} variants={rise} className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-md">
+              <span className="text-sm tabular-nums text-brand-ink">{pad(i + 1)}</span>
+              <p className="mt-2 text-lg font-medium text-foreground">{step.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+            </motion.li>
+          ))}
+        </ol>
+        <motion.p variants={rise} className="mx-auto mt-6 max-w-xl text-center text-sm leading-relaxed text-muted-foreground">
+          Teams submit a proposal, then a working web or mobile prototype with a repository link and a demo video of up to 10 minutes.
+        </motion.p>
+      </motion.div>
+
       <motion.div {...revealOnce} variants={rise} className="mx-auto max-w-xl pb-8 text-center">
-        <p className="text-muted-foreground">Picked your frontier? Here&rsquo;s when it all happens.</p>
+        <p className="text-muted-foreground">Found your problem? Here&rsquo;s when it all happens.</p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
           <a
             href={REGISTER_HREF}

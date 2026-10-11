@@ -182,8 +182,8 @@ export default function ChallengeHero() {
         </h1>
 
         <p className="mt-4 max-w-[34rem] text-pretty text-sm leading-relaxed text-white/82 sm:mt-5 sm:text-base md:text-lg">
-          Forty-eight hours to turn audacious ideas into the technology that changes how Sri Lanka
-          plays and watches sport.
+          Turn audacious ideas into the technology that changes how Sri Lanka plays and watches
+          sport.
         </p>
 
         <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row">

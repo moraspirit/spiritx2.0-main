@@ -11,7 +11,7 @@ import ThemeToggle from './ThemeToggle.tsx';
 
 const TABS = [
   { id: 'about', label: 'about' },
-  { id: 'tracks', label: 'tracks' },
+  { id: 'challenge', label: 'challenge' },
   { id: 'timeline', label: 'timeline' },
   { id: 'prizes', label: 'prizes' },
   { id: 'experience', label: 'experience' },
@@ -20,7 +20,7 @@ const TABS = [
 ] as const;
 
 // The hero counts as "about", so the pill is already on when the page opens.
-const SPY_IDS = ['hero', 'about', 'tracks', 'timeline', 'prizes', 'experience', 'stories', 'register', 'contact'] as const;
+const SPY_IDS = ['hero', 'about', 'challenge', 'timeline', 'prizes', 'experience', 'stories', 'register', 'contact'] as const;
 
 const PILL_TRANSITION = { duration: 0.5, ease: EASE_OUT };
 

@@ -156,7 +156,7 @@ export default function TeamRegisterForm() {
       <div>
         <h2 className="text-xl font-medium text-foreground sm:text-2xl">Team registration</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Teams of 2–4 undergraduates. Leader counts as member 1.
+          Teams of 3–4 undergraduates from the same university. Leader counts as member 1.
         </p>
       </div>
 
@@ -195,7 +195,7 @@ export default function TeamRegisterForm() {
             onChange={(e) => syncMembers(Number(e.target.value))}
             className="w-full rounded-xl border border-border bg-background/80 px-3 py-2.5 text-sm outline-none focus:border-brand/50 focus:ring-2 focus:ring-brand/30"
           >
-            {[2, 3, 4].map((n) => (
+            {[3, 4].map((n) => (
               <option key={n} value={n}>
                 {n} members
               </option>
