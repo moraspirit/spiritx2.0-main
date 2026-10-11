@@ -99,8 +99,8 @@ function FaqItem({ faq, index, open, onToggle }: { faq: Faq; index: number; open
 }
 
 export default function FaqSection() {
-  // One answer open at a time; the first starts open, like hackx.
-  const [open, setOpen] = useState(0);
+  // One answer open at a time; all start collapsed (-1 = none open).
+  const [open, setOpen] = useState(-1);
 
   return (
     <section id="faq" aria-labelledby="faq-title" className="faq-section relative isolate">
