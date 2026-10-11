@@ -1,10 +1,4 @@
-import { useTheme } from './theme.tsx';
-
-/**
- * Returns whether the active site theme is light.
- * Controlled by the user toggle (defaults to light, persists in localStorage).
- */
+/** Always false: the site is dark-only. Kept so theme-aware components need no changes. */
 export function usePrefersLight(): boolean {
-  const { isLight } = useTheme();
-  return isLight;
+  return false;
 }

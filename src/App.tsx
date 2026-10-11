@@ -10,7 +10,7 @@ export default function App() {
   const route = useHashRoute();
   return (
     <ThemeProvider>
-      {/* "user": motion drops transform/layout animation when the OS asks for reduced motion. */}
+      {/* "userd": motion drops transform/layout animation when the OS asks for reduced motion. */}
       <MotionConfig reducedMotion="user">
         <SplashCursor
           DENSITY_DISSIPATION={2.2}

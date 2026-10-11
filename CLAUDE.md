@@ -36,13 +36,9 @@ Vite public env vars (see `.env.example`, typed in `src/vite-env.d.ts`, read in 
 
 **Nav** — `SiteNav` is rendered once by `App`, `position: fixed`, above every section (sections use `isolate` so their own z-indexes can't cover it). On home, `useScrollSpy` (the last section whose top has passed 40% of the viewport) drives the active tab, and the pill slides between tabs with motion `layoutId="nav-pill"`. `#hero` counts as the "about" tab. Adding a section means: give it an id and add it to `SECTIONS` (useHashRoute) and `SPY_IDS` (SiteNav), plus `TABS` if it should get a nav tab. Sticky or pinned stages need top padding (~6rem) so their headings clear the fixed nav.
 
-**Theming (light/dark)** — driven only by the OS `prefers-color-scheme`; there is no toggle.
-- Colour tokens are HSL triplets on `:root` in `src/index.css` (dark "Night Stadium" is the default, light overrides live in a media query). `tailwind.config.js` maps them to Tailwind colours (`background`, `foreground`, `primary`/`brand`, `brand-ink`, `muted`, `border`, …). Use these tokens, not raw colours.
-- `brand` is the button fill; `brand-ink` is for brand-blue text, icons and indicators (logo light blue `#74CEDD` on dark, deep blue `#00558F` on light).
-- `.stage-dark` re-applies the dark tokens to a subtree so copy stays legible over video in light mode.
-- Background art with day/night variants uses `themedArtStyle({ dark, light })` from `src/themedArt.ts` plus the `.themed-art` class (CSS picks the variant, no JS).
-- Components that need to *swap elements* per theme (`ChallengeHero`: video vs still image + `HeroDustCanvas`; `Footer`: night tunnel vs daylight video + `OriginalLinePulse`; `TimelineSection`: stadium clip only in dark) use `usePrefersLight()`.
-- `Footer` in day mode (`.site-footer.is-day`) re-pins light-on-dark tokens because its media is always dark-ish.
+**Theming (dark only)** — the site is dark-only ("Night Stadium"): `index.html` ships `<html class="dark">`, `theme.tsx` keeps the `dark` class on and exposes a constant `useTheme()`, and `usePrefersLight()` always returns false. There is no toggle. The light-mode CSS, `themedArtStyle` light variants and `usePrefersLight` branches are dead code left in place; delete them if you want a cleanup.
+- Colour tokens are HSL triplets in `src/index.css`; `tailwind.config.js` maps them to Tailwind colours (`background`, `foreground`, `primary`/`brand`, `brand-ink`, `muted`, `border`, ...). Use these tokens, not raw colours.
+- `brand` is the button fill; `brand-ink` is for brand-blue text, icons and indicators.
 
 **Section atmosphere** — plain sections get a `SectionBackdrop` (photo + page-colour veil whose edges fade into neighbours; `tone="duotone"` tints daylight event photos Spirit X blue; `sticky` for pinned sections like Tracks). Light mode raises the veil a lot for night photos (they turn grey otherwise). About's floodlight beams and the Prizes spotlight are pure CSS (`.challenge-intro::before`, `.prizes-glow`). Stock backgrounds in `public/media/bg/` are from Unsplash (free licence).
 
