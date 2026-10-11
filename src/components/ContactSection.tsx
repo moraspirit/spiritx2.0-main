@@ -118,18 +118,35 @@ export default function ContactSection() {
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
 
-  const cardStep = () => {
-    const child = scrollRef.current?.firstElementChild as HTMLElement | null;
-    return child ? child.getBoundingClientRect().width + 20 : 340;
-  };
-
-  const scrollToNext = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: cardStep(), behavior: 'smooth' });
+  /** Moves to the neighbouring slide. Works from the slide positions themselves, so it also
+   *  behaves on phones, where one slide fills the view and scroll-snap is mandatory. */
+  const goToSlide = useCallback((direction: 1 | -1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const slides = Array.from(el.children) as HTMLElement[];
+    if (slides.length === 0) return;
+    const align = getComputedStyle(slides[0]).scrollSnapAlign.split(' ').pop() === 'center' ? 'center' : 'start';
+    const box = el.getBoundingClientRect();
+    const anchor = align === 'center' ? box.left + box.width / 2 : box.left;
+    let current = 0;
+    let best = Infinity;
+    slides.forEach((slide, i) => {
+      const r = slide.getBoundingClientRect();
+      const point = align === 'center' ? r.left + r.width / 2 : r.left;
+      const dist = Math.abs(point - anchor);
+      if (dist < best) {
+        best = dist;
+        current = i;
+      }
+    });
+    const target = slides[Math.min(slides.length - 1, Math.max(0, current + direction))];
+    const r = target.getBoundingClientRect();
+    const delta = align === 'center' ? r.left + r.width / 2 - anchor : r.left - anchor;
+    el.scrollBy({ left: delta, behavior: 'smooth' });
   }, []);
 
-  const scrollToPrev = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: -cardStep(), behavior: 'smooth' });
-  }, []);
+  const scrollToNext = useCallback(() => goToSlide(1), [goToSlide]);
+  const scrollToPrev = useCallback(() => goToSlide(-1), [goToSlide]);
 
   // The track holds three copies of the list. Park on the middle copy, and whenever scrolling
   // settles in an outer copy, jump one set-width back to the same card in the middle copy.
