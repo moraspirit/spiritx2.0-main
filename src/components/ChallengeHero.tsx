@@ -23,7 +23,7 @@ const LIGHT_LANDSCAPE = '/media/home-cosmos-light.webp';
 const LIGHT_PORTRAIT = '/media/home-cosmos-light-portrait.webp';
 
 const STATS = [
-  { value: '200+', label: 'hackers' },
+  { value: '200+', label: 'innovators' },
   { value: 'TBA', label: 'prize pool' },
   { value: '20+', label: 'universities' },
 ];
