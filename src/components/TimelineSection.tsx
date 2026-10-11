@@ -35,28 +35,74 @@ const MILESTONES: Milestone[] = [
     body: 'Form a team of two to four undergraduates and claim your place on the Spirit X stage.',
   },
   {
-    id: 'proposals',
-    when: 'TBA',
-    title: 'Proposal submission',
+    id: 'proposals-open',
+    when: '15 Nov',
+    date: '2026-11-15T00:00:00+05:30',
+    title: 'Proposal submissions open',
     body: 'Pitch your idea in one PDF: the problem, your solution, and why your team is the one to build it.',
   },
   {
-    id: 'mentoring',
-    when: 'TBA',
-    title: 'Workshops & mentoring',
-    body: 'Shortlisted teams sharpen their ideas with mentors from technology and sport.',
+    id: 'registration-closed',
+    when: '20 Nov',
+    date: '2026-11-20T00:00:00+05:30',
+    title: 'Registration closes',
+    body: 'Last day to register your team.',
   },
   {
-    id: 'semis',
-    when: 'TBA',
-    title: 'Semi-finals',
-    body: 'Present to the judging panel for a place in the final 48 hours.',
+    id: 'workshop-1',
+    when: '28 Nov',
+    date: '2026-11-28T00:00:00+05:30',
+    title: '1st workshop',
+    body: 'Sharpen your idea with mentors from technology and sport.',
+  },
+  {
+    id: 'proposal-deadline',
+    when: '3 Dec',
+    date: '2026-12-03T00:00:00+05:30',
+    title: 'Proposal submission deadline',
+    body: 'Proposals are due. Get your PDF in before the deadline.',
+  },
+  {
+    id: 'results',
+    when: '15 Dec',
+    date: '2026-12-15T00:00:00+05:30',
+    title: 'Proposal results announced',
+    body: 'Teams selected to proceed to the prototype stage are announced.',
+  },
+  {
+    id: 'workshop-2',
+    when: '19 Dec',
+    date: '2026-12-19T00:00:00+05:30',
+    title: '2nd workshop',
+    body: 'Mentors guide selected teams through prototype development.',
+  },
+  {
+    id: 'workshop-3',
+    when: '9 Jan',
+    date: '2027-01-09T00:00:00+05:30',
+    title: '3rd workshop',
+    body: 'A final round of mentoring before prototypes are due.',
+  },
+  {
+    id: 'prototype-deadline',
+    when: '13 Jan',
+    date: '2027-01-13T00:00:00+05:30',
+    title: 'Prototype submission deadline',
+    body: 'Prototypes are due. Submit your build for evaluation.',
+  },
+  {
+    id: 'final-10',
+    when: '22 Jan',
+    date: '2027-01-22T00:00:00+05:30',
+    title: 'Final 10 announced',
+    body: 'The ten teams heading to the final evaluation are officially announced.',
   },
   {
     id: 'finale',
-    when: 'TBA',
-    title: '48-hour grand finale',
-    body: 'Build through the night at the University of Moratuwa, then demo on the main stage.',
+    when: '30 Jan',
+    date: '2027-01-30T00:00:00+05:30',
+    title: 'Final evaluation day',
+    body: 'Final evaluation and judging day.',
   },
 ];
 
@@ -179,21 +225,6 @@ function Rail({
               )}
             />
           </button>
-        ))}
-      </div>
-      <div aria-hidden="true" className="relative hidden h-5 md:block">
-        {MILESTONES.map((m, i) => (
-          <span
-            key={m.id}
-            className={cn(
-              'absolute top-0 whitespace-nowrap text-xs transition-colors duration-300',
-              i === 0 ? '' : i === N - 1 ? '-translate-x-full' : '-translate-x-1/2',
-              i === active ? 'text-foreground' : 'text-muted-foreground'
-            )}
-            style={{ left: `${(i / (N - 1)) * 100}%` }}
-          >
-            {m.title}
-          </span>
         ))}
       </div>
     </div>
