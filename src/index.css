@@ -1077,3 +1077,21 @@ a.partner-tile-inner:hover,
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 85%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 85%);
 }
+/* Experience hero copy: the hazy daylight photo is mid-grey, so light mode gets a soft page-colour
+   cushion behind the small text and full-strength ink. Dark mode is untouched. */
+.exp-copy {
+  isolation: isolate;
+}
+.exp-copy > p {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+:root:not(.dark) .exp-copy::before {
+  content: '';
+  position: absolute;
+  inset: -1.25rem -1.5rem;
+  z-index: -1;
+  border-radius: 1.5rem;
+  background: radial-gradient(closest-side, hsl(var(--background) / 0.82), hsl(var(--background) / 0.55) 70%, transparent);
+  filter: blur(6px);
+}

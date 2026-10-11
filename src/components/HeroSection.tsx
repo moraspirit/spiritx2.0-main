@@ -66,20 +66,20 @@ export default function HeroSection() {
       </div>
 
       <div
-        className="hero-anim hero-fade absolute bottom-14 left-10 z-50 hidden max-w-[260px] sm:block md:left-14"
+        className="hero-anim hero-fade exp-copy absolute bottom-14 left-10 z-50 hidden max-w-[260px] sm:block md:left-14"
         style={{ animationDelay: '0.7s' }}
       >
-        <p className="text-legible text-sm leading-relaxed text-foreground/85">
+        <p className="text-legible text-sm leading-relaxed">
           Experience results-driven student innovation anytime, anywhere with Spirit X &mdash; Sri
           Lanka&rsquo;s flagship inter-university hackathon.
         </p>
       </div>
 
       <div
-        className="hero-anim hero-fade absolute bottom-10 left-5 right-5 z-50 flex max-w-full flex-col items-start gap-4 sm:bottom-24 sm:left-auto sm:right-10 sm:max-w-[260px] sm:gap-5 md:right-14"
+        className="hero-anim hero-fade exp-copy absolute bottom-10 left-5 right-5 z-50 flex max-w-full flex-col items-start gap-4 sm:bottom-24 sm:left-auto sm:right-10 sm:max-w-[260px] sm:gap-5 md:right-14"
         style={{ animationDelay: '0.85s' }}
       >
-        <p className="text-legible text-xs leading-relaxed text-foreground/85 sm:text-sm">
+        <p className="text-legible text-xs leading-relaxed sm:text-sm">
           48 hours. 200+ hackers. 20+ universities. Built by students, open to every undergraduate
           in Sri Lanka.
         </p>
