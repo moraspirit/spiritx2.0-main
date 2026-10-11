@@ -159,10 +159,14 @@
 .footer-copy { margin: 0; font-size: 0.8rem; color: var(--ink-soft); }
 
 @media (max-width: 720px) {
-  .footer-top { flex-direction: column; align-items: flex-start; }
+  .footer-top { flex-direction: column; align-items: center; text-align: center; }
+  .footer-brand { display: flex; flex-direction: column; align-items: center; }
+  .footer-brand > div { justify-content: center; }
   .footer-dispatch { max-width: none; }
-  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-  .socials { margin-left: -12px; }
+  .footer-bottom { flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; }
+  .footer-links { justify-content: center; }
+  .socials { margin-left: 0; justify-content: center; }
+  .footer-copy { text-align: center; }
 }
 
 /* ---------- light theme: daylight tunnel + green beam ---------- */
