@@ -49,13 +49,6 @@ const MILESTONES: Milestone[] = [
     body: 'Last day to register your team.',
   },
   {
-    id: 'workshop-1',
-    when: '28 Nov',
-    date: '2026-11-28T00:00:00+05:30',
-    title: '1st workshop',
-    body: 'Sharpen your idea with mentors from technology and sport.',
-  },
-  {
     id: 'proposal-deadline',
     when: '3 Dec',
     date: '2026-12-03T00:00:00+05:30',
@@ -70,17 +63,17 @@ const MILESTONES: Milestone[] = [
     body: 'Teams selected to proceed to the prototype stage are announced.',
   },
   {
-    id: 'workshop-2',
+    id: 'workshop-1',
     when: '19 Dec',
     date: '2026-12-19T00:00:00+05:30',
-    title: '2nd workshop',
+    title: '1st workshop',
     body: 'Mentors guide selected teams through prototype development.',
   },
   {
-    id: 'workshop-3',
+    id: 'workshop-2',
     when: '9 Jan',
     date: '2027-01-09T00:00:00+05:30',
-    title: '3rd workshop',
+    title: '2nd workshop',
     body: 'A final round of mentoring before prototypes are due.',
   },
   {

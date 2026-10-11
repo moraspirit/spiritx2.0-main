@@ -42,13 +42,15 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
   const bannerHeight = useTransform(p, [0, 0.15], ['80svh', '100svh']);
   const bannerRadius = useTransform(p, [0, 0.15], ['40px', '0px']);
   const bannerBorder = useTransform(p, [0, 0.15], ['3px', '0px']);
+  // Wall starts dimmed so the heading reads; it comes up to full strength as the banner opens.
+  const wallOpacity = useTransform(p, [0, 0.15], [0.5, 1]);
   const introOpacity = useTransform(p, [0, 0.1], [1, 0]);
   const footerOpacity = useTransform(p, [0.8, 0.95], [0, 1]);
 
-  const rotateY = useTransform(p, [0.15, 1], [-45, -8]);
-  const rotateX = useTransform(p, [0.15, 1], [25, 4]);
-  const rotateZ = useTransform(p, [0.15, 1], [15, 2]);
-  const z = useTransform(p, [0.15, 1], [-800, 0]);
+  const rotateY = useTransform(p, [0.15, 1], [-22, -6]);
+  const rotateX = useTransform(p, [0.15, 1], [12, 3]);
+  const rotateZ = useTransform(p, [0.15, 1], [6, 1]);
+  const z = useTransform(p, [0.15, 1], [-350, 0]);
 
   const drift = [
     useTransform(p, [0.15, 1], ['0%', '-40%']),
@@ -81,7 +83,7 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
             />
 
             <motion.div
-              style={{ rotateX, rotateY, rotateZ, z, transformStyle: 'preserve-3d' }}
+              style={{ rotateX, rotateY, rotateZ, z, opacity: wallOpacity, transformStyle: 'preserve-3d' }}
               className="flex h-[150vh] w-[120vw] origin-center items-center justify-center gap-4 will-change-transform md:gap-6"
             >
               {columns.map((col, c) => (
@@ -117,7 +119,14 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
               style={{ opacity: introOpacity }}
               className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-6 text-center"
             >
-              {intro}
+              <div className="relative">
+                <div
+                  aria-hidden="true"
+                  className="absolute -inset-x-16 -inset-y-10 -z-10 blur-2xl"
+                  style={{ background: 'radial-gradient(closest-side, hsl(var(--background) / 0.9), hsl(var(--background) / 0.6) 70%, transparent)' }}
+                />
+                {intro}
+              </div>
             </motion.div>
           ) : null}
 
