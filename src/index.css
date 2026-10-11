@@ -1125,3 +1125,17 @@ a.partner-tile-inner:hover,
     radial-gradient(46% 38% at 82% 30%, hsl(var(--brand-ink) / 0.12), transparent 72%),
     radial-gradient(40% 34% at 10% 78%, hsl(var(--brand-ink) / 0.08), transparent 72%);
 }
+
+/* Fine film grain over a card surface. Sits above the card background but below nothing
+   interactive (pointer-events: none), and uses overlay blending so text keeps its contrast. */
+.card-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9 0 0 0 0 .9 0 0 0 0 .9 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+}

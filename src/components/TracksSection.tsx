@@ -183,7 +183,7 @@ function TrackStack() {
                 variant="light"
                 role="article"
                 aria-labelledby={`track-${id}-title`}
-                className="items-start justify-between gap-4 border border-border bg-card/95 p-7 text-foreground backdrop-blur-md"
+                className="card-noise items-start justify-between gap-4 border border-white/15 [background-color:hsl(var(--card)/0.84)] bg-gradient-to-br from-white/[0.09] to-transparent p-7 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150"
               >
                 <div className="flex w-full items-start justify-between">
                   <div className="flex size-14 items-center justify-center rounded-2xl bg-brand/10 text-brand-ink">
@@ -257,7 +257,7 @@ export default function TracksSection() {
         </motion.h3>
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {STEPS_PATH.map((step, i) => (
-            <motion.li key={step.title} variants={rise} className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur-md">
+            <motion.li key={step.title} variants={rise} className="card-noise relative rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.09] to-transparent p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150 [background-color:hsl(var(--card)/0.84)]">
               <span className="text-sm tabular-nums text-brand-ink">{pad(i + 1)}</span>
               <p className="mt-2 text-lg font-medium text-foreground">{step.title}</p>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
