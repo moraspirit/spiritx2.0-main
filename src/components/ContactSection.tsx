@@ -6,78 +6,69 @@ import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Chair = {
   name: string;
-  role: string;
+  role?: string;
   affiliation: string;
-  email: string;
+  email?: string;
   phone: string;
   photo?: string;
 };
 
-/** 8 Spirit X 2.0 Organizing Committee Chairperson Cards */
+/** Spirit X 2.0 contacts. */
 const CHAIRS: Chair[] = [
   {
-    name: 'Chairperson 1',
-    role: 'Overall Chairperson',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair1@moraspirit.com',
-    phone: '+94 70 000 0001',
-    photo: '/media/team/chair-1.webp',
+    name: 'Sangeeth Kariyapperuma',
+    role: 'Pillar Head – Web & Technology Pillar',
+    affiliation: 'MoraSpirit 360',
+    email: 'web@moraspirit.com',
+    phone: '0760858499',
+    photo: '/contact/sangeeth.jpeg',
   },
   {
-    name: 'Chairperson 2',
-    role: 'Co-Chairperson',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair2@moraspirit.com',
-    phone: '+94 70 000 0002',
-    photo: '/media/team/chair-2.webp',
+    name: 'Kusal Pabasara',
+    role: 'Assistant Pillar Head – Web & Technology Pillar',
+    affiliation: 'MoraSpirit 360',
+    email: 'kusalpabasararcg@gmail.com',
+    phone: '074 016 4134',
+    photo: '/contact/kusal_pabasara.jpeg',
   },
   {
-    name: 'Chairperson 3',
-    role: 'Co-Chairperson',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair3@moraspirit.com',
-    phone: '+94 70 000 0003',
-    photo: '/media/team/chair-3.webp',
+    name: 'Kusal Nirukshan',
+    role: 'Co-Chair – SpiritX 2.0',
+    affiliation: 'MoraSpirit 360',
+    email: 'kusalnirukshan@moraspirit.com',
+    phone: '071 114 5121',
+    photo: '/contact/kusal_nirukshan.jpeg',
   },
   {
-    name: 'Chairperson 4',
-    role: 'Lead — Technical',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair4@moraspirit.com',
-    phone: '+94 70 000 0004',
-    photo: '/media/team/chair-4.webp',
+    name: 'Sawani Thiwandika',
+    role: 'Co-Chair – SpiritX 2.0',
+    affiliation: 'MoraSpirit 360',
+    email: 'thiwandika.whs02@gmail.com',
+    phone: '076 351 9008',
+    photo: '/contact/sawani.jpeg',
   },
   {
-    name: 'Chairperson 5',
-    role: 'Lead — Operations',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair5@moraspirit.com',
-    phone: '+94 70 000 0005',
-    photo: '/media/team/chair-5.webp',
+    name: 'Pragathi Jayasinghe',
+    role: 'Delegate Lead',
+    affiliation: 'MoraSpirit 360',
+    phone: '071 581 4164',
+    photo: '/contact/pragathi.jpeg',
   },
   {
-    name: 'Chairperson 6',
-    role: 'Lead — Partnerships',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair6@moraspirit.com',
-    phone: '+94 70 000 0006',
-    photo: '/media/team/chair-6.webp',
+    name: 'Pamudu Chandeepa',
+    role: 'CSO – MoraSpirit',
+    affiliation: 'MoraSpirit 360',
+    email: 'cso@moraspirit.com',
+    phone: '+94 71 882 3065',
+    photo: '/contact/pamudu.jpeg',
   },
   {
-    name: 'Chairperson 7',
-    role: 'Lead — Public Relations',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair7@moraspirit.com',
-    phone: '+94 70 000 0007',
-    photo: '/media/team/chair-7.webp',
-  },
-  {
-    name: 'Chairperson 8',
-    role: 'Lead — Logistics',
-    affiliation: 'Spirit X 2.0 Organising Committee',
-    email: 'chair8@moraspirit.com',
-    phone: '+94 70 000 0008',
-    photo: '/media/team/chair-8.webp',
+    name: 'D.G.S Anuchana Jayarathne',
+    role: 'Delegate Lead',
+    affiliation: 'MoraSpirit 360',
+    email: 'shavindaanuchana@gmail.com',
+    phone: '070 398 5778',
+    photo: '/contact/anuchana.jpeg',
   },
 ];
 
@@ -215,7 +206,7 @@ export default function ContactSection() {
             Contact us
           </motion.h2>
           <motion.p variants={rise} className="mx-auto mt-2 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Questions about teams, tracks or registration? Reach the people running Spirit X 2.0 directly.
+            Questions about teams, your idea or registration? Reach the people running Spirit X 2.0 directly.
           </motion.p>
         </motion.div>
 
@@ -262,7 +253,7 @@ export default function ContactSection() {
           >
             {CHAIRS.map((chair, index) => (
               <motion.li
-                key={`${chair.email}-${index}`}
+                key={`${chair.name}-${index}`}
                 variants={lift}
                 className="contact-slide"
               >
@@ -272,22 +263,26 @@ export default function ContactSection() {
                     <h3 className="mt-6 truncate text-lg font-semibold tracking-tight text-foreground" title={chair.name}>
                       {chair.name}
                     </h3>
-                    <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">{chair.role}</p>
+                    {chair.role ? (
+                      <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">{chair.role}</p>
+                    ) : null}
                     <p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>
                   </div>
                   
                   <div className="mt-6 flex flex-col items-center gap-1 border-t border-border/60 pt-4 text-sm">
+                    {chair.email ? (
                     <a
-                      href={`mailto:${chair.email}`}
-                      className="contact-link"
-                      title={chair.email}
-                      onClick={(e) => {
-                        if (isDraggingRef.current) e.preventDefault();
-                      }}
-                    >
-                      <Mail size={14} strokeWidth={1.75} aria-hidden="true" />
-                      <span className="truncate">{chair.email}</span>
-                    </a>
+                        href={`mailto:${chair.email}`}
+                        className="contact-link"
+                        title={chair.email}
+                        onClick={(e) => {
+                          if (isDraggingRef.current) e.preventDefault();
+                        }}
+                      >
+                        <Mail size={14} strokeWidth={1.75} aria-hidden="true" />
+                        <span className="truncate">{chair.email}</span>
+                      </a>
+                    ) : null}
                     <a
                       href={`tel:${chair.phone.replace(/\s+/g, '')}`}
                       className="contact-link"
