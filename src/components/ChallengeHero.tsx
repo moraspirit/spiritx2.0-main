@@ -176,7 +176,7 @@ export default function ChallengeHero() {
       <div className="hero-theme-scrim pointer-events-none absolute inset-0 z-[1]" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-40 bg-gradient-to-b from-transparent via-background/60 to-background" />
 
-      <div className="cosmos-hero-content relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-32 pt-24 text-center sm:px-6 sm:pb-36 sm:pt-28">
+      <div className="cosmos-hero-content relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-28 pt-28 text-center sm:px-6 sm:pb-36 sm:pt-28">
         <h1 className="flex w-full max-w-7xl items-center justify-center text-white overflow-visible px-2 sm:px-4">
           <span className="sr-only">Spirit X 2.0</span>
           <Spirit3DLogo className="h-[min(12rem,28svh)] w-full max-w-full sm:h-[min(16rem,32svh)] md:h-[min(20rem,36svh)] lg:h-[min(24rem,38svh)] xl:h-[min(28rem,40svh)]" />

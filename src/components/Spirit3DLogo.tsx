@@ -13,7 +13,21 @@ interface Spirit3DLogoProps {
   className?: string;
 }
 
+/** Tracks the static-viewport query live, so resizing or rotating a device updates the logo. */
+function useStaticViewport() {
+  const [isStatic, setIsStatic] = useState(isStaticViewport);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const onChange = () => setIsStatic(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return isStatic;
+}
+
 export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
+  const isStatic = useStaticViewport();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -91,7 +105,7 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
 
     // Check reduced motion
     const prefersReducedMotion =
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches || isStaticViewport();
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches || isStatic;
 
     // Scene & Camera
     const scene = new THREE.Scene();
@@ -405,7 +419,7 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
         renderer.dispose();
       }
     };
-  }, []);
+  }, [isStatic]);
 
   if (hasError) {
     return (
@@ -419,13 +433,13 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
   return (
     <div
       ref={containerRef}
-      className={`relative flex items-center justify-center select-none overflow-visible ${isStaticViewport() ? 'touch-pan-y' : 'touch-none'} ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
+      className={`relative flex items-center justify-center select-none overflow-visible ${isStatic ? 'touch-pan-y' : 'touch-none'} ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
       style={{ perspective: 1000 }}
     >
       {/* Fallback & smooth fade-in */}
       <canvas
         ref={canvasRef}
-        className={`w-full h-full ${isStaticViewport() ? '' : 'cursor-grab active:cursor-grabbing'} transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full ${isStatic ? '' : 'cursor-grab active:cursor-grabbing'} transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         aria-label="Spirit X 2.0 Interactive 3D Model"
         role="img"
       />
