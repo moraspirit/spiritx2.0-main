@@ -51,6 +51,7 @@ const CHAIRS: Chair[] = [
     name: 'Pragathi Jayasinghe',
     role: 'Delegate Lead',
     affiliation: 'MoraSpirit 360',
+    email: 'pragathijayasinghe@gmail.com',
     phone: '071 581 4164',
     photo: '/contact/pragathi.jpeg',
   },

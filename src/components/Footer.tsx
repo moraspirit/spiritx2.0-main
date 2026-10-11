@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import './footer.css';
 import AmbientVideo from './AmbientVideo.tsx';
 import BrandLogo from './BrandLogo.tsx';
@@ -10,7 +9,7 @@ import { REGISTER_HREF } from '../lib/api.ts';
 const NIGHT = { src: '/media/footer-tunnel.mp4', poster: '/media/footer-tunnel.webp' };
 const DAY = { src: '/media/footer-daylight.mp4', poster: '/media/footer-daylight.webp' };
 
-const CONTACT_EMAIL = 'hello@moraspirit.com';
+const CONTACT_EMAIL = 'spiritx@moraspirit.com';
 
 /** Only what's still useful at the very bottom; the fixed nav covers the sections. */
 const LINKS = [
@@ -144,18 +143,9 @@ function OriginalLinePulse() {
   return <canvas ref={canvasRef} className="footer-led-pulse" />;
 }
 
-/** Compact closing band: brand, the dispatch signup, essential links, socials. */
+/** Compact closing band: brand, essential links, socials. */
 export default function Footer() {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
   const light = usePrefersLight();
-
-  // TODO: not wired to any list yet — the address is discarded after the thank-you.
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubscribed(true);
-    setEmail('');
-  };
 
   return (
     <footer className={light ? 'site-footer is-day' : 'site-footer'} id="site-footer">
@@ -169,31 +159,6 @@ export default function Footer() {
           <div className="footer-brand">
             <BrandLogo className="footer-logo" label="Spirit X 2.0" />
             <OrganizerLockup size="sm" className="mt-4" />
-          </div>
-
-          <div className="footer-dispatch">
-            <p className="footer-dispatch-note">Early notice on registration, tracks and finals.</p>
-            <form className="subscribe" onSubmit={handleSubmit}>
-              <label className="footer-sr-only" htmlFor="nl-email">
-                Email address
-              </label>
-              <input
-                id="nl-email"
-                type="email"
-                name="email"
-                placeholder="Leave your email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <button type="submit" aria-label="Subscribe">
-                <ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" />
-              </button>
-            </form>
-            <p className="subscribe-note" role="status">
-              {subscribed ? 'You’re on the list — watch your inbox.' : ' '}
-            </p>
           </div>
         </div>
 
