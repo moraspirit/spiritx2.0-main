@@ -1077,8 +1077,8 @@ a.partner-tile-inner:hover,
     conic-gradient(from 198deg at 94% -4%, transparent 0deg, hsl(var(--brand-ink) / 0.09) 14deg, transparent 28deg),
     radial-gradient(ellipse 28% 18% at 6% 0%, hsl(var(--brand-ink) / 0.22), transparent 70%),
     radial-gradient(ellipse 28% 18% at 94% 0%, hsl(var(--brand-ink) / 0.18), transparent 70%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 85%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 85%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 40%, transparent 85%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 40%, transparent 85%);
 }
 /* Experience hero copy: the hazy daylight photo is mid-grey, so light mode gets a soft page-colour
    cushion behind the small text and full-strength ink. Dark mode is untouched. */

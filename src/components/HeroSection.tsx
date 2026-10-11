@@ -43,6 +43,7 @@ export default function HeroSection() {
         style={themedArtStyle(REVEAL_ART)}
       />
 
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-40 h-48 bg-gradient-to-b from-background via-background/70 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-56 bg-gradient-to-b from-transparent to-background" />
 
       <div className="pointer-events-none absolute inset-x-0 top-[18%] z-50 flex flex-col items-center px-5 text-center sm:top-[16%]">
