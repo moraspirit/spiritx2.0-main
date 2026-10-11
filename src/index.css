@@ -958,6 +958,8 @@ body {
   display: flex;
   height: 100%;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   padding: 1.25rem;
   border-radius: 0.875rem;
   background: hsl(var(--card));
@@ -975,6 +977,7 @@ a.partner-tile-inner:hover,
   display: flex;
   height: 3.5rem;
   align-items: center;
+  justify-content: center;
 }
 .is-featured .partner-mark { height: 5rem; }
 .partner-logo {
@@ -1139,3 +1142,12 @@ a.partner-tile-inner:hover,
   mix-blend-mode: soft-light;
   opacity: 0.4;
 }
+
+/* Logo sheets ship with generous padding, so let them render larger and in colour. */
+.partner-logo.is-full-colour {
+  filter: none;
+  opacity: 1;
+  max-width: 15rem;
+  height: 5.5rem;
+}
+.partner-mark:has(.is-full-colour) { height: 5.5rem; }

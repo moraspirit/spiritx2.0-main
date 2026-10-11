@@ -12,40 +12,24 @@ type Partner = {
   logo?: string;
   /** Renders the MoraSpirit 360 badge (theme-aware) instead of a plain logo. */
   moraspirit?: boolean;
+  /** Show the logo in its own colours instead of the muted greyscale treatment. */
+  fullColour?: boolean;
   href?: string;
 };
 
 type Tier = { label: string; featured?: boolean; partners: Partner[] };
 
-/** Organisers are real; every other tier is MOCK until partnerships are confirmed. */
+/** Only confirmed partners are listed. */
 const TIERS: Tier[] = [
   {
     label: 'Organised by',
     partners: [
-      { name: 'University of Moratuwa', role: 'Host university', href: 'https://uom.lk/' },
       { name: 'MoraSpirit 360', role: 'Organising partner', moraspirit: true, href: 'https://moraspirit.com' },
     ],
   },
   {
-    label: 'Title partner',
-    featured: true,
-    partners: [{ name: 'Title Partner', role: 'Presenting Spirit X 2.0' }],
-  },
-  {
-    label: 'Official partners',
-    partners: [
-      { name: 'Connectivity Partner', role: 'Official connectivity partner' },
-      { name: 'Technology Partner', role: 'Official technology partner' },
-      { name: 'Sports Partner', role: 'Official sports partner' },
-    ],
-  },
-  {
-    label: 'Knowledge & media',
-    partners: [
-      { name: 'Knowledge Partner', role: 'Knowledge partner' },
-      { name: 'Media Partner', role: 'Official media partner' },
-      { name: 'Content Partner', role: 'Visual content partner' },
-    ],
+    label: 'Bronze partner',
+    partners: [{ name: 'Circles', role: 'Bronze partner', logo: '/partners/circles-horizontal.png', fullColour: true }],
   },
 ];
 
@@ -56,7 +40,7 @@ function PartnerTile({ partner, featured }: { partner: Partner; featured?: boole
         {partner.moraspirit ? (
           <OrganizerBadge size={featured ? 'lg' : 'md'} />
         ) : partner.logo ? (
-          <img src={partner.logo} alt="" loading="lazy" decoding="async" className="partner-logo" />
+          <img src={partner.logo} alt="" loading="lazy" decoding="async" className={cn('partner-logo', partner.fullColour && 'is-full-colour')} />
         ) : (
           <span className="partner-wordmark">{partner.name}</span>
         )}
@@ -91,7 +75,7 @@ export default function PartnersSection() {
             Organisers <em className="font-serif font-normal text-brand-ink">&amp; partners.</em>
           </motion.h2>
           <motion.p variants={rise} className="mt-4 max-w-md text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-            The institutions and companies putting Spirit X 2.0 on the field.
+            The people putting Spirit X 2.0 on the field.
           </motion.p>
         </motion.div>
 
