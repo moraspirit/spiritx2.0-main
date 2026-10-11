@@ -25,7 +25,7 @@ export default function SpiritGallery() {
     <section
       id="moments"
       aria-labelledby="moments-heading"
-      className="gallery-section relative isolate bg-background text-foreground"
+      className="gallery-section section-glow bg-background text-foreground"
     >
       <ParallaxUnfurlingGallery
         photos={PHOTOS}
