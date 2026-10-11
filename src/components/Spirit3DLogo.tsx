@@ -5,6 +5,10 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import BrandLogo from './BrandLogo.tsx';
 import { usePrefersLight } from '../usePrefersLight.ts';
 
+/** Phones and touch screens get a still logo: no float, sway, shine sweep or drag. */
+const isStaticViewport = () =>
+  typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+
 interface Spirit3DLogoProps {
   className?: string;
 }
@@ -86,7 +90,8 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
     let modelGroup: THREE.Group | null = null;
 
     // Check reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches || isStaticViewport();
 
     // Scene & Camera
     const scene = new THREE.Scene();
@@ -279,12 +284,12 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
       if (isPointerDown) {
         const deltaX = (e.clientX - pointerStartX) / rect.width;
         const deltaY = (e.clientY - pointerStartY) / rect.height;
-        targetRotationY = baseRotationY + deltaX * 2.2;
-        targetRotationX = baseRotationX - deltaY * 0.35; // Subdued vertical drag tilt
+        targetRotationY = baseRotationY + deltaX * 1.2;
+        targetRotationX = baseRotationX - deltaY * 0.2; // Subdued vertical drag tilt
       } else {
         // Natural hover tilt (kept left/right movement, reduced top/bottom movement)
-        targetRotationY = nx * 0.42;
-        targetRotationX = -ny * 0.08; // Subtle vertical pitch tilt
+        targetRotationY = nx * 0.2;
+        targetRotationX = -ny * 0.04; // Subtle vertical pitch tilt
       }
     };
 
@@ -309,10 +314,13 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
       }
     };
 
-    container.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    container.addEventListener('pointerleave', onPointerLeave);
+    // Static viewports (phones, touch, reduced motion) never react to the pointer.
+    if (!prefersReducedMotion) {
+      container.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+      container.addEventListener('pointerleave', onPointerLeave);
+    }
 
     // Animation Loop
     let clock = new THREE.Clock();
@@ -327,10 +335,10 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
         currentRotationY += (targetRotationY - currentRotationY) * 0.08;
 
         // Subtle ambient floating motion
-        const floatOffset = prefersReducedMotion ? 0 : Math.sin(elapsedTime * 1.8) * 0.06;
-        const autoOscillate = prefersReducedMotion ? 0 : Math.sin(elapsedTime * 0.8) * 0.08;
+        const floatOffset = prefersReducedMotion ? 0 : Math.sin(elapsedTime * 1.1) * 0.025;
+        const autoOscillate = prefersReducedMotion ? 0 : Math.sin(elapsedTime * 0.5) * 0.035;
 
-        modelGroup.rotation.x = currentRotationX + (prefersReducedMotion ? 0 : Math.sin(elapsedTime * 1.2) * 0.03);
+        modelGroup.rotation.x = currentRotationX + (prefersReducedMotion ? 0 : Math.sin(elapsedTime * 0.8) * 0.012);
         modelGroup.rotation.y = currentRotationY + autoOscillate;
         modelGroup.position.y = floatOffset;
       }
@@ -411,13 +419,13 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
   return (
     <div
       ref={containerRef}
-      className={`relative flex items-center justify-center select-none touch-none overflow-visible ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
+      className={`relative flex items-center justify-center select-none overflow-visible ${isStaticViewport() ? 'touch-pan-y' : 'touch-none'} ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
       style={{ perspective: 1000 }}
     >
       {/* Fallback & smooth fade-in */}
       <canvas
         ref={canvasRef}
-        className={`w-full h-full cursor-grab active:cursor-grabbing transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full ${isStaticViewport() ? '' : 'cursor-grab active:cursor-grabbing'} transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         aria-label="Spirit X 2.0 Interactive 3D Model"
         role="img"
       />
