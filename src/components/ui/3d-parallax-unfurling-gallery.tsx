@@ -23,12 +23,13 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
   const trackRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
-  // Round-robin photos into columns, doubled so the drift never runs out of images.
+  // Round-robin photos into columns, repeated three times so the drift never runs out of images
+  // (full-height photos make the columns shorter than they used to be).
   const columns = useMemo(
     () =>
       Array.from({ length: COLUMNS }, (_, c) => {
         const base = photos.filter((_, i) => i % COLUMNS === c);
-        return [...base, ...base];
+        return [...base, ...base, ...base];
       }),
     [photos]
   );
@@ -95,17 +96,17 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
                   {col.map((photo, i) => (
                     <div
                       key={`${c}-${i}`}
-                      className="h-[200px] w-full flex-shrink-0 overflow-hidden bg-muted sm:h-[300px] md:h-[400px]"
+                      className="w-full flex-shrink-0 overflow-hidden bg-muted"
                     >
                       <img
                         src={photo.src}
-                        alt={i < col.length / 2 ? photo.alt : ''}
-                        aria-hidden={i < col.length / 2 ? undefined : true}
-                        loading="lazy"
+                        alt={i < col.length / 3 ? photo.alt : ''}
+                        aria-hidden={i < col.length / 3 ? undefined : true}
+                        width={1400}
+                        height={933}
                         decoding="async"
                         draggable={false}
-                        style={{ objectPosition: photo.pos }}
-                        className="h-full w-full object-cover"
+                        className="block aspect-[3/2] h-auto w-full"
                       />
                     </div>
                   ))}

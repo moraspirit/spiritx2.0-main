@@ -13,7 +13,6 @@ const PHOTOS: ParallaxPhoto[] = [
   { src: '/media/gallery/04.webp', alt: 'A team presenting with the microphone', pos: '50% 30%' },
   { src: '/media/gallery/08.webp', alt: 'Student presenting from a wheelchair with teammates', pos: '48% 35%' },
   { src: '/media/gallery/06.webp', alt: 'Team in Spirit X polos after their thank-you slide', pos: '50% 35%' },
-  { src: '/media/gallery/11.webp', alt: 'Host on mic during Spirit X', pos: '50% 25%' },
   { src: '/media/gallery/01.webp', alt: 'Grand champions holding the Spirit X prize cheque', pos: '50% 35%' },
   { src: '/media/gallery/09.webp', alt: 'First runner-up team with their cheque', pos: '50% 35%' },
   { src: '/media/gallery/05.webp', alt: 'Most Popular Idea winners with certificates', pos: '50% 40%' },
