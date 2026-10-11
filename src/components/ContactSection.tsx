@@ -72,6 +72,9 @@ const CHAIRS: Chair[] = [
   },
 ];
 
+/** Three copies so the carousel can wrap around without a visible rewind. */
+const LOOP = [...CHAIRS, ...CHAIRS, ...CHAIRS];
+
 const initials = (name: string) =>
   name
     .split(/\s+/)
@@ -114,36 +117,49 @@ export default function ContactSection() {
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
 
+  const cardStep = () => {
+    const child = scrollRef.current?.firstElementChild as HTMLElement | null;
+    return child ? child.getBoundingClientRect().width + 20 : 340;
+  };
+
   const scrollToNext = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    const child = el.firstElementChild as HTMLElement | null;
-    const cardWidth = child ? child.getBoundingClientRect().width + 20 : 340;
-
-    // If near or at the end, smoothly loop back to the first card
-    if (el.scrollLeft >= maxScroll - 15) {
-      el.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      el.scrollBy({ left: cardWidth, behavior: 'smooth' });
-    }
+    scrollRef.current?.scrollBy({ left: cardStep(), behavior: 'smooth' });
   }, []);
 
   const scrollToPrev = useCallback(() => {
+    scrollRef.current?.scrollBy({ left: -cardStep(), behavior: 'smooth' });
+  }, []);
+
+  // The track holds three copies of the list. Park on the middle copy, and whenever scrolling
+  // settles in an outer copy, jump one set-width back to the same card in the middle copy.
+  useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    const child = el.firstElementChild as HTMLElement | null;
-    const cardWidth = child ? child.getBoundingClientRect().width + 20 : 340;
-
-    // If near or at the start, loop around to the end
-    if (el.scrollLeft <= 15) {
-      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
-    } else {
-      el.scrollBy({ left: -cardWidth, behavior: 'smooth' });
-    }
+    const setWidth = () => el.scrollWidth / 3;
+    const jump = (delta: number) => {
+      el.style.scrollBehavior = 'auto';
+      el.style.scrollSnapType = 'none';
+      el.scrollLeft += delta;
+      requestAnimationFrame(() => {
+        el.style.scrollBehavior = '';
+        el.style.scrollSnapType = '';
+      });
+    };
+    jump(setWidth());
+    let timer: number | undefined;
+    const onScroll = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        const w = setWidth();
+        if (el.scrollLeft < w * 0.5) jump(w);
+        else if (el.scrollLeft > w * 1.5) jump(-w);
+      }, 140);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      el.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   // Automatic loop swiping to the left
@@ -251,11 +267,12 @@ export default function ContactSection() {
             className="contact-slider-track cursor-grab active:cursor-grabbing px-2 sm:px-4"
             aria-label="Chairpersons"
           >
-            {CHAIRS.map((chair, index) => (
+            {LOOP.map((chair, index) => (
               <motion.li
                 key={`${chair.name}-${index}`}
                 variants={lift}
                 className="contact-slide"
+                aria-hidden={index >= CHAIRS.length ? true : undefined}
               >
                 <div className="contact-card flex flex-col justify-between">
                   <div>
@@ -274,6 +291,7 @@ export default function ContactSection() {
                     <a
                         href={`mailto:${chair.email}`}
                         className="contact-link"
+                      tabIndex={index >= CHAIRS.length ? -1 : undefined}
                         title={chair.email}
                         onClick={(e) => {
                           if (isDraggingRef.current) e.preventDefault();
@@ -286,6 +304,7 @@ export default function ContactSection() {
                     <a
                       href={`tel:${chair.phone.replace(/\s+/g, '')}`}
                       className="contact-link"
+                      tabIndex={index >= CHAIRS.length ? -1 : undefined}
                       onClick={(e) => {
                         if (isDraggingRef.current) e.preventDefault();
                       }}
