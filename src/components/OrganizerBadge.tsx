@@ -20,7 +20,7 @@ export default function OrganizerBadge({ size = 'sm', className = '' }: Organize
 
   return (
     <span
-      className={`organizer-badge inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black ring-1 ring-white/15 ${dim} ${className}`}
+      className={`organizer-badge inline-flex shrink-0 items-center justify-center overflow-hidden ${dim} ${className}`}
       title="MoraSpirit 360"
     >
       <img

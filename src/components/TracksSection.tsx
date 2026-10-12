@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, ArrowRight, BarChart3, CalendarDays, ClipboardList, HeartPulse, MonitorSmartphone } from 'lucide-react';
+import { Activity, ArrowRight, BarChart3, ClipboardList, HeartPulse, MonitorSmartphone } from 'lucide-react';
 import { motion, useMotionValueEvent, useTransform } from 'motion/react';
 import {
   CardTransformed,
@@ -33,13 +33,6 @@ const TRACKS = [
     badge: 'Clubs · Operations',
     title: 'Sports Management',
     body: 'Streamline how clubs, teams and associations are run, from rosters to resources.',
-  },
-  {
-    id: 'events',
-    Icon: CalendarDays,
-    badge: 'Tournaments · Logistics',
-    title: 'Event & Competition Management',
-    body: 'Simplify running fixtures, tournaments and events for organisers and participants alike.',
   },
   {
     id: 'analytics',

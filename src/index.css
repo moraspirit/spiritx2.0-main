@@ -416,7 +416,7 @@ body {
 }
 .dark .organizer-badge,
 .stage-dark .organizer-badge {
-  background: #000;
+  background: #00000000;
 }
 
 /* Gallery is a true theme surface (unlike video heroes, which intentionally
@@ -699,19 +699,23 @@ body {
     scroll-snap-align: start;
   }
 }
+.contact-card-shine {
+  height: 100%;
+  border-radius: 1.25rem;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.contact-card-shine:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -10px hsl(var(--brand-ink) / 0.22);
+}
+
 .contact-card {
   height: 100%;
   min-width: 0;
   padding: 2.25rem 1.5rem 1.85rem;
   text-align: center;
-  border-radius: 1.25rem;
+  border-radius: inherit;
   background: hsl(var(--card));
-  box-shadow: inset 0 0 0 1px hsl(var(--border));
-  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.contact-card:hover {
-  transform: translateY(-4px);
-  box-shadow: inset 0 0 0 1px hsl(var(--brand-ink) / 0.5), 0 12px 28px -10px hsl(var(--brand-ink) / 0.16);
 }
 
 .contact-avatar {
@@ -751,8 +755,8 @@ body {
 .contact-link:hover { color: hsl(var(--brand-ink)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .contact-card { transition: none; }
-  .contact-card:hover { transform: none; }
+  .contact-card-shine { transition: none; }
+  .contact-card-shine:hover { transform: none; }
 }
 
 /* ---------- Prizes (PrizesSection) ---------- */
@@ -930,67 +934,114 @@ body {
   background: hsl(var(--background));
 }
 
-/* Each tier: label on the left, logos on the right (stacked on phones). */
-.partner-tier {
-  display: grid;
-  gap: 1rem;
-  padding-block: 1.75rem;
+/* Each tier / showcase: titles on sides, badges centered in one row. */
+.partner-showcase {
   border-top: 1px solid hsl(var(--border));
+  border-bottom: 1px solid hsl(var(--border));
+  padding-block: 2.25rem;
 }
-@media (min-width: 900px) {
-  .partner-tier { grid-template-columns: 12rem minmax(0, 1fr); gap: 2.5rem; align-items: start; }
+
+.partner-showcase-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
+
+@media (min-width: 768px) {
+  .partner-showcase-row {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) auto minmax(8rem, 1fr);
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
 .partner-tier-label {
-  padding-top: 0.35rem;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: hsl(var(--brand-ink));
+  white-space: nowrap;
 }
 
-.partner-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
-  gap: 0.75rem;
+.partner-side-title {
+  width: 100%;
 }
-.partner-grid.is-featured { grid-template-columns: minmax(0, 26rem); }
+
+.partner-side-title.is-left {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.partner-side-title.is-right {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.partner-badges-center {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+}
+
+.partner-tile {
+  width: clamp(10.5rem, 24vw, 15.5rem);
+  display: flex;
+}
 
 .partner-tile-inner {
+  width: 100%;
   display: flex;
   height: 100%;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 1.25rem;
+  padding: 1.5rem 1.25rem;
   border-radius: 0.875rem;
   background: hsl(var(--card));
   box-shadow: inset 0 0 0 1px hsl(var(--border));
   transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 a.partner-tile-inner:hover,
 .partner-tile-inner:hover {
   transform: translateY(-2px);
   box-shadow: inset 0 0 0 1px hsl(var(--brand-ink) / 0.4);
 }
-.is-featured .partner-tile-inner { padding: 1.75rem; }
 
 .partner-mark {
   display: flex;
-  height: 3.5rem;
+  height: 4.5rem;
+  width: 100%;
   align-items: center;
   justify-content: center;
 }
-.is-featured .partner-mark { height: 5rem; }
+
 .partner-logo {
-  max-height: 100%;
-  max-width: 10rem;
+  max-height: 3.25rem;
+  max-width: 9.5rem;
   object-fit: contain;
   filter: grayscale(1);
   opacity: 0.8;
   transition: filter 0.4s, opacity 0.4s;
 }
+
+.partner-logo.is-full-colour {
+  filter: none;
+  opacity: 1;
+  max-height: 3.5rem;
+  max-width: 11rem;
+}
+
 .partner-tile-inner:hover .partner-logo { filter: none; opacity: 1; }
+
 /* Stand-in until a real logo is supplied. */
 .partner-wordmark {
   font-family: 'Instrument Serif', Georgia, serif;
@@ -999,7 +1050,6 @@ a.partner-tile-inner:hover,
   letter-spacing: -0.01em;
   color: hsl(var(--foreground) / 0.55);
 }
-.is-featured .partner-wordmark { font-size: 2.25rem; }
 
 @media (prefers-reduced-motion: reduce) {
   .partner-tile-inner { transition: none; }
@@ -1145,11 +1195,3 @@ a.partner-tile-inner:hover,
   opacity: 0.4;
 }
 
-/* Logo sheets ship with generous padding, so let them render larger and in colour. */
-.partner-logo.is-full-colour {
-  filter: none;
-  opacity: 1;
-  max-width: 15rem;
-  height: 5.5rem;
-}
-.partner-mark:has(.is-full-colour) { height: 5.5rem; }
