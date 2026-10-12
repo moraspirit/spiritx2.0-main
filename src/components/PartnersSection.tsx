@@ -38,14 +38,14 @@ function PartnerTile({ partner, featured }: { partner: Partner; featured?: boole
     <>
       <span className="partner-mark">
         {partner.moraspirit ? (
-          <OrganizerBadge size={featured ? 'lg' : 'md'} />
+          <OrganizerBadge size="lg" />
         ) : partner.logo ? (
           <img src={partner.logo} alt="" loading="lazy" decoding="async" className={cn('partner-logo', partner.fullColour && 'is-full-colour')} />
         ) : (
           <span className="partner-wordmark">{partner.name}</span>
         )}
       </span>
-      <span className="mt-4 block">
+      <span className="mt-4 block text-center">
         <span className="block text-sm font-medium text-foreground">{partner.name}</span>
         {partner.role ? <span className="mt-0.5 block text-xs text-muted-foreground">{partner.role}</span> : null}
       </span>
@@ -53,7 +53,7 @@ function PartnerTile({ partner, featured }: { partner: Partner; featured?: boole
   );
 
   return (
-    <motion.li variants={lift} className={cn('partner-tile', featured && 'is-featured')}>
+    <motion.li variants={lift} className={cn('partner-tile list-none', featured && 'is-featured')}>
       {partner.href ? (
         <a href={partner.href} target="_blank" rel="noopener noreferrer" className="partner-tile-inner">
           {body}
@@ -66,6 +66,9 @@ function PartnerTile({ partner, featured }: { partner: Partner; featured?: boole
 }
 
 export default function PartnersSection() {
+  const leftTier = TIERS[0];
+  const rightTier = TIERS[1];
+
   return (
     <section id="partners" aria-labelledby="partners-title" className="partners-section relative isolate">
       <SectionBackdrop src="/media/bg/partners-stadium-streaks.webp" position="50% 55%" veil={0.74} />
@@ -79,23 +82,46 @@ export default function PartnersSection() {
           </motion.p>
         </motion.div>
 
-        <div className="mt-12 sm:mt-16">
-          {TIERS.map((tier) => (
-            <div key={tier.label} className="partner-tier">
-              <motion.h3 {...revealOnce} variants={rise} className="partner-tier-label">
-                {tier.label}
+        <div className="partner-showcase mt-12 sm:mt-16">
+          {/* Mobile titles header (< md) */}
+          <div className="partner-mobile-titles flex md:hidden items-center justify-between pb-3 px-1">
+            <motion.h3 {...revealOnce} variants={rise} className="partner-tier-label text-left">
+              {leftTier.label}
+            </motion.h3>
+            <motion.h3 {...revealOnce} variants={rise} className="partner-tier-label text-right">
+              {rightTier.label}
+            </motion.h3>
+          </div>
+
+          <div className="partner-showcase-row">
+            {/* Desktop Left Tier Title: aligned left */}
+            <div className="partner-side-title is-left hidden md:flex items-center justify-start">
+              <motion.h3 {...revealOnce} variants={rise} className="partner-tier-label text-left">
+                {leftTier.label}
               </motion.h3>
-              <motion.ul
-                {...revealOnce}
-                variants={stagger(0.08)}
-                className={cn('partner-grid', tier.featured && 'is-featured')}
-              >
-                {tier.partners.map((partner) => (
-                  <PartnerTile key={partner.name} partner={partner} featured={tier.featured} />
-                ))}
-              </motion.ul>
             </div>
-          ))}
+
+            {/* Badges in ONE row: centered */}
+            <motion.ul
+              {...revealOnce}
+              variants={stagger(0.08)}
+              className="partner-badges-center"
+            >
+              {leftTier.partners.map((partner) => (
+                <PartnerTile key={partner.name} partner={partner} featured={leftTier.featured} />
+              ))}
+              {rightTier.partners.map((partner) => (
+                <PartnerTile key={partner.name} partner={partner} featured={rightTier.featured} />
+              ))}
+            </motion.ul>
+
+            {/* Desktop Right Tier Title: aligned right */}
+            <div className="partner-side-title is-right hidden md:flex items-center justify-end">
+              <motion.h3 {...revealOnce} variants={rise} className="partner-tier-label text-right">
+                {rightTier.label}
+              </motion.h3>
+            </div>
+          </div>
         </div>
 
         <motion.p {...revealOnce} variants={rise} className="mt-10 text-sm text-muted-foreground">
