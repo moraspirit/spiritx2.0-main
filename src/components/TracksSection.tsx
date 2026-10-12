@@ -35,13 +35,6 @@ const TRACKS = [
     body: 'Streamline how clubs, teams and associations are run, from rosters to resources.',
   },
   {
-    id: 'events',
-    Icon: CalendarDays,
-    badge: 'Tournaments · Logistics',
-    title: 'Event & Competition Management',
-    body: 'Simplify running fixtures, tournaments and events for organisers and participants alike.',
-  },
-  {
     id: 'analytics',
     Icon: BarChart3,
     badge: 'Data · Insight',
