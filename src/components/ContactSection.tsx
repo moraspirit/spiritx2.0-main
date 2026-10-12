@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback, type MouseEvent as ReactMouse
 import { ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
 import SectionBackdrop from './SectionBackdrop.tsx';
+import ShineBorder from './ui/shine-border.tsx';
 import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Chair = {
@@ -252,28 +253,6 @@ export default function ContactSection() {
           onTouchStart={() => { isInteractingRef.current = true; }}
           onTouchEnd={() => { isInteractingRef.current = false; }}
         >
-          {/* Left Arrow Button */}
-          <button
-            type="button"
-            onClick={scrollToPrev}
-            aria-label="Previous chairperson"
-            title="Previous chairperson"
-            className="absolute -left-3 sm:-left-5 top-1/2 z-20 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <ChevronLeft size={24} strokeWidth={2.2} />
-          </button>
-
-          {/* Right Arrow Button */}
-          <button
-            type="button"
-            onClick={scrollToNext}
-            aria-label="Next chairperson"
-            title="Next chairperson"
-            className="absolute -right-3 sm:-right-5 top-1/2 z-20 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <ChevronRight size={24} strokeWidth={2.2} />
-          </button>
-
           {/* Swipeable / Scrollable Slider Track */}
           <motion.ul
             {...revealOnce}
@@ -292,49 +271,90 @@ export default function ContactSection() {
                 className="contact-slide"
                 aria-hidden={index >= CHAIRS.length ? true : undefined}
               >
-                <div className="contact-card flex flex-col justify-between">
-                  <div>
-                    <Avatar chair={chair} />
-                    <h3 className="mt-6 truncate text-lg font-semibold tracking-tight text-foreground" title={chair.name}>
-                      {chair.name}
-                    </h3>
-                    {chair.role ? (
-                      <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">{chair.role}</p>
-                    ) : null}
-                    <p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>
-                  </div>
-                  
-                  <div className="mt-6 flex flex-col items-center gap-1 border-t border-border/60 pt-4 text-sm">
-                    {chair.email ? (
-                    <a
-                        href={`mailto:${chair.email}`}
+                <ShineBorder
+                  borderWidth={2}
+                  duration={3.5}
+                  color="hsl(var(--brand-ink))"
+                  borderRadius="1.25rem"
+                  showOnHover={true}
+                  className="contact-card-shine"
+                >
+                  <div className="contact-card flex flex-col justify-between">
+                    <div>
+                      <Avatar chair={chair} />
+                      <h3 className="mt-6 truncate text-lg font-semibold tracking-tight text-foreground" title={chair.name}>
+                        {chair.name}
+                      </h3>
+                      {chair.role ? (
+                        <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">{chair.role}</p>
+                      ) : null}
+                      <p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>
+                    </div>
+                    
+                    <div className="mt-6 flex flex-col items-center gap-1 border-t border-border/60 pt-4 text-sm">
+                      {chair.email ? (
+                      <a
+                          href={`mailto:${chair.email}`}
+                          className="contact-link"
+                        tabIndex={index >= CHAIRS.length ? -1 : undefined}
+                          title={chair.email}
+                          onClick={(e) => {
+                            if (isDraggingRef.current) e.preventDefault();
+                          }}
+                        >
+                          <Mail size={14} strokeWidth={1.75} aria-hidden="true" />
+                          <span className="truncate">{chair.email}</span>
+                        </a>
+                      ) : null}
+                      <a
+                        href={`tel:${chair.phone.replace(/\s+/g, '')}`}
                         className="contact-link"
-                      tabIndex={index >= CHAIRS.length ? -1 : undefined}
-                        title={chair.email}
+                        tabIndex={index >= CHAIRS.length ? -1 : undefined}
                         onClick={(e) => {
                           if (isDraggingRef.current) e.preventDefault();
                         }}
                       >
-                        <Mail size={14} strokeWidth={1.75} aria-hidden="true" />
-                        <span className="truncate">{chair.email}</span>
+                        <Phone size={14} strokeWidth={1.75} aria-hidden="true" />
+                        <span className="tabular-nums">{chair.phone}</span>
                       </a>
-                    ) : null}
-                    <a
-                      href={`tel:${chair.phone.replace(/\s+/g, '')}`}
-                      className="contact-link"
-                      tabIndex={index >= CHAIRS.length ? -1 : undefined}
-                      onClick={(e) => {
-                        if (isDraggingRef.current) e.preventDefault();
-                      }}
-                    >
-                      <Phone size={14} strokeWidth={1.75} aria-hidden="true" />
-                      <span className="tabular-nums">{chair.phone}</span>
-                    </a>
+                    </div>
                   </div>
-                </div>
+                </ShineBorder>
               </motion.li>
             ))}
           </motion.ul>
+
+          {/* Left Arrow Button (Rendered AFTER track to ensure top stacking order) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollToPrev();
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            aria-label="Previous chairperson"
+            title="Previous chairperson"
+            className="absolute -left-2 sm:-left-4 lg:-left-6 top-1/2 z-40 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <ChevronLeft size={24} strokeWidth={2.2} />
+          </button>
+
+          {/* Right Arrow Button (Rendered AFTER track to ensure top stacking order) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollToNext();
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            aria-label="Next chairperson"
+            title="Next chairperson"
+            className="absolute -right-2 sm:-right-4 lg:-right-6 top-1/2 z-40 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <ChevronRight size={24} strokeWidth={2.2} />
+          </button>
         </div>
       </div>
     </section>
