@@ -416,7 +416,7 @@ body {
 }
 .dark .organizer-badge,
 .stage-dark .organizer-badge {
-  background: #000;
+  background: #00000000;
 }
 
 /* Gallery is a true theme surface (unlike video heroes, which intentionally
