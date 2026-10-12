@@ -5,6 +5,7 @@ import Home from './pages/Home.tsx';
 import Register from './pages/Register.tsx';
 import { ThemeProvider } from './theme.tsx';
 import SplashCursor from './components/SplashCursor.tsx';
+import ScrollToTop from './components/ScrollToTop.tsx';
 
 export default function App() {
   const route = useHashRoute();
@@ -27,6 +28,7 @@ export default function App() {
         />
         <SiteNav route={route} />
         {route === '/register' ? <Register /> : <Home />}
+        <ScrollToTop />
       </MotionConfig>
     </ThemeProvider>
   );
