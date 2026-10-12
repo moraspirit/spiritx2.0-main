@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, ArrowRight, BarChart3, CalendarDays, ClipboardList, HeartPulse, MonitorSmartphone } from 'lucide-react';
+import { Activity, ArrowRight, BarChart3, ClipboardList, HeartPulse, MonitorSmartphone } from 'lucide-react';
 import { motion, useMotionValueEvent, useTransform } from 'motion/react';
 import {
   CardTransformed,

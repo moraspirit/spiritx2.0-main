@@ -75,7 +75,7 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
           onClick={scrollToTop}
           aria-label={`Scroll to top (${Math.round(progress)}% scrolled)`}
           title={`Scroll to top (${Math.round(progress)}%)`}
-          className="group fixed bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))] right-[max(1.5rem,calc(env(safe-area-inset-right)+1rem))] z-50 flex items-center justify-center rounded-full bg-white dark:bg-[#0c111a] shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.5)] border border-slate-200/80 dark:border-white/10 p-0 text-[#0f2b46] dark:text-[#74CEDD] hover:shadow-[0_6px_24px_rgba(0,0,0,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer"
+          className="group fixed bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))] right-[max(1.5rem,calc(env(safe-area-inset-right)+1rem))] z-50 flex items-center justify-center rounded-full border border-border bg-card shadow-[0_4px_24px_rgba(0,0,0,0.5)] p-0 text-brand-ink hover:shadow-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer"
           style={{ width: size, height: size }}
         >
           <svg
@@ -85,14 +85,6 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
             className="absolute inset-0 -rotate-90 pointer-events-none"
             aria-hidden="true"
           >
-            <defs>
-              <linearGradient id="scroll-progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#ea580c" />
-                <stop offset="50%" stopColor="#f97316" />
-                <stop offset="100%" stopColor="#f59e0b" />
-              </linearGradient>
-            </defs>
-
             {/* Background subtle track */}
             <circle
               cx={center}
@@ -101,7 +93,7 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
               stroke="currentColor"
               strokeWidth={strokeWidth}
               fill="transparent"
-              className="text-slate-100 dark:text-white/10"
+              className="text-white/10"
             />
 
             {/* Active progress arc */}
@@ -109,7 +101,7 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
               cx={center}
               cy={center}
               r={radius}
-              stroke="url(#scroll-progress-gradient)"
+              stroke="hsl(var(--brand-ink))"
               strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
@@ -120,7 +112,7 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
           </svg>
 
           <ChevronUp
-            className="relative z-10 w-5 h-5 text-[#0f2b46] dark:text-[#74CEDD] transition-transform duration-200 group-hover:-translate-y-0.5"
+            className="relative z-10 w-5 h-5 text-brand-ink transition-transform duration-200 group-hover:-translate-y-0.5"
             strokeWidth={2.6}
             aria-hidden="true"
           />
