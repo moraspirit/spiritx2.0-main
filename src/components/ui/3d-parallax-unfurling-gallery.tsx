@@ -34,24 +34,27 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
   const isMobile = viewport.w < 768;
 
   // Phones get a slightly shorter track than desktop, but still long enough for the unfurl to play.
-  const effectiveHeight = isMobile ? 250 : heightVh;
+  const effectiveHeight = isMobile ? 170 : heightVh;
 
   // Repeat each column's photos until it is comfortably taller than the wall plus its drift,
   // so no column runs out of photos (the old fixed 2x left gaps on narrow screens).
   const numColumns = isMobile ? 3 : COLUMNS;
+  // Phones show a shorter wall and only the first nine photos, so the section stays brief.
+  const wallVh = isMobile ? 115 : 150;
+  const shown = useMemo(() => (isMobile ? photos.slice(0, 9) : photos), [photos, isMobile]);
   const columns = useMemo(() => {
     const colWidth = Math.max(viewport.w * 0.22, viewport.w < 640 ? 130 : viewport.w < 768 ? 170 : 200);
     const gap = viewport.w < 768 ? 12 : 24;
     const itemHeight = (colWidth * 2) / 3 + gap;
-    const wallHeight = viewport.h * 1.5;
-    const needed = wallHeight * 1.7;
+    const wallHeight = viewport.h * (wallVh / 100);
+    const needed = wallHeight * (isMobile ? 1.35 : 1.7);
     return Array.from({ length: numColumns }, (_, c) => {
-      const base = photos.filter((_, i) => i % numColumns === c);
+      const base = shown.filter((_, i) => i % numColumns === c);
       if (base.length === 0) return base;
       const repeats = Math.min(8, Math.max(2, Math.ceil(needed / (base.length * itemHeight))));
       return Array.from({ length: repeats }, () => base).flat();
     });
-  }, [photos, viewport, numColumns]);
+  }, [shown, viewport, numColumns, wallVh, isMobile]);
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] });
   // Touch scrolling maps straight to scroll progress: a spring adds visible lag under a finger.
@@ -73,11 +76,12 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
   const rotateZ = useTransform(p, [0.12, 1], [6, 1]);
   const z = useTransform(p, [0.12, 1], [-350, 0]);
 
+  const k = isMobile ? 0.5 : 1;
   const drift = [
-    useTransform(p, [0.12, 1], ['0%', '-40%']),
-    useTransform(p, [0.12, 1], ['-40%', '10%']),
-    useTransform(p, [0.12, 1], ['0%', '-40%']),
-    useTransform(p, [0.12, 1], ['-30%', '20%']),
+    useTransform(p, [0.12, 1], ['0%', `${-40 * k}%`]),
+    useTransform(p, [0.12, 1], [`${-40 * k}%`, `${10 * k}%`]),
+    useTransform(p, [0.12, 1], ['0%', `${-40 * k}%`]),
+    useTransform(p, [0.12, 1], [`${-30 * k}%`, `${20 * k}%`]),
   ];
 
   return (
@@ -104,8 +108,8 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
             />
 
             <motion.div
-              style={{ rotateX, rotateY, rotateZ, z, opacity: wallOpacity, transformStyle: 'preserve-3d' }}
-              className="flex h-[150vh] w-[120vw] origin-center items-center justify-center gap-3 will-change-transform md:gap-6"
+              style={{ rotateX, rotateY, rotateZ, z, opacity: wallOpacity, transformStyle: 'preserve-3d', height: `${wallVh}vh` }}
+              className="flex w-[120vw] origin-center items-center justify-center gap-3 will-change-transform md:gap-6"
             >
               {columns.map((col, c) => (
                 <motion.div
@@ -120,8 +124,8 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
                     >
                       <img
                         src={photo.src}
-                        alt={i < Math.ceil(photos.length / numColumns) ? photo.alt : ''}
-                        aria-hidden={i < Math.ceil(photos.length / numColumns) ? undefined : true}
+                        alt={i < Math.ceil(shown.length / numColumns) ? photo.alt : ''}
+                        aria-hidden={i < Math.ceil(shown.length / numColumns) ? undefined : true}
                         width={1400}
                         height={933}
                         decoding="async"
