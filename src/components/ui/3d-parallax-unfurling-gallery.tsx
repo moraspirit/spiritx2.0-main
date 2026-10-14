@@ -22,31 +22,39 @@ const COLUMNS = 4;
 export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  const [isMobile, setIsMobile] = useState(false);
+  const [viewport, setViewport] = useState({ w: 1280, h: 800 });
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
     check();
     window.addEventListener('resize', check, { passive: true });
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // On mobile view, speed up scroll by shortening track to 115svh so 1-2 thumb swipes pass through smoothly
-  const effectiveHeight = isMobile ? 115 : heightVh;
+  const isMobile = viewport.w < 768;
 
-  // On mobile, use 3 columns and single set to drastically reduce 3D DOM overhead and improve FPS
+  // Phones get a slightly shorter track than desktop, but still long enough for the unfurl to play.
+  const effectiveHeight = isMobile ? 250 : heightVh;
+
+  // Repeat each column's photos until it is comfortably taller than the wall plus its drift,
+  // so no column runs out of photos (the old fixed 2x left gaps on narrow screens).
   const numColumns = isMobile ? 3 : COLUMNS;
-  const columns = useMemo(
-    () =>
-      Array.from({ length: numColumns }, (_, c) => {
-        const base = photos.filter((_, i) => i % numColumns === c);
-        return isMobile ? [...base, ...base] : [...base, ...base, ...base];
-      }),
-    [photos, numColumns, isMobile]
-  );
+  const columns = useMemo(() => {
+    const colWidth = Math.max(viewport.w * 0.22, viewport.w < 640 ? 130 : viewport.w < 768 ? 170 : 200);
+    const gap = viewport.w < 768 ? 12 : 24;
+    const itemHeight = (colWidth * 2) / 3 + gap;
+    const wallHeight = viewport.h * 1.5;
+    const needed = wallHeight * 1.7;
+    return Array.from({ length: numColumns }, (_, c) => {
+      const base = photos.filter((_, i) => i % numColumns === c);
+      if (base.length === 0) return base;
+      const repeats = Math.min(8, Math.max(2, Math.ceil(needed / (base.length * itemHeight))));
+      return Array.from({ length: repeats }, () => base).flat();
+    });
+  }, [photos, viewport, numColumns]);
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] });
-  // On mobile, map directly to scrollYProgress for instant, zero-lag scrolling without spring sluggishness
+  // Touch scrolling maps straight to scroll progress: a spring adds visible lag under a finger.
   const spring = useSpring(scrollYProgress, { stiffness: 100, damping: 20, mass: 0.5 });
   const settled = useMotionValue(1);
   const p = reduce ? settled : (isMobile ? scrollYProgress : spring);
@@ -103,7 +111,7 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
                 <motion.div
                   key={c}
                   style={{ y: drift[c] }}
-                  className="flex w-[22vw] min-w-[130px] sm:min-w-[170px] md:min-w-[200px] flex-col gap-3 md:gap-6"
+                  className="flex w-[22vw] min-w-[130px] shrink-0 flex-col gap-3 sm:min-w-[170px] md:min-w-[200px] md:gap-6"
                 >
                   {col.map((photo, i) => (
                     <div
@@ -112,8 +120,8 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
                     >
                       <img
                         src={photo.src}
-                        alt={i < col.length / 3 ? photo.alt : ''}
-                        aria-hidden={i < col.length / 3 ? undefined : true}
+                        alt={i < Math.ceil(photos.length / numColumns) ? photo.alt : ''}
+                        aria-hidden={i < Math.ceil(photos.length / numColumns) ? undefined : true}
                         width={1400}
                         height={933}
                         decoding="async"

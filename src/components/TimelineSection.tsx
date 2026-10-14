@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown } from 'lucide-react';
 import {
   AnimatePresence,
@@ -162,7 +162,7 @@ function MilestoneBody({ m, i, here }: { m: Milestone; i: number; here: Here }) 
   );
 }
 
-function Panel({ m, i, pos, active, here }: { m: Milestone; i: number; pos: MotionValue<number>; active: boolean; here: Here }) {
+const Panel = memo(function Panel({ m, i, pos, active, here }: { m: Milestone; i: number; pos: MotionValue<number>; active: boolean; here: Here }) {
   // Focus falls off with distance from the current milestone.
   const distance = useTransform(pos, (v) => Math.min(1, Math.abs(v - i)));
   const opacity = useTransform(distance, [0, 1], [1, 0.2]);
@@ -175,7 +175,7 @@ function Panel({ m, i, pos, active, here }: { m: Milestone; i: number; pos: Moti
       </motion.div>
     </li>
   );
-}
+});
 
 function Rail({
   progress,
@@ -231,11 +231,13 @@ function Rail({
 function PinnedTimeline() {
   const sectionRef = useRef<HTMLElement>(null);
   const light = usePrefersLight();
+  const isMobile = useIsMobile();
   const here = useMemo(() => whereWeAre(Date.now()), []);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] });
   const smooth = useSpring(scrollYProgress, { stiffness: 170, damping: 34, restDelta: 0.0005 });
-  const pos = useTransform(smooth, [HOLD, 1 - HOLD], [0, N - 1]);
+  // On phones the strip follows the finger's scroll directly: a spring trailing behind it feels laggy.
+  const pos = useTransform(isMobile ? scrollYProgress : smooth, [HOLD, 1 - HOLD], [0, N - 1]);
   const railProgress = useTransform(pos, [0, N - 1], [0, 1]);
   const x = useTransform(pos, (v) => `calc(var(--panel) * ${-v})`);
 
@@ -263,7 +265,15 @@ function PinnedTimeline() {
       style={{ height: HEIGHT }}
     >
       <div className="sticky top-0 flex h-svh flex-col overflow-hidden">
-        {light ? null : (
+        {light ? null : isMobile ? (
+          // Same look as the video's first frame, without decoding video under a scroll-linked stage.
+          <img
+            src={STADIUM.poster}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover opacity-30"
+          />
+        ) : (
           <AmbientVideo className="absolute inset-0 h-full w-full object-cover opacity-30" cut={STADIUM} lazy />
         )}
         <div aria-hidden="true" className="timeline-scrim pointer-events-none absolute inset-0" />
@@ -304,7 +314,7 @@ function PinnedTimeline() {
         <div className="relative z-10 min-h-0 flex-1">
           <motion.ol
             aria-label="Spirit X 2.0 milestones"
-            className="absolute inset-y-0 left-0 flex w-max items-center"
+            className="absolute inset-y-0 left-0 flex w-max items-center will-change-transform"
             style={{ x, paddingLeft: 'calc(50% - var(--panel) / 2)' }}
           >
             {MILESTONES.map((m, i) => (
@@ -317,6 +327,19 @@ function PinnedTimeline() {
       </div>
     </section>
   );
+}
+
+/** True below the md breakpoint; follows resizes and rotation. */
+function useIsMobile() {
+  const [mobile, setMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const onChange = () => setMobile(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return mobile;
 }
 
 /** Reduced motion: no pinning, no panning — the same milestones as a plain grid. */

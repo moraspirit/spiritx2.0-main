@@ -853,6 +853,9 @@ body {
   padding: clamp(4.5rem, 9vw, 7.5rem) max(1.25rem, env(safe-area-inset-left));
   background: hsl(var(--background));
 }
+@media (max-width: 639px) {
+  .partners-section { padding-bottom: 3rem; }
+}
 .faq-list { border-top: 1px solid hsl(var(--border)); }
 .faq-item { border-bottom: 1px solid hsl(var(--border)); }
 
