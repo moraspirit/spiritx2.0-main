@@ -22,6 +22,18 @@
   -webkit-mask-image: linear-gradient(to bottom,transparent 5%,#000 21%,#000 88%,transparent 100%);
   mask-image: linear-gradient(to bottom,transparent 5%,#000 21%,#000 88%,transparent 100%);
 }
+/* Empty band between home chapters — separates sections without changing type size. */
+.section-gap {
+  height: clamp(3.5rem, 10vw, 6.5rem);
+  background: hsl(var(--background));
+  flex: none;
+}
+@media (max-width: 767px) {
+  .section-gap {
+    height: 4.5rem;
+  }
+}
+
 .challenge-intro {
   padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left));
   background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background));
@@ -166,7 +178,6 @@
   }
 
   /* Skip layout/paint for off-screen chapters on the long home page. */
-  #prizes,
   #experience,
   #stories,
   #partners,

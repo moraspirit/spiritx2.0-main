@@ -2,8 +2,8 @@ import ChallengeHero from '../components/ChallengeHero.tsx';
 import ChallengeIntro from '../components/ChallengeIntro.tsx';
 import TracksSection from '../components/TracksSection.tsx';
 import TimelineSection from '../components/TimelineSection.tsx';
-import PrizesAnnouncedLaterSection from '../components/PrizesAnnouncedLaterSection.tsx';
 // Kept for when official prize pool is announced:
+// import PrizesAnnouncedLaterSection from '../components/PrizesAnnouncedLaterSection.tsx';
 // import PrizesSection from '../components/PrizesSection.tsx';
 import HeroSection from '../components/HeroSection.tsx';
 
@@ -14,24 +14,37 @@ import FaqSection from '../components/FaqSection.tsx';
 import ContactSection from '../components/ContactSection.tsx';
 import Footer from '../components/Footer.tsx';
 
+/** Empty band between chapters so sections read as separate beats, not one continuous block. */
+function SectionGap() {
+  return <div className="section-gap" aria-hidden="true" />;
+}
+
 /** The whole story on one scroll. Section ids match SECTIONS in useHashRoute.ts. */
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <ChallengeHero />
+      <SectionGap />
       <ChallengeIntro />
+      <SectionGap />
       <TracksSection />
+      <SectionGap />
       <TimelineSection />
-      <PrizesAnnouncedLaterSection />
+      <SectionGap />
       <HeroSection />
+      <SectionGap />
       <div id="stories">
-  
         <SpiritGallery />
       </div>
+      <SectionGap />
       <PartnersSection />
+      <SectionGap />
       <RegisterSection />
+      <SectionGap />
       <FaqSection />
+      <SectionGap />
       <ContactSection />
+      <SectionGap />
       <Footer />
     </div>
   );

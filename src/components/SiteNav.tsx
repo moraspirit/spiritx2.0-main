@@ -12,14 +12,13 @@ const TABS = [
   { id: 'about', label: 'about' },
   { id: 'challenge', label: 'challenge' },
   { id: 'timeline', label: 'timeline' },
-  { id: 'prizes', label: 'prizes' },
   { id: 'experience', label: 'experience' },
   { id: 'stories', label: 'stories' },
   { id: 'contact', label: 'contact' },
 ] as const;
 
 // The hero counts as "about", so the pill is already on when the page opens.
-const SPY_IDS = ['hero', 'about', 'challenge', 'timeline', 'prizes', 'experience', 'stories', 'register', 'contact'] as const;
+const SPY_IDS = ['hero', 'about', 'challenge', 'timeline', 'experience', 'stories', 'register', 'contact'] as const;
 
 const PILL_TRANSITION = { duration: 0.5, ease: EASE_OUT };
 
