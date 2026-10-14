@@ -119,31 +119,40 @@ export default function ContactSection() {
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
 
-  /** Moves to the neighbouring slide. Works from the slide positions themselves, so it also
-   *  behaves on phones, where one slide fills the view and scroll-snap is mandatory. */
+  /** Moves to the neighbouring slide using getBoundingClientRect for reliable center-alignment
+   *  and native scroll-snap coordination across mobile and desktop. */
   const goToSlide = useCallback((direction: 1 | -1) => {
     const el = scrollRef.current;
     if (!el) return;
     const slides = Array.from(el.children) as HTMLElement[];
     if (slides.length === 0) return;
-    const align = getComputedStyle(slides[0]).scrollSnapAlign.split(' ').pop() === 'center' ? 'center' : 'start';
-    const box = el.getBoundingClientRect();
-    const anchor = align === 'center' ? box.left + box.width / 2 : box.left;
-    let current = 0;
-    let best = Infinity;
+
+    const elRect = el.getBoundingClientRect();
+    const elCenter = elRect.left + elRect.width / 2;
+
+    let currentIndex = 0;
+    let minDistance = Infinity;
+
     slides.forEach((slide, i) => {
-      const r = slide.getBoundingClientRect();
-      const point = align === 'center' ? r.left + r.width / 2 : r.left;
-      const dist = Math.abs(point - anchor);
-      if (dist < best) {
-        best = dist;
-        current = i;
+      const slideRect = slide.getBoundingClientRect();
+      const slideCenter = slideRect.left + slideRect.width / 2;
+      const dist = Math.abs(slideCenter - elCenter);
+      if (dist < minDistance) {
+        minDistance = dist;
+        currentIndex = i;
       }
     });
-    const target = slides[Math.min(slides.length - 1, Math.max(0, current + direction))];
-    const r = target.getBoundingClientRect();
-    const delta = align === 'center' ? r.left + r.width / 2 - anchor : r.left - anchor;
-    el.scrollBy({ left: delta, behavior: 'smooth' });
+
+    const targetIndex = Math.min(slides.length - 1, Math.max(0, currentIndex + direction));
+    const target = slides[targetIndex];
+
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
   }, []);
 
   const scrollToNext = useCallback(() => goToSlide(1), [goToSlide]);
@@ -324,34 +333,34 @@ export default function ContactSection() {
             ))}
           </motion.ul>
 
-          {/* Left Arrow Button (Rendered AFTER track to ensure top stacking order) */}
+          {/* Left Arrow Button */}
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               scrollToPrev();
             }}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
             aria-label="Previous chairperson"
             title="Previous chairperson"
-            className="absolute -left-2 sm:-left-4 lg:-left-6 top-1/2 z-40 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="absolute left-1 sm:-left-4 lg:-left-6 top-1/2 z-50 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto select-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <ChevronLeft size={24} strokeWidth={2.2} />
           </button>
 
-          {/* Right Arrow Button (Rendered AFTER track to ensure top stacking order) */}
+          {/* Right Arrow Button */}
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               scrollToNext();
             }}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
             aria-label="Next chairperson"
             title="Next chairperson"
-            className="absolute -right-2 sm:-right-4 lg:-right-6 top-1/2 z-40 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="absolute right-1 sm:-right-4 lg:-right-6 top-1/2 z-50 flex h-11 w-11 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-brand hover:text-brand hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto select-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <ChevronRight size={24} strokeWidth={2.2} />
           </button>

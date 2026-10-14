@@ -4,10 +4,17 @@ export function scrollToId(id: string, opts: { focus?: boolean } = {}) {
   if (!el) return;
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  el.scrollIntoView({
-    behavior: reduce ? 'auto' : 'smooth',
-    block: opts.focus ? 'center' : 'start',
-  });
+  if (window.__lenis && !reduce) {
+    window.__lenis.scrollTo(el, {
+      offset: opts.focus ? -window.innerHeight / 4 : -70,
+      duration: 1.2,
+    });
+  } else {
+    el.scrollIntoView({
+      behavior: reduce ? 'auto' : 'smooth',
+      block: opts.focus ? 'center' : 'start',
+    });
+  }
 
   if (opts.focus && el instanceof HTMLElement) {
     // Wait for the smooth scroll to settle before stealing focus.

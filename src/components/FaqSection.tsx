@@ -76,21 +76,35 @@ function FaqItem({ faq, index, open, onToggle }: { faq: Faq; index: number; open
           aria-expanded={open}
           aria-controls={`${id}-a`}
           onClick={onToggle}
-          className="faq-trigger"
+          className="faq-trigger group w-full cursor-pointer select-none touch-manipulation"
         >
-          <span className="min-w-0">
+          <span className="min-w-0 text-left">
             <span className="faq-topic">
               {pad(index + 1)} · {faq.topic}
             </span>
             <span className="faq-question">{faq.q}</span>
           </span>
-          <span aria-hidden="true" className="faq-icon">
+          <span
+            aria-hidden="true"
+            className={cn(
+              'faq-icon shrink-0 transition-transform duration-300',
+              open && 'rotate-45'
+            )}
+          >
             <Plus size={18} strokeWidth={1.75} />
           </span>
         </button>
       </h3>
-      <div id={`${id}-a`} role="region" aria-labelledby={`${id}-q`} className="faq-panel" aria-hidden={!open}>
-        <div className="min-h-0 overflow-hidden">
+      <div
+        id={`${id}-a`}
+        role="region"
+        aria-labelledby={`${id}-q`}
+        className={cn(
+          'grid transition-[grid-template-rows,opacity] duration-300 ease-out',
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        )}
+      >
+        <div className="overflow-hidden">
           <p className="faq-answer">{faq.a}</p>
         </div>
       </div>
@@ -117,7 +131,13 @@ export default function FaqSection() {
 
         <motion.ul {...revealOnce} variants={stagger(0.07, 0.05)} className="faq-list">
           {FAQS.map((faq, i) => (
-            <FaqItem key={faq.q} faq={faq} index={i} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
+            <FaqItem
+              key={faq.q}
+              faq={faq}
+              index={i}
+              open={open === i}
+              onToggle={() => setOpen((prev) => (prev === i ? -1 : i))}
+            />
           ))}
         </motion.ul>
       </div>

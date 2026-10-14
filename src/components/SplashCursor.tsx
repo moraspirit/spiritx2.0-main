@@ -63,6 +63,10 @@ export default function SplashCursor({
   const isLight = usePrefersLight();
 
   useEffect(() => {
+    // Only run cursor splash effect on desktop / fine-pointer devices
+    const isTouchOrMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+    if (isTouchOrMobile) return;
+
     const canvasEl = canvasRef.current;
     if (!canvasEl) return;
     const canvas = canvasEl;

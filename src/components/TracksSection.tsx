@@ -143,13 +143,17 @@ function TrackIndex({ active }: { active: number }) {
 
 function TrackDots({ active }: { active: number }) {
   return (
-    <div className="mt-16 flex justify-center gap-2 lg:hidden" aria-hidden="true">
-      {TRACKS.map(({ id }, i) => (
-        <span
+    <div className="mt-8 sm:mt-16 flex justify-center gap-2 lg:hidden">
+      {TRACKS.map(({ id, title }, i) => (
+        <button
           key={id}
+          type="button"
+          onClick={() => scrollToTrack(i)}
+          aria-label={`Jump to direction ${i + 1}: ${title}`}
+          aria-current={i === active ? 'step' : undefined}
           className={cn(
-            'h-1 rounded-full transition-all duration-300',
-            i === active ? 'w-8 bg-brand-ink' : 'w-4 bg-border'
+            'h-2 rounded-full transition-all duration-300 cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+            i === active ? 'w-8 bg-brand-ink' : 'w-4 bg-border/60 hover:bg-border'
           )}
         />
       ))}

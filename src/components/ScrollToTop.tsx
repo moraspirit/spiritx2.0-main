@@ -47,6 +47,10 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
   }, [threshold]);
 
   const scrollToTop = () => {
+    if (window.__lenis) {
+      window.__lenis.scrollTo(0, { duration: 1.2 });
+      return;
+    }
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({
       top: 0,
@@ -75,7 +79,7 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
           onClick={scrollToTop}
           aria-label={`Scroll to top (${Math.round(progress)}% scrolled)`}
           title={`Scroll to top (${Math.round(progress)}%)`}
-          className="group fixed bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))] right-[max(1.5rem,calc(env(safe-area-inset-right)+1rem))] z-50 flex items-center justify-center rounded-full border border-border bg-card shadow-[0_4px_24px_rgba(0,0,0,0.5)] p-0 text-brand-ink hover:shadow-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer"
+          className="group fixed bottom-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] right-[max(1rem,calc(env(safe-area-inset-right)+0.5rem))] sm:bottom-[max(1.5rem,calc(env(safe-area-inset-bottom)+1rem))] sm:right-[max(1.5rem,calc(env(safe-area-inset-right)+1rem))] z-50 flex items-center justify-center rounded-full border border-border bg-card shadow-[0_4px_24px_rgba(0,0,0,0.5)] p-0 text-brand-ink hover:shadow-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer select-none touch-manipulation"
           style={{ width: size, height: size }}
         >
           <svg

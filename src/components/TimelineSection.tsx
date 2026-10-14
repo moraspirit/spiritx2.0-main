@@ -203,16 +203,16 @@ function Rail({
             type="button"
             onClick={() => onJump(i)}
             aria-label={`Go to ${m.title} (${m.date ? m.when : 'date to be announced'})`}
-            className="absolute top-1/2 grid size-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full"
+            className="absolute top-1/2 grid size-8 sm:size-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full touch-manipulation cursor-pointer"
             style={{ left: `${(i / (N - 1)) * 100}%` }}
           >
             {here.index === i ? (
-              <span aria-hidden="true" className="timeline-here-ring absolute size-7 rounded-full border border-brand-ink/70" />
+              <span aria-hidden="true" className="timeline-here-ring absolute size-6 sm:size-7 rounded-full border border-brand-ink/70" />
             ) : null}
             <span
               aria-hidden="true"
               className={cn(
-                'relative size-3 rounded-full border-2 transition-[background-color,border-color,transform] duration-500',
+                'relative size-2.5 sm:size-3 rounded-full border-2 transition-[background-color,border-color,transform] duration-500',
                 i <= active ? 'border-brand-ink bg-brand-ink' : 'border-foreground/35 bg-background',
                 i === active && 'scale-125'
               )}
@@ -247,7 +247,11 @@ function PinnedTimeline() {
     if (!el) return;
     const travel = el.offsetHeight - window.innerHeight;
     const p = HOLD + (i / (N - 1)) * (1 - 2 * HOLD);
-    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + p * travel });
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY + p * travel,
+      behavior: reduce ? 'auto' : 'smooth',
+    });
   };
 
   return (

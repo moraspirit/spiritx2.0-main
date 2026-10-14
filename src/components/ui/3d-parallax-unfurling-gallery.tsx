@@ -1,4 +1,4 @@
-import { useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react';
 
 export type ParallaxPhoto = { src: string; alt: string; pos?: string };
@@ -22,46 +22,58 @@ const COLUMNS = 4;
 export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Round-robin photos into columns, repeated three times so the drift never runs out of images
-  // (full-height photos make the columns shorter than they used to be).
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check, { passive: true });
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // On mobile view, speed up scroll by shortening track to 115svh so 1-2 thumb swipes pass through smoothly
+  const effectiveHeight = isMobile ? 115 : heightVh;
+
+  // On mobile, use 3 columns and single set to drastically reduce 3D DOM overhead and improve FPS
+  const numColumns = isMobile ? 3 : COLUMNS;
   const columns = useMemo(
     () =>
-      Array.from({ length: COLUMNS }, (_, c) => {
-        const base = photos.filter((_, i) => i % COLUMNS === c);
-        return [...base, ...base, ...base];
+      Array.from({ length: numColumns }, (_, c) => {
+        const base = photos.filter((_, i) => i % numColumns === c);
+        return isMobile ? [...base, ...base] : [...base, ...base, ...base];
       }),
-    [photos]
+    [photos, numColumns, isMobile]
   );
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] });
+  // On mobile, map directly to scrollYProgress for instant, zero-lag scrolling without spring sluggishness
   const spring = useSpring(scrollYProgress, { stiffness: 100, damping: 20, mass: 0.5 });
   const settled = useMotionValue(1);
-  const p = reduce ? settled : spring;
+  const p = reduce ? settled : (isMobile ? scrollYProgress : spring);
 
-  const bannerWidth = useTransform(p, [0, 0.15], ['90vw', '100vw']);
-  const bannerHeight = useTransform(p, [0, 0.15], ['80svh', '100svh']);
-  const bannerRadius = useTransform(p, [0, 0.15], ['40px', '0px']);
-  const bannerBorder = useTransform(p, [0, 0.15], ['3px', '0px']);
+  const bannerWidth = useTransform(p, [0, 0.12], ['90vw', '100vw']);
+  const bannerHeight = useTransform(p, [0, 0.12], ['80svh', '100svh']);
+  const bannerRadius = useTransform(p, [0, 0.12], ['40px', '0px']);
+  const bannerBorder = useTransform(p, [0, 0.12], ['3px', '0px']);
   // Wall starts dimmed so the heading reads; it comes up to full strength as the banner opens.
-  const wallOpacity = useTransform(p, [0, 0.15], [0.5, 1]);
-  const introOpacity = useTransform(p, [0, 0.1], [1, 0]);
-  const footerOpacity = useTransform(p, [0.8, 0.95], [0, 1]);
+  const wallOpacity = useTransform(p, [0, 0.12], [0.5, 1]);
+  const introOpacity = useTransform(p, [0, 0.08], [1, 0]);
+  const footerOpacity = useTransform(p, [0.75, 0.95], [0, 1]);
 
-  const rotateY = useTransform(p, [0.15, 1], [-22, -6]);
-  const rotateX = useTransform(p, [0.15, 1], [12, 3]);
-  const rotateZ = useTransform(p, [0.15, 1], [6, 1]);
-  const z = useTransform(p, [0.15, 1], [-350, 0]);
+  const rotateY = useTransform(p, [0.12, 1], [-22, -6]);
+  const rotateX = useTransform(p, [0.12, 1], [12, 3]);
+  const rotateZ = useTransform(p, [0.12, 1], [6, 1]);
+  const z = useTransform(p, [0.12, 1], [-350, 0]);
 
   const drift = [
-    useTransform(p, [0.15, 1], ['0%', '-40%']),
-    useTransform(p, [0.15, 1], ['-40%', '10%']),
-    useTransform(p, [0.15, 1], ['0%', '-40%']),
-    useTransform(p, [0.15, 1], ['-30%', '20%']),
+    useTransform(p, [0.12, 1], ['0%', '-40%']),
+    useTransform(p, [0.12, 1], ['-40%', '10%']),
+    useTransform(p, [0.12, 1], ['0%', '-40%']),
+    useTransform(p, [0.12, 1], ['-30%', '20%']),
   ];
 
   return (
-    <div ref={trackRef} className="relative w-full" style={{ height: `${heightVh}svh` }}>
+    <div ref={trackRef} className="relative w-full" style={{ height: `${effectiveHeight}svh` }}>
       <div className="sticky top-0 flex h-svh w-full items-center justify-center overflow-hidden">
         <motion.div
           style={{
@@ -85,13 +97,13 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
 
             <motion.div
               style={{ rotateX, rotateY, rotateZ, z, opacity: wallOpacity, transformStyle: 'preserve-3d' }}
-              className="flex h-[150vh] w-[120vw] origin-center items-center justify-center gap-4 will-change-transform md:gap-6"
+              className="flex h-[150vh] w-[120vw] origin-center items-center justify-center gap-3 will-change-transform md:gap-6"
             >
               {columns.map((col, c) => (
                 <motion.div
                   key={c}
                   style={{ y: drift[c] }}
-                  className="flex w-[22vw] min-w-[200px] flex-col gap-4 md:gap-6"
+                  className="flex w-[22vw] min-w-[130px] sm:min-w-[170px] md:min-w-[200px] flex-col gap-3 md:gap-6"
                 >
                   {col.map((photo, i) => (
                     <div
