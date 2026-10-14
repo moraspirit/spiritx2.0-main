@@ -19,8 +19,8 @@ export default function RegisterSection() {
       aria-label="Registration"
       className={
         isDark
-          ? 'stage-dark relative isolate flex min-h-[100svh] items-center overflow-hidden bg-background'
-          : 'relative isolate flex min-h-[100svh] items-center overflow-hidden bg-background'
+          ? 'stage-dark relative isolate flex min-h-0 items-center overflow-hidden bg-background sm:min-h-[100svh]'
+          : 'relative isolate flex min-h-0 items-center overflow-hidden bg-background sm:min-h-[100svh]'
       }
     >
       {isDark ? (
@@ -30,7 +30,7 @@ export default function RegisterSection() {
             cut={STADIUM_DARK}
             lazy
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background via-background/55 to-background" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background via-background/30 to-background sm:via-background/55" />
         </>
       ) : (
         <>
@@ -44,7 +44,7 @@ export default function RegisterSection() {
         </>
       )}
 
-      <div className="relative z-10 w-full px-0 pb-[max(2rem,env(safe-area-inset-bottom))] pt-24">
+      <div className="relative z-10 w-full px-0 pb-[max(2rem,env(safe-area-inset-bottom))] pt-10 sm:pt-24">
         <RegisterPanel />
       </div>
     </section>

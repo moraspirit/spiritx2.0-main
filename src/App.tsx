@@ -1,12 +1,14 @@
+import { lazy, Suspense } from 'react';
 import { MotionConfig } from 'motion/react';
 import { useHashRoute } from './useHashRoute.ts';
 import SiteNav from './components/SiteNav.tsx';
 import Home from './pages/Home.tsx';
-import Register from './pages/Register.tsx';
 import { ThemeProvider } from './theme.tsx';
 import SplashCursor from './components/SplashCursor.tsx';
 import ScrollToTop from './components/ScrollToTop.tsx';
 import SmoothScroll from './components/SmoothScroll.tsx';
+
+const Register = lazy(() => import('./pages/Register.tsx'));
 
 export default function App() {
   const route = useHashRoute();
@@ -29,7 +31,13 @@ export default function App() {
             COLOR_PALETTE={['#4C1D95', '#1E3A8A', '#0369A1', '#6B21A8', '#0F172A']}
           />
           <SiteNav route={route} />
-          {route === '/register' ? <Register /> : <Home />}
+          {route === '/register' ? (
+            <Suspense fallback={<div className="min-h-screen bg-background" />}>
+              <Register />
+            </Suspense>
+          ) : (
+            <Home />
+          )}
           <ScrollToTop />
         </SmoothScroll>
       </MotionConfig>

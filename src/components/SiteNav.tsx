@@ -64,23 +64,23 @@ export default function SiteNav({ route }: { route: Route }) {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 px-3 transition-[padding] duration-500 ease-out sm:px-6 md:px-10',
+        'pointer-events-none fixed inset-x-0 top-0 z-50 px-3 transition-[padding] duration-500 ease-out sm:px-6 md:px-10',
         scrolled
           ? 'pt-[max(0.5rem,env(safe-area-inset-top))] sm:pt-3'
           : 'pt-[max(0.75rem,env(safe-area-inset-top))] sm:pt-6'
       )}
     >
-      <nav aria-label="Primary" className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3">
+      <nav aria-label="Primary" className="pointer-events-none mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3">
         <a
           href="#/"
           onClick={onLogo}
           aria-label="Spirit X 2.0 home"
-          className="flex min-h-11 min-w-0 items-center rounded-full border border-border bg-card/80 px-3 py-1 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 sm:px-5"
+          className="pointer-events-auto flex min-h-11 min-w-0 items-center rounded-full border border-border bg-card/80 px-3 py-1 text-foreground backdrop-blur-md transition-colors hover:border-brand/40 sm:px-5"
         >
           <BrandLogo className="h-7 w-auto max-w-[42vw] sm:h-10 sm:max-w-none" />
         </a>
 
-        <div className="hidden items-center gap-0.5 rounded-full border border-border bg-card/80 p-1.5 backdrop-blur-md lg:flex">
+        <div className="pointer-events-auto hidden items-center gap-0.5 rounded-full border border-border bg-card/80 p-1.5 backdrop-blur-md lg:flex">
           {TABS.map((tab) => {
             const isActive = tab.id === active;
             return (
@@ -107,7 +107,7 @@ export default function SiteNav({ route }: { route: Route }) {
           })}
         </div>
 
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="pointer-events-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <a
             href={REGISTER_HREF}
             aria-current={registerCurrent ? 'location' : undefined}
@@ -139,7 +139,7 @@ export default function SiteNav({ route }: { route: Route }) {
         id="mobile-nav"
         className={cn(
           'mx-auto mt-2 max-w-7xl rounded-3xl border border-border bg-card/95 backdrop-blur-md transition-[opacity,transform,visibility] duration-300 lg:hidden',
-          open ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'
+          open ? 'pointer-events-auto visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'
         )}
       >
         <div className="flex flex-col gap-1 p-2">

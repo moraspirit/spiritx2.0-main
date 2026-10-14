@@ -48,7 +48,7 @@ const FAQS: Faq[] = [
   {
     topic: 'Proposal',
     q: 'What do we need to submit first?',
-    a: 'One proposal per team, up to 10 MB, describing the problem and your proposed solution. Only the proposals are evaluated to choose who moves on to the development stage.',
+    a: 'One proposal per team, describing the problem and your proposed solution. Only the proposals are evaluated to choose who moves on to the development stage.',
   },
   {
     topic: 'Prototype',
@@ -57,9 +57,8 @@ const FAQS: Faq[] = [
   },
   {
     topic: 'Finale',
-    q: 'Where is the final evaluation day?',
-    // Venue and date announced later per the booklet.
-    a: 'Finalists present and demo their solutions in person to the judging panel at the University of Moratuwa. The venue and final date will be announced later; the timeline above shows every confirmed date.',
+    q: 'When and where is the final evaluation day?',
+    a: 'The final evaluation day is on 30 January 2027 at the University of Moratuwa. Finalists present and demo their solutions in person to the judging panel.',
   },
 ];
 

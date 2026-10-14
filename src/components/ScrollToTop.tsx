@@ -48,7 +48,12 @@ export default function ScrollToTop({ threshold = 120 }: ScrollToTopProps) {
 
   const scrollToTop = () => {
     if (window.__lenis) {
-      window.__lenis.scrollTo(0, { duration: 1.2 });
+      // Longer pages get a longer glide, with a soft start and a soft landing.
+      const duration = Math.min(3, Math.max(1.6, 1.2 + window.scrollY / 5000));
+      window.__lenis.scrollTo(0, {
+        duration,
+        easing: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+      });
       return;
     }
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
