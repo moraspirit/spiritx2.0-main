@@ -62,11 +62,19 @@ export default function SplashCursor({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isLight = usePrefersLight();
 
-  useEffect(() => {
-    // Only run cursor splash effect on desktop / fine-pointer devices
-    const isTouchOrMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
-    if (isTouchOrMobile) return;
+  // Safeguard: Never render on mobile or touch devices
+  const isDesktopPointer =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+    !window.matchMedia('(pointer: coarse)').matches &&
+    window.innerWidth >= 1024 &&
+    !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+  if (!isDesktopPointer) {
+    return null;
+  }
+
+  useEffect(() => {
     const canvasEl = canvasRef.current;
     if (!canvasEl) return;
     const canvas = canvasEl;
@@ -1011,34 +1019,7 @@ export default function SplashCursor({
       updatePointerMoveData(pointer, posX, posY);
     };
 
-    const onTouchMove = (e: TouchEvent) => {
-      const touches = e.targetTouches;
-      for (let i = 0; i < touches.length; i++) {
-        let pointer = pointers[i];
-        if (!pointer) {
-          pointer = {
-            id: touches[i].identifier,
-            texcoordX: 0,
-            texcoordY: 0,
-            prevTexcoordX: 0,
-            prevTexcoordY: 0,
-            deltaX: 0,
-            deltaY: 0,
-            down: true,
-            moved: false,
-            color: generateColor(),
-          };
-          pointers[i] = pointer;
-        }
-
-        const posX = scaleByPixelRatio(touches[i].clientX);
-        const posY = scaleByPixelRatio(touches[i].clientY);
-        updatePointerMoveData(pointer, posX, posY);
-      }
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
 
     // Render loop
     const update = () => {
@@ -1070,7 +1051,6 @@ export default function SplashCursor({
     return () => {
       cancelAnimationFrame(animFrameId);
       window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('touchmove', onTouchMove);
     };
   }, [
     SIM_RESOLUTION,
