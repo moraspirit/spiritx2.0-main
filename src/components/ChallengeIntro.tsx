@@ -23,21 +23,36 @@ function Word({ word, i, total, progress }: { word: string; i: number; total: nu
   );
 }
 
+const STATEMENT_CLASS =
+  'intro-statement max-w-[34ch] text-pretty text-2xl font-light leading-snug tracking-tight text-foreground sm:text-3xl lg:text-[2.15rem]';
+
 /** The statement brightens word by word as it is read, like a line lighting up across a scoreboard. */
 function ScrollStatement() {
   const ref = useRef<HTMLParagraphElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end 0.45'] });
   const words = STATEMENT.split(' ');
+  // Phones: one opacity track instead of per-word transforms — same text, same fade-in feel.
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const mobileOpacity = useTransform(scrollYProgress, [0, 0.6], [0.35, 1]);
+
+  if (reduceMotion) {
+    return <p className={STATEMENT_CLASS}>{STATEMENT}</p>;
+  }
+
+  if (isMobile) {
+    return (
+      <motion.p ref={ref} style={{ opacity: mobileOpacity }} className={STATEMENT_CLASS}>
+        {STATEMENT}
+      </motion.p>
+    );
+  }
 
   return (
-    <p
-      ref={ref}
-      className="intro-statement max-w-[34ch] text-pretty text-2xl font-light leading-snug tracking-tight text-foreground sm:text-3xl lg:text-[2.15rem]"
-    >
-      {reduceMotion
-        ? STATEMENT
-        : words.map((word, i) => <Word key={`${word}-${i}`} word={word} i={i} total={words.length} progress={scrollYProgress} />)}
+    <p ref={ref} className={STATEMENT_CLASS}>
+      {words.map((word, i) => (
+        <Word key={`${word}-${i}`} word={word} i={i} total={words.length} progress={scrollYProgress} />
+      ))}
     </p>
   );
 }

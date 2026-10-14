@@ -167,10 +167,12 @@ const Panel = memo(function Panel({ m, i, pos, active, here }: { m: Milestone; i
   const distance = useTransform(pos, (v) => Math.min(1, Math.abs(v - i)));
   const opacity = useTransform(distance, [0, 1], [1, 0.2]);
   const scale = useTransform(distance, [0, 1], [1, 0.9]);
+  // Phones: opacity only — skipping scale halves the per-panel transform work.
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <li className="w-[var(--panel)] shrink-0 pr-10 sm:pr-16" aria-current={active ? 'step' : undefined}>
-      <motion.div style={{ opacity, scale }} className="origin-left">
+      <motion.div style={isMobile ? { opacity } : { opacity, scale }} className="origin-left">
         <MilestoneBody m={m} i={i} here={here} />
       </motion.div>
     </li>

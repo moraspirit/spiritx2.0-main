@@ -138,7 +138,11 @@ export const CardTransformed = React.forwardRef<HTMLDivElement, CardStickyProps>
     // Hook is called unconditionally, then selected — calling it inside the
     // ternary would make hook order depend on `variant`.
     const dropShadow = useMotionTemplate`drop-shadow(${dx}px ${dy}px ${blur}px rgba(0,0,0,${alpha}))`;
-    const filter = variant === 'light' ? dropShadow : 'none';
+    // Animated drop-shadow filters are expensive on phones; stack motion stays the same.
+    const isCoarse =
+      typeof window !== 'undefined' &&
+      (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+    const filter = variant === 'light' && !isCoarse ? dropShadow : 'none';
 
     const cardStyle = {
       top: index * incrementY,
@@ -150,7 +154,6 @@ export const CardTransformed = React.forwardRef<HTMLDivElement, CardStickyProps>
     };
     return (
       <motion.div
-        layout="position"
         ref={ref}
         style={cardStyle}
         className={cn(cardVariants({ variant, className }))}

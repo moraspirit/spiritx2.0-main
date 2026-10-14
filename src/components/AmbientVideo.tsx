@@ -69,13 +69,15 @@ export default function AmbientVideo({ cut, portrait, lazy = false, className }:
     window.addEventListener('touchend', retry, { passive: true });
     window.addEventListener('click', retry);
 
+    // Tight margin on phones so fewer clips decode at once while scrolling.
+    const isCoarse = window.matchMedia('(pointer: coarse), (max-width: 1023px)').matches;
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
         if (visible) play();
         else video.pause();
       },
-      { rootMargin: '200px 0px' }
+      { rootMargin: isCoarse ? '40px 0px' : '200px 0px' }
     );
     observer.observe(video);
 

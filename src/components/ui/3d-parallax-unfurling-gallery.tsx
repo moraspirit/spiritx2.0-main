@@ -51,7 +51,9 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
     return Array.from({ length: numColumns }, (_, c) => {
       const base = shown.filter((_, i) => i % numColumns === c);
       if (base.length === 0) return base;
-      const repeats = Math.min(8, Math.max(2, Math.ceil(needed / (base.length * itemHeight))));
+      // Cap repeats on phones so the sticky stage has fewer image nodes to composite.
+      const maxRepeats = isMobile ? 3 : 8;
+      const repeats = Math.min(maxRepeats, Math.max(2, Math.ceil(needed / (base.length * itemHeight))));
       return Array.from({ length: repeats }, () => base).flat();
     });
   }, [shown, viewport, numColumns, wallVh, isMobile]);
@@ -129,6 +131,7 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
                         width={1400}
                         height={933}
                         decoding="async"
+                        loading={i < 2 ? 'eager' : 'lazy'}
                         draggable={false}
                         className="block aspect-[3/2] h-auto w-full"
                       />

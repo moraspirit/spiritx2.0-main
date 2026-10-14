@@ -116,10 +116,11 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
       renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
-        antialias: true,
-        powerPreference: 'high-performance',
+        // Still logo on phones: skip antialias / high DPR — same look, less GPU.
+        antialias: !isStatic,
+        powerPreference: isStatic ? 'default' : 'high-performance',
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(isStatic ? 1 : Math.min(window.devicePixelRatio, 1.75));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.35;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -203,6 +204,13 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
 
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+      if (isStatic) {
+        renderer.render(scene, camera);
+      }
+    };
+
+    const renderScene = () => {
+      if (renderer) renderer.render(scene, camera);
     };
 
     const setupModel = (root: THREE.Group) => {
@@ -388,10 +396,34 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
       }
     };
 
-    animate();
+    // Pause the render loop while the logo is off screen (same look when visible).
+    let isVisible = true;
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) {
+        if (isStatic) {
+          renderScene();
+        } else {
+          clock.start();
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = requestAnimationFrame(animate);
+        }
+      } else {
+        cancelAnimationFrame(animationFrameId);
+      }
+    });
+    intersectionObserver.observe(container);
+
+    if (isStatic) {
+      // Still frame only — no continuous rAF on phones.
+      renderScene();
+    } else {
+      animate();
+    }
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      intersectionObserver.disconnect();
       resizeObserver.disconnect();
 
       container.removeEventListener('pointerdown', onPointerDown);

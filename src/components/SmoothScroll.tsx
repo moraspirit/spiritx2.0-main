@@ -28,13 +28,50 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Mobile/touch devices already have hardware-accelerated momentum scrolling.
+    // Running Lenis on mobile causes touch-lag, scroll stutter, and fights native gestures.
+    const isTouchOrMobile =
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia('(pointer: coarse)').matches ||
+      window.innerWidth < 1024;
+
+    if (isTouchOrMobile) {
+      const handleAnchorClick = (e: MouseEvent) => {
+        const anchor = (e.target as HTMLElement).closest('a');
+        if (!anchor) return;
+        const href = anchor.getAttribute('href');
+        if (!href || !href.startsWith('#')) return;
+
+        if (href === '#/' || href === '#' || href === '#top') {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        try {
+          const id = href.replace(/^#\/?/, '');
+          const targetElement = document.getElementById(id);
+          if (targetElement) {
+            e.preventDefault();
+            const top = targetElement.getBoundingClientRect().top + window.scrollY - 70;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        } catch {
+          // Ignore invalid selector
+        }
+      };
+
+      document.addEventListener('click', handleAnchorClick, { capture: true });
+      return () => document.removeEventListener('click', handleAnchorClick, { capture: true });
+    }
+
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      touchMultiplier: 1.5,
     });
 
     lenisRef.current = lenis;
