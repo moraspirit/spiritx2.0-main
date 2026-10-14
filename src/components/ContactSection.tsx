@@ -112,6 +112,8 @@ export default function ContactSection() {
   const scrollRef = useRef<HTMLUListElement>(null);
   const isHoveredRef = useRef(false);
   const isInteractingRef = useRef(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const inViewRef = useRef(false);
 
   // Mouse drag-to-scroll support
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -119,40 +121,35 @@ export default function ContactSection() {
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
 
-  /** Moves to the neighbouring slide using getBoundingClientRect for reliable center-alignment
-   *  and native scroll-snap coordination across mobile and desktop. */
+  /** Moves to the neighbouring slide by scrolling the track sideways only. `scrollIntoView` is
+   *  deliberately avoided: it also scrolls the page, which dragged the whole site down to this
+   *  section every time the auto-advance fired. */
   const goToSlide = useCallback((direction: 1 | -1) => {
     const el = scrollRef.current;
     if (!el) return;
     const slides = Array.from(el.children) as HTMLElement[];
     if (slides.length === 0) return;
 
-    const elRect = el.getBoundingClientRect();
-    const elCenter = elRect.left + elRect.width / 2;
+    const align = getComputedStyle(slides[0]).scrollSnapAlign.split(' ').pop() === 'center' ? 'center' : 'start';
+    const box = el.getBoundingClientRect();
+    const anchor = align === 'center' ? box.left + box.width / 2 : box.left;
+    const pointOf = (slide: HTMLElement) => {
+      const r = slide.getBoundingClientRect();
+      return align === 'center' ? r.left + r.width / 2 : r.left;
+    };
 
-    let currentIndex = 0;
-    let minDistance = Infinity;
-
+    let current = 0;
+    let best = Infinity;
     slides.forEach((slide, i) => {
-      const slideRect = slide.getBoundingClientRect();
-      const slideCenter = slideRect.left + slideRect.width / 2;
-      const dist = Math.abs(slideCenter - elCenter);
-      if (dist < minDistance) {
-        minDistance = dist;
-        currentIndex = i;
+      const dist = Math.abs(pointOf(slide) - anchor);
+      if (dist < best) {
+        best = dist;
+        current = i;
       }
     });
 
-    const targetIndex = Math.min(slides.length - 1, Math.max(0, currentIndex + direction));
-    const target = slides[targetIndex];
-
-    if (target) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        inline: 'center',
-        block: 'nearest',
-      });
-    }
+    const target = slides[Math.min(slides.length - 1, Math.max(0, current + direction))];
+    el.scrollBy({ left: pointOf(target) - anchor, behavior: 'smooth' });
   }, []);
 
   const scrollToNext = useCallback(() => goToSlide(1), [goToSlide]);
@@ -190,10 +187,21 @@ export default function ContactSection() {
     };
   }, []);
 
+  // Only auto-advance while the carousel is actually on screen.
+  useEffect(() => {
+    const node = wrapperRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      inViewRef.current = entry.isIntersecting;
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   // Automatic loop swiping to the left
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isHoveredRef.current && !isInteractingRef.current) {
+      if (inViewRef.current && !isHoveredRef.current && !isInteractingRef.current) {
         scrollToNext();
       }
     }, 3500);
@@ -256,6 +264,7 @@ export default function ContactSection() {
 
         {/* Carousel Container with Flanking Left & Right Arrow Buttons */}
         <div
+          ref={wrapperRef}
           className="relative mt-10"
           onMouseEnter={() => { isHoveredRef.current = true; }}
           onMouseLeave={() => { isHoveredRef.current = false; handleMouseUpOrLeave(); }}
