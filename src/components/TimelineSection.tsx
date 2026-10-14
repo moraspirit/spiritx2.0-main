@@ -95,7 +95,7 @@ const MILESTONES: Milestone[] = [
     when: '30 Jan',
     date: '2027-01-30T00:00:00+05:30',
     title: 'Final evaluation day',
-    body: 'Final evaluation and judging day.',
+    body: 'Final evaluation and judging day at the University of Moratuwa.',
   },
 ];
 

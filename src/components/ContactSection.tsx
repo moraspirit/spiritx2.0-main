@@ -17,6 +17,14 @@ type Chair = {
 /** Spirit X 2.0 contacts. */
 const CHAIRS: Chair[] = [
   {
+    name: 'Pamudu Chandeepa',
+    role: 'CSO – MoraSpirit',
+    affiliation: 'MoraSpirit 360',
+    email: 'cso@moraspirit.com',
+    phone: '+94 71 882 3065',
+    photo: '/contact/pamudu.jpeg',
+  },
+  {
     name: 'Sangeeth Kariyapperuma',
     role: 'Pillar Head – Web & Technology Pillar',
     affiliation: 'MoraSpirit 360',
@@ -55,14 +63,6 @@ const CHAIRS: Chair[] = [
     email: 'pragathijayasinghe@gmail.com',
     phone: '071 581 4164',
     photo: '/contact/pragathi.jpeg',
-  },
-  {
-    name: 'Pamudu Chandeepa',
-    role: 'CSO – MoraSpirit',
-    affiliation: 'MoraSpirit 360',
-    email: 'cso@moraspirit.com',
-    phone: '+94 71 882 3065',
-    photo: '/contact/pamudu.jpeg',
   },
   {
     name: 'D.G.S Anuchana Jayarathne',
