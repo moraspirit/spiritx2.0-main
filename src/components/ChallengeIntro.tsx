@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Orbit, Radio, Layers } from 'lucide-react';
+import { Orbit, Radio, Layers } from 'lucide-react';
 import { type MotionValue, motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { cn } from '@/lib/utils';
 import OrganizerLockup from './OrganizerLockup.tsx';
@@ -117,12 +117,12 @@ export default function ChallengeIntro() {
                 </div>
                 <div className="intro-idea-side">
                   <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{copy}</p>
-                  <span className="mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-medium text-foreground">
+                  {/* <span className="mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-medium text-foreground">
                     Explore the challenge
                     <span className="intro-idea-arrow">
                       <ArrowUpRight size={16} />
                     </span>
-                  </span>
+                  </span> */}
                 </div>
               </a>
             </motion.li>
@@ -132,10 +132,10 @@ export default function ChallengeIntro() {
         <motion.div
           {...revealOnce}
           variants={rise}
-          className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6 text-sm"
+          className="flex flex-wrap items-center justify-center gap-4 border-t border-border pt-6 text-sm"
         >
           <p className="text-muted-foreground">Every new idea starts with a shared story.</p>
-          <a href="#stories" className="inline-flex min-h-11 items-center gap-2 font-medium text-brand-ink">Meet the Spirit X community <ArrowUpRight size={17} /></a>
+          {/* <a href="#stories" className="inline-flex min-h-11 items-center gap-2 font-medium text-brand-ink">Meet the Spirit X community <ArrowUpRight size={17} /></a> */}
         </motion.div>
       </div>
     </section>
