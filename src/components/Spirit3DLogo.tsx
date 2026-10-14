@@ -5,7 +5,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import BrandLogo from './BrandLogo.tsx';
 import { usePrefersLight } from '../usePrefersLight.ts';
 
-/** Phones and touch screens get a still logo: no float, sway, shine sweep or drag. */
+/** Phones and touch screens use the SVG wordmark — no GLB / WebGL. */
 const isStaticViewport = () =>
   typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
 
@@ -26,8 +26,18 @@ function useStaticViewport() {
   return isStatic;
 }
 
+const FALLBACK_CLASS = 'h-16 w-auto max-w-[85vw] drop-shadow-md sm:h-24 md:h-32 lg:h-36';
+
+/** Phones: crisp SVG wordmark. Desktop: interactive 3D GLB. */
 export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
   const isStatic = useStaticViewport();
+  if (isStatic) {
+    return <BrandLogo className={className || FALLBACK_CLASS} label="Spirit X 2.0" />;
+  }
+  return <DesktopSpirit3DLogo className={className} />;
+}
+
+function DesktopSpirit3DLogo({ className }: Spirit3DLogoProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -103,9 +113,7 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
     let dracoLoader: DRACOLoader | null = null;
     let modelGroup: THREE.Group | null = null;
 
-    // Check reduced motion
-    const prefersReducedMotion =
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches || isStatic;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Scene & Camera
     const scene = new THREE.Scene();
@@ -116,11 +124,10 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
       renderer = new THREE.WebGLRenderer({
         canvas,
         alpha: true,
-        // Still logo on phones: skip antialias / high DPR — same look, less GPU.
-        antialias: !isStatic,
-        powerPreference: isStatic ? 'default' : 'high-performance',
+        antialias: true,
+        powerPreference: 'high-performance',
       });
-      renderer.setPixelRatio(isStatic ? 1 : Math.min(window.devicePixelRatio, 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.35;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -204,13 +211,6 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
 
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
-      if (isStatic) {
-        renderer.render(scene, camera);
-      }
-    };
-
-    const renderScene = () => {
-      if (renderer) renderer.render(scene, camera);
     };
 
     const setupModel = (root: THREE.Group) => {
@@ -396,34 +396,10 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
       }
     };
 
-    // Pause the render loop while the logo is off screen (same look when visible).
-    let isVisible = true;
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
-      if (isVisible) {
-        if (isStatic) {
-          renderScene();
-        } else {
-          clock.start();
-          cancelAnimationFrame(animationFrameId);
-          animationFrameId = requestAnimationFrame(animate);
-        }
-      } else {
-        cancelAnimationFrame(animationFrameId);
-      }
-    });
-    intersectionObserver.observe(container);
-
-    if (isStatic) {
-      // Still frame only — no continuous rAF on phones.
-      renderScene();
-    } else {
-      animate();
-    }
+    animate();
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      intersectionObserver.disconnect();
       resizeObserver.disconnect();
 
       container.removeEventListener('pointerdown', onPointerDown);
@@ -451,27 +427,22 @@ export default function Spirit3DLogo({ className }: Spirit3DLogoProps) {
         renderer.dispose();
       }
     };
-  }, [isStatic]);
+  }, []);
 
   if (hasError) {
-    return (
-      <BrandLogo
-        className={className || 'h-16 w-auto max-w-[85vw] drop-shadow-md sm:h-24 md:h-32 lg:h-36'}
-        label="Spirit X 2.0"
-      />
-    );
+    return <BrandLogo className={className || FALLBACK_CLASS} label="Spirit X 2.0" />;
   }
 
   return (
     <div
       ref={containerRef}
-      className={`relative flex items-center justify-center select-none overflow-visible ${isStatic ? 'touch-pan-y' : 'touch-none'} ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
+      className={`relative flex items-center justify-center select-none overflow-visible touch-none ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
       style={{ perspective: 1000 }}
     >
       {/* Fallback & smooth fade-in */}
       <canvas
         ref={canvasRef}
-        className={`w-full h-full ${isStatic ? '' : 'cursor-grab active:cursor-grabbing'} transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full cursor-grab active:cursor-grabbing transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         aria-label="Spirit X 2.0 Interactive 3D Model"
         role="img"
       />

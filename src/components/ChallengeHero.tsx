@@ -1,10 +1,45 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ArrowRight, FileText } from 'lucide-react';
 import { REGISTER_HREF } from '@/lib/api';
 
-import Spirit3DLogo from './Spirit3DLogo.tsx';
+import BrandLogo from './BrandLogo.tsx';
 import HeroDustCanvas from './HeroDustCanvas.tsx';
 import { usePrefersLight } from '../usePrefersLight.ts';
+
+/** Desktop only — phones never download the Three.js / GLB chunk. */
+const Spirit3DLogo = lazy(() => import('./Spirit3DLogo.tsx'));
+
+const LOGO_CLASS =
+  'h-[min(12rem,28svh)] w-full max-w-full sm:h-[min(16rem,32svh)] md:h-[min(20rem,36svh)] lg:h-[min(24rem,38svh)] xl:h-[min(28rem,40svh)]';
+
+function useMobileLogo() {
+  const [mobile, setMobile] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 767px), (pointer: coarse)').matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const onChange = () => setMobile(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return mobile;
+}
+
+/** Phones: crisp SVG wordmark. Desktop: interactive 3D GLB. */
+function HeroLogo() {
+  const mobile = useMobileLogo();
+  if (mobile) {
+    return <BrandLogo className={`${LOGO_CLASS} drop-shadow-md`} label="Spirit X 2.0" />;
+  }
+  return (
+    <Suspense fallback={<BrandLogo className={`${LOGO_CLASS} drop-shadow-md`} label="Spirit X 2.0" />}>
+      <Spirit3DLogo className={LOGO_CLASS} />
+    </Suspense>
+  );
+}
 
 /** Drop the booklet PDF at this path under public/ (it 404s until then). */
 const DELEGATE_BOOKLET = '/spirit-x-2.0-delegate-booklet.pdf';
@@ -179,7 +214,7 @@ export default function ChallengeHero() {
       <div className="cosmos-hero-content relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-28 pt-28 text-center sm:px-6 sm:pb-36 sm:pt-28">
         <h1 className="flex w-full max-w-7xl items-center justify-center text-white overflow-visible px-2 sm:px-4">
           <span className="sr-only">Spirit X 2.0</span>
-          <Spirit3DLogo className="h-[min(12rem,28svh)] w-full max-w-full sm:h-[min(16rem,32svh)] md:h-[min(20rem,36svh)] lg:h-[min(24rem,38svh)] xl:h-[min(28rem,40svh)]" />
+          <HeroLogo />
         </h1>
 
         <p className="mt-4 max-w-[34rem] text-pretty text-sm leading-relaxed text-white/82 sm:mt-5 sm:text-base md:text-lg">

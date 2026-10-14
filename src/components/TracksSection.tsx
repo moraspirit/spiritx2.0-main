@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Activity, ArrowRight, BarChart3, ClipboardList, HeartPulse, MonitorSmartphone } from 'lucide-react';
 import { motion, useMotionValueEvent, useTransform } from 'motion/react';
 import {
@@ -11,6 +11,30 @@ import { cn } from '@/lib/utils';
 import { REGISTER_HREF } from '@/lib/api';
 import SectionBackdrop from './SectionBackdrop.tsx';
 import { revealOnce, rise, stagger } from '../motion.ts';
+
+/** Phones / coarse pointers get a lighter sticky stack (same cards, less GPU). */
+function useLiteTracks() {
+  const [lite, setLite] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches)
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const onChange = () => setLite(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return lite;
+}
+
+const CARD_SURFACE_DESKTOP =
+  'card-noise items-start justify-between gap-4 border border-white/15 [background-color:hsl(var(--card)/0.84)] bg-gradient-to-br from-white/[0.09] to-transparent p-7 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150';
+
+/** Opaque fill, no blur / noise — those force expensive offscreen compositing on phones. */
+const CARD_SURFACE_LITE =
+  'items-start justify-between gap-4 border border-white/15 [background-color:hsl(var(--card)/0.94)] bg-gradient-to-br from-white/[0.09] to-transparent p-7 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]';
 
 const TRACKS = [
   {
@@ -161,8 +185,9 @@ function TrackDots({ active }: { active: number }) {
   );
 }
 
-function TrackStack() {
+function TrackStack({ lite }: { lite: boolean }) {
   const active = useActiveTrack();
+  const surface = lite ? CARD_SURFACE_LITE : CARD_SURFACE_DESKTOP;
 
   return (
     <div className="sticky left-0 top-0 flex h-svh w-full items-center">
@@ -171,16 +196,20 @@ function TrackStack() {
         <TrackIndex active={active} />
 
         <div>
-          <CardsContainer className="mx-auto size-full h-[400px] w-[86%] max-w-[440px] sm:w-full">
+          <CardsContainer
+            lite={lite}
+            className="mx-auto size-full h-[400px] w-[86%] max-w-[440px] sm:w-full"
+          >
             {TRACKS.map(({ id, Icon, badge, title, body }, index) => (
               <CardTransformed
                 key={id}
                 arrayLength={TRACKS.length}
                 index={index + 1}
                 variant="light"
+                lite={lite}
                 role="article"
                 aria-labelledby={`track-${id}-title`}
-                className="card-noise items-start justify-between gap-4 border border-white/15 [background-color:hsl(var(--card)/0.84)] bg-gradient-to-br from-white/[0.09] to-transparent p-7 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150"
+                className={surface}
               >
                 <div className="flex w-full items-start justify-between">
                   <div className="flex size-14 items-center justify-center rounded-2xl bg-brand/10 text-brand-ink">
@@ -225,9 +254,19 @@ function TrackStack() {
 }
 
 export default function TracksSection() {
+  const lite = useLiteTracks();
+
   return (
     <section id="challenge" aria-labelledby="tracks-title" className="relative isolate bg-background px-5 pb-12 pt-24 sm:px-8 sm:pt-32">
-      <SectionBackdrop src="/media/home-innovation-poster.webp" position="50% 72%" veil={0.5} veilLight={0.72} sticky />
+      {/* Sticky keeps the photo one viewport tall so object-fit:cover crops correctly
+          through the tall card stack (without it the image stretches across 200vh+). */}
+      <SectionBackdrop
+        src="/media/home-innovation-poster.webp"
+        position={lite ? '50% 45%' : '50% 72%'}
+        veil={0.5}
+        veilLight={0.72}
+        sticky
+      />
       <motion.div {...revealOnce} variants={stagger(0.1)} className="mx-auto max-w-2xl text-center">
         <motion.p variants={rise} className="eyebrow">the spirit x challenge</motion.p>
         <motion.h2
@@ -244,8 +283,12 @@ export default function TracksSection() {
         </motion.p>
       </motion.div>
 
-      <ContainerScroll id={STACK_ID} className="h-[300vh]">
-        <TrackStack />
+      <ContainerScroll
+        id={STACK_ID}
+        lite={lite}
+        className={lite ? 'h-[200vh]' : 'h-[300vh]'}
+      >
+        <TrackStack lite={lite} />
       </ContainerScroll>
 
       <motion.div {...revealOnce} variants={stagger(0.08)} className="mx-auto mt-4 max-w-5xl pb-20">
@@ -254,7 +297,16 @@ export default function TracksSection() {
         </motion.h3>
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {STEPS_PATH.map((step, i) => (
-            <motion.li key={step.title} variants={rise} className="card-noise relative rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.09] to-transparent p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150 [background-color:hsl(var(--card)/0.84)]">
+            <motion.li
+              key={step.title}
+              variants={rise}
+              className={cn(
+                'relative rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.09] to-transparent p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]',
+                lite
+                  ? '[background-color:hsl(var(--card)/0.94)]'
+                  : 'card-noise shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150 [background-color:hsl(var(--card)/0.84)]'
+              )}
+            >
               <span className="text-sm tabular-nums text-brand-ink">{pad(i + 1)}</span>
               <p className="mt-2 text-lg font-medium text-foreground">{step.title}</p>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.body}</p>

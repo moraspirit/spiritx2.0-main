@@ -15,9 +15,9 @@ import { cn } from '@/lib/utils';
 const cardVariants = cva('absolute will-change-transform', {
   variants: {
     variant: {
-      dark: 'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border border-stone-700/50 bg-accent-foreground/80 p-6 backdrop-blur-md',
+      dark: 'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border border-stone-700/50 bg-accent-foreground/80 p-6 md:backdrop-blur-md',
       light:
-        'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border  bg-accent bg-background/80 p-6 backdrop-blur-md ',
+        'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border bg-accent bg-background/90 p-6 md:bg-background/80 md:backdrop-blur-md',
     },
   },
   defaultVariants: {
@@ -35,6 +35,11 @@ interface CardStickyProps extends HTMLMotionProps<'div'>, VariantProps<typeof ca
   incrementY?: number;
   incrementZ?: number;
   incrementRotation?: number;
+  /**
+   * Phones: translateY only — skip rotate / translateZ / drop-shadow.
+   * Keeps the sticky stack feel with much less compositing cost.
+   */
+  lite?: boolean;
 }
 interface ContainerScrollContextValue {
   scrollYProgress: MotionValue<number>;
@@ -53,10 +58,16 @@ export function useContainerScrollContext() {
   return context;
 }
 
-export const ContainerScroll: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+type ContainerScrollProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Skip CSS perspective on phones — 3D stacking is expensive while scrolling. */
+  lite?: boolean;
+};
+
+export const ContainerScroll: React.FC<ContainerScrollProps> = ({
   children,
   style,
   className,
+  lite = false,
   ...props
 }) => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -70,7 +81,7 @@ export const ContainerScroll: React.FC<React.HTMLAttributes<HTMLDivElement>> = (
       <div
         ref={scrollRef}
         className={cn('relative min-h-svh w-full', className)}
-        style={{ perspective: '1000px', ...style }}
+        style={lite ? style : { perspective: '1000px', ...style }}
         {...props}
       >
         {children}
@@ -80,10 +91,13 @@ export const ContainerScroll: React.FC<React.HTMLAttributes<HTMLDivElement>> = (
 };
 ContainerScroll.displayName = 'ContainerScroll';
 
-export const CardsContainer: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+type CardsContainerProps = React.HTMLAttributes<HTMLDivElement> & { lite?: boolean };
+
+export const CardsContainer: React.FC<CardsContainerProps> = ({
   children,
   className,
   style,
+  lite = false,
   ...props
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -92,7 +106,7 @@ export const CardsContainer: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
     <div
       ref={containerRef}
       className={cn('relative', className)}
-      style={{ perspective: '1000px', ...style }}
+      style={lite ? style : { perspective: '1000px', ...style }}
       {...props}
     >
       {children}
@@ -112,6 +126,7 @@ export const CardTransformed = React.forwardRef<HTMLDivElement, CardStickyProps>
       className,
       variant,
       style,
+      lite = false,
       ...props
     },
     ref
@@ -127,22 +142,20 @@ export const CardTransformed = React.forwardRef<HTMLDivElement, CardStickyProps>
     // instead of scrolling through an empty stage.
     const y = useTransform(scrollYProgress, range, ['0%', index === arrayLength ? '0%' : '-180%']);
     const rotate = useTransform(scrollYProgress, rotateRange, [incrementRotation, 0]);
-    const transform = useMotionTemplate`translateZ(${
+    const fullTransform = useMotionTemplate`translateZ(${
       index * incrementZ
     }px) translateY(${y}) rotate(${rotate}deg)`;
+    const liteTransform = useMotionTemplate`translateY(${y})`;
+    const transform = lite ? liteTransform : fullTransform;
 
     const dx = useTransform(scrollYProgress, rotateRange, [4, 0]);
     const dy = useTransform(scrollYProgress, rotateRange, [4, 12]);
     const blur = useTransform(scrollYProgress, rotateRange, [2, 24]);
     const alpha = useTransform(scrollYProgress, rotateRange, [0.15, 0.2]);
     // Hook is called unconditionally, then selected — calling it inside the
-    // ternary would make hook order depend on `variant`.
+    // ternary would make hook order depend on `variant` / `lite`.
     const dropShadow = useMotionTemplate`drop-shadow(${dx}px ${dy}px ${blur}px rgba(0,0,0,${alpha}))`;
-    // Animated drop-shadow filters are expensive on phones; stack motion stays the same.
-    const isCoarse =
-      typeof window !== 'undefined' &&
-      (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
-    const filter = variant === 'light' && !isCoarse ? dropShadow : 'none';
+    const filter = variant === 'light' && !lite ? dropShadow : 'none';
 
     const cardStyle = {
       top: index * incrementY,
@@ -180,7 +193,7 @@ export const ReviewStars = React.forwardRef<HTMLDivElement, ReviewProps>(
               fill="currentColor"
               viewBox="0 0 20 20"
             >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" />
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287 3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" />
             </svg>
           ))}
           {fractionalPart > 0 && (
@@ -192,7 +205,7 @@ export const ReviewStars = React.forwardRef<HTMLDivElement, ReviewProps>(
                 </linearGradient>
               </defs>
               <path
-                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z"
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287 3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286 3.957z"
                 fill="url(#half)"
               />
             </svg>
@@ -204,7 +217,7 @@ export const ReviewStars = React.forwardRef<HTMLDivElement, ReviewProps>(
               fill="currentColor"
               viewBox="0 0 20 20"
             >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" />
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287 3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286 3.957z" />
             </svg>
           ))}
         </div>
