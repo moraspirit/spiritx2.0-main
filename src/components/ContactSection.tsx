@@ -21,7 +21,7 @@ const CHAIRS: Chair[] = [
     role: 'CSO – MoraSpirit',
     affiliation: 'MoraSpirit 360',
     email: 'cso@moraspirit.com',
-    phone: '+94 71 882 3065',
+    phone: '071 882 3065',
     photo: '/contact/pamudu.jpeg',
   },
   {
