@@ -261,10 +261,10 @@ export default function TracksSection() {
       {/* Sticky keeps the photo one viewport tall so object-fit:cover crops correctly
           through the tall card stack (without it the image stretches across 200vh+). */}
       <SectionBackdrop
-        src="/media/home-innovation-poster.webp"
-        position={lite ? '50% 45%' : '50% 72%'}
-        veil={0.5}
-        veilLight={0.72}
+        src="/explore-bg.webp"
+        position="center"
+        veil={0.35}
+        veilLight={0.55}
         sticky
       />
       <motion.div {...revealOnce} variants={stagger(0.1)} className="mx-auto max-w-2xl text-center">

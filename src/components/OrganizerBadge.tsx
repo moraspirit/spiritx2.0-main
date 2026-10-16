@@ -24,7 +24,7 @@ export default function OrganizerBadge({ size = 'sm', className = '' }: Organize
       title="MoraSpirit 360"
     >
       <img
-        src="/brand/moraspirit360-white-red.png"
+        src="/brand/moraspirit360-white-red.webp"
         alt="MoraSpirit 360"
         className="h-full w-full object-contain p-0.5"
         width={56}

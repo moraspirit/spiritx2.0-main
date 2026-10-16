@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback, type MouseEvent as ReactMouse
 import { ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
 import SectionBackdrop from './SectionBackdrop.tsx';
-import ShineBorder from './ui/shine-border.tsx';
 import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Chair = {
@@ -22,7 +21,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'cso@moraspirit.com',
     phone: '071 882 3065',
-    photo: '/contact/pamudu.jpeg',
+    photo: '/contact/pamudu.webp',
   },
   {
     name: 'Sangeeth Kariyapperuma',
@@ -30,7 +29,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'web@moraspirit.com',
     phone: '0760858499',
-    photo: '/contact/sangeeth.jpeg',
+    photo: '/contact/sangeeth.webp',
   },
   {
     name: 'Kusal Pabasara',
@@ -38,7 +37,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'kusalpabasararcg@gmail.com',
     phone: '078 772 0767',
-    photo: '/contact/kusal_pabasara.jpeg',
+    photo: '/contact/kusal_pabasara.webp',
   },
   {
     name: 'Kusal Nirukshan',
@@ -46,7 +45,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'kusalnirukshan@moraspirit.com',
     phone: '071 114 5121',
-    photo: '/contact/kusal_nirukshan.jpeg',
+    photo: '/contact/kusal_nirukshan.webp',
   },
   {
     name: 'Sawani Thiwandika',
@@ -54,7 +53,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'thiwandika.whs02@gmail.com',
     phone: '076 351 9008',
-    photo: '/contact/sawani.jpeg',
+    photo: '/contact/sawani.webp',
   },
   {
     name: 'Pragathi Jayasinghe',
@@ -62,7 +61,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'pragathijayasinghe@gmail.com',
     phone: '071 581 4164',
-    photo: '/contact/pragathi.jpeg',
+    photo: '/contact/pragathi.webp',
   },
   {
     name: 'D.G.S Anuchana Jayarathne',
@@ -70,7 +69,7 @@ const CHAIRS: Chair[] = [
     affiliation: 'MoraSpirit 360',
     email: 'shavindaanuchana@gmail.com',
     phone: '070 398 5778',
-    photo: '/contact/anuchana.jpeg',
+    photo: '/contact/anuchana.webp',
   },
 ];
 
@@ -255,7 +254,7 @@ export default function ContactSection() {
 
   return (
     <section id="contact" aria-labelledby="contact-title" className="contact-section relative isolate">
-      <SectionBackdrop src="/media/gallery/10.webp" tone="duotone" position="50% 30%" veil={0.86} cropWatermark />
+      <SectionBackdrop src="/media/gallery/10.webp" tone="duotone" position="50% 30%" veil={0.86} cropWatermark noTopShade />
       
       <div className="mx-auto max-w-6xl px-1 sm:px-4">
         {/* Header with Title and Subtitle */}
@@ -295,14 +294,7 @@ export default function ContactSection() {
                 className="contact-slide"
                 aria-hidden={index >= CHAIRS.length ? true : undefined}
               >
-                <ShineBorder
-                  borderWidth={2}
-                  duration={3.5}
-                  color="hsl(var(--brand-ink))"
-                  borderRadius="1.25rem"
-                  showOnHover={true}
-                  className="contact-card-shine"
-                >
+                <div className="contact-card-shine h-full rounded-[1.25rem] border border-border">
                   <div className="contact-card flex flex-col justify-between">
                     <div>
                       <Avatar chair={chair} />
@@ -346,7 +338,7 @@ export default function ContactSection() {
                       </a>
                     </div>
                   </div>
-                </ShineBorder>
+                </div>
               </motion.li>
             ))}
           </motion.ul>

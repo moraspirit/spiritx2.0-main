@@ -15,6 +15,8 @@ type SectionBackdropProps = {
   cropWatermark?: boolean;
   /** Keep the photo pinned in view while a tall (pinned) section scrolls past. */
   sticky?: boolean;
+  /** Skip the solid fade across the top of the photo. */
+  noTopShade?: boolean;
   className?: string;
 };
 
@@ -31,6 +33,7 @@ export default function SectionBackdrop({
   veilLight,
   cropWatermark = false,
   sticky = false,
+  noTopShade = false,
   className,
 }: SectionBackdropProps) {
   const customProps: Record<string, string | number> = {
@@ -43,7 +46,13 @@ export default function SectionBackdrop({
   return (
     <div
       aria-hidden="true"
-      className={cn('section-backdrop', tone === 'duotone' && 'is-duotone', sticky && 'has-sticky', className)}
+      className={cn(
+        'section-backdrop',
+        tone === 'duotone' && 'is-duotone',
+        sticky && 'has-sticky',
+        noTopShade && 'no-top-shade',
+        className,
+      )}
       style={customProps as CSSProperties}
     >
       <div className={cn('section-backdrop-frame', sticky && 'is-sticky')}>
