@@ -55,7 +55,7 @@ export default function HeroSection() {
             className="hero-anim hero-reveal block text-5xl font-light sm:text-7xl md:text-8xl"
             style={{ animationDelay: '0.25s' }}
           >
-            create unforgettable
+            Create unforgettable
           </span>
           <span
             className="hero-anim hero-reveal block text-5xl font-semibold text-brand-ink sm:text-7xl md:text-8xl"

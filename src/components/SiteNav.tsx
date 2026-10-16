@@ -115,7 +115,7 @@ export default function SiteNav({ route }: { route: Route }) {
               registerCurrent && 'shadow-brand'
             )}
           >
-            register
+            Register
           </a>
 
           <button
@@ -167,7 +167,7 @@ export default function SiteNav({ route }: { route: Route }) {
             onClick={() => setOpen(false)}
             className="rounded-2xl bg-brand px-5 py-3.5 text-left text-base font-medium text-primary-foreground"
           >
-            register
+            Register
           </a>
         </div>
       </div>

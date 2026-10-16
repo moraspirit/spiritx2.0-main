@@ -15,7 +15,7 @@ export default function OrganizerLockup({
   return (
     <div className={`inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 ${className}`}>
       <span className="eyebrow shrink-0 !tracking-[0.12em] max-[360px]:text-[0.62rem]">
-        organised by
+        organized by
       </span>
       <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.1em] text-foreground/95 sm:text-xs">
         University of Moratuwa

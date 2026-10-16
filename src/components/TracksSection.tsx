@@ -239,7 +239,7 @@ function TrackStack({ lite }: { lite: boolean }) {
                   href={REGISTER_HREF}
                   className="group -my-3 inline-flex items-center gap-2 py-3 text-sm font-medium text-foreground transition-colors hover:text-brand-ink"
                 >
-                  register your team
+                  Register your team
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                 </a>
               </CardTransformed>
@@ -274,7 +274,7 @@ export default function TracksSection() {
           id="tracks-title"
           className="hero-title mt-4 text-5xl font-medium text-foreground sm:text-6xl md:text-7xl"
         >
-          explore the possibilities<span className="text-brand-ink">.</span>
+          Explore the possibilities<span className="text-brand-ink">.</span>
         </motion.h2>
         <motion.p variants={rise} className="mx-auto mt-5 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
           Find a real problem in sports, fitness, athletics or sports management and build the
@@ -293,7 +293,7 @@ export default function TracksSection() {
 
       <motion.div {...revealOnce} variants={stagger(0.08)} className="mx-auto mt-4 max-w-5xl pb-20">
         <motion.h3 variants={rise} className="text-center text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-          from problem to solution
+          From problem to solution
         </motion.h3>
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {STEPS_PATH.map((step, i) => (
@@ -325,13 +325,13 @@ export default function TracksSection() {
             href={REGISTER_HREF}
             className="inline-flex min-h-11 items-center rounded-full bg-brand px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
           >
-            register your team
+            Register your team
           </a>
           <a
             href="#timeline"
             className="inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-3.5 text-sm font-medium text-foreground transition-colors hover:text-brand-ink"
           >
-            see the timeline
+            See the timeline
             <ArrowRight size={16} className="rotate-90" />
           </a>
         </div>

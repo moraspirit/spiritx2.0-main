@@ -72,7 +72,7 @@ export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelPr
           href="#/register"
           className="mt-8 inline-flex min-h-12 items-center rounded-full bg-brand px-8 py-3.5 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
         >
-          register your team
+          Register your team
         </motion.a>
       </motion.div>
     );
@@ -91,7 +91,7 @@ export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelPr
       <motion.div variants={rise}>
         <p className="eyebrow mb-3">Spirit X 2.0</p>
         <Title className="hero-title text-balance text-[2rem] font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
-          registration <span className="text-brand">coming soon</span>
+          Registration <span className="text-brand">coming soon</span>
         </Title>
       </motion.div>
       <motion.p variants={rise} className="mt-4 max-w-md text-legible text-sm leading-relaxed text-foreground/85 sm:text-base">

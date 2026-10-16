@@ -125,7 +125,7 @@ function Title() {
       id="timeline-title"
       className="text-balance text-3xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl [@media(max-height:520px)]:hidden"
     >
-      the road to the <em className="font-serif font-normal text-brand-ink">finale.</em>
+      The road to the <em className="font-serif font-normal text-brand-ink">finale.</em>
     </h2>
   );
 }
