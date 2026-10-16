@@ -75,6 +75,12 @@ const CHAIRS: Chair[] = [
 ];
 
 /** Three copies so the carousel can wrap around without a visible rewind. */
+/** Sri Lankan numbers (0XX… or +94…) to a wa.me link. */
+const whatsappHref = (phone: string) => {
+  const digits = phone.replace(/\D/g, '');
+  return `https://wa.me/${digits.startsWith('94') ? digits : `94${digits.replace(/^0/, '')}`}`;
+};
+
 const LOOP = [...CHAIRS, ...CHAIRS, ...CHAIRS];
 
 const initials = (name: string) =>
@@ -325,7 +331,10 @@ export default function ContactSection() {
                         </a>
                       ) : null}
                       <a
-                        href={`tel:${chair.phone.replace(/\s+/g, '')}`}
+                        href={whatsappHref(chair.phone)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`WhatsApp ${chair.name} on ${chair.phone}`}
                         className="contact-link"
                         tabIndex={index >= CHAIRS.length ? -1 : undefined}
                         onClick={(e) => {
