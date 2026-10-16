@@ -66,12 +66,15 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       return () => document.removeEventListener('click', handleAnchorClick, { capture: true });
     }
 
+    // Shorter glide so the wheel stays close to the page. A long duration
+    // stacks on top of the pinned scroll stages and feels like lag.
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 0.55,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
+      wheelMultiplier: 1.05,
     });
 
     lenisRef.current = lenis;

@@ -22,6 +22,7 @@ function checkDesktopPointer(): boolean {
 export default function App() {
   const route = useHashRoute();
   const [hasDesktopCursor, setHasDesktopCursor] = useState(checkDesktopPointer);
+  const [scrolling, setScrolling] = useState(false);
 
   useEffect(() => {
     const update = () => setHasDesktopCursor(checkDesktopPointer());
@@ -39,12 +40,28 @@ export default function App() {
     };
   }, []);
 
+  // Take the cursor effect off the page while scrolling, then mount it again once scrolling stops.
+  useEffect(() => {
+    if (!hasDesktopCursor) return;
+    let timer = 0;
+    const onScroll = () => {
+      setScrolling(true);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setScrolling(false), 160);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [hasDesktopCursor]);
+
   return (
     <ThemeProvider>
       {/* "user": motion drops transform/layout animation when the OS asks for reduced motion. */}
       <MotionConfig reducedMotion="user">
         <SmoothScroll>
-          {hasDesktopCursor && (
+          {hasDesktopCursor && !scrolling && (
             <Suspense fallback={null}>
               <SplashCursor
                 DENSITY_DISSIPATION={2.2}

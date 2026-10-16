@@ -30,7 +30,7 @@ function useLiteTracks() {
 }
 
 const CARD_SURFACE_DESKTOP =
-  'card-noise items-start justify-between gap-4 border border-white/15 [background-color:hsl(var(--card)/0.84)] bg-gradient-to-br from-white/[0.09] to-transparent p-7 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.22),inset_0_0_32px_rgba(255,255,255,0.03)] backdrop-blur-xl backdrop-saturate-150';
+  'items-start justify-between gap-4 border border-white/15 [background-color:hsl(var(--card)/0.92)] bg-gradient-to-br from-white/[0.09] to-transparent p-7 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_40px_rgba(0,0,0,0.28)]';
 
 /** Opaque fill, no blur / noise — those force expensive offscreen compositing on phones. */
 const CARD_SURFACE_LITE =

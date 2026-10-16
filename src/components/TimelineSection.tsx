@@ -7,7 +7,6 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
-  useSpring,
   useTransform,
 } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -237,9 +236,8 @@ function PinnedTimeline() {
   const here = useMemo(() => whereWeAre(Date.now()), []);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] });
-  const smooth = useSpring(scrollYProgress, { stiffness: 170, damping: 34, restDelta: 0.0005 });
-  // On phones the strip follows the finger's scroll directly: a spring trailing behind it feels laggy.
-  const pos = useTransform(isMobile ? scrollYProgress : smooth, [HOLD, 1 - HOLD], [0, N - 1]);
+  // Direct scroll mapping. A spring trails the wheel and feels like lag while the strip pans.
+  const pos = useTransform(scrollYProgress, [HOLD, 1 - HOLD], [0, N - 1]);
   const railProgress = useTransform(pos, [0, N - 1], [0, 1]);
   const x = useTransform(pos, (v) => `calc(var(--panel) * ${-v})`);
 

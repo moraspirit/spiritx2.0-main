@@ -148,21 +148,13 @@ export const CardTransformed = React.forwardRef<HTMLDivElement, CardStickyProps>
     const liteTransform = useMotionTemplate`translateY(${y})`;
     const transform = lite ? liteTransform : fullTransform;
 
-    const dx = useTransform(scrollYProgress, rotateRange, [4, 0]);
-    const dy = useTransform(scrollYProgress, rotateRange, [4, 12]);
-    const blur = useTransform(scrollYProgress, rotateRange, [2, 24]);
-    const alpha = useTransform(scrollYProgress, rotateRange, [0.15, 0.2]);
-    // Hook is called unconditionally, then selected — calling it inside the
-    // ternary would make hook order depend on `variant` / `lite`.
-    const dropShadow = useMotionTemplate`drop-shadow(${dx}px ${dy}px ${blur}px rgba(0,0,0,${alpha}))`;
-    const filter = variant === 'light' && !lite ? dropShadow : 'none';
-
+    // Animated drop-shadow filters repaint every scroll frame. A static shadow
+    // on the card class is enough and stays smooth while the stack moves.
     const cardStyle = {
       top: index * incrementY,
       transform,
       backfaceVisibility: 'hidden' as const,
       zIndex: (arrayLength - index) * incrementZ,
-      filter,
       ...style,
     };
     return (

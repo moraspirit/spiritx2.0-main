@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react';
+import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from 'motion/react';
 
 export type ParallaxPhoto = { src: string; alt: string; pos?: string };
 
@@ -51,18 +51,17 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
     return Array.from({ length: numColumns }, (_, c) => {
       const base = shown.filter((_, i) => i % numColumns === c);
       if (base.length === 0) return base;
-      // Cap repeats on phones so the sticky stage has fewer image nodes to composite.
-      const maxRepeats = isMobile ? 3 : 8;
+      // Fewer repeated tiles keeps the same photos while compositing less during scroll.
+      const maxRepeats = isMobile ? 3 : 4;
       const repeats = Math.min(maxRepeats, Math.max(2, Math.ceil(needed / (base.length * itemHeight))));
       return Array.from({ length: repeats }, () => base).flat();
     });
   }, [shown, viewport, numColumns, wallVh, isMobile]);
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] });
-  // Touch scrolling maps straight to scroll progress: a spring adds visible lag under a finger.
-  const spring = useSpring(scrollYProgress, { stiffness: 100, damping: 20, mass: 0.5 });
+  // Follow scroll directly. A spring trails the wheel and reads as lag on top of smooth-scroll.
   const settled = useMotionValue(1);
-  const p = reduce ? settled : (isMobile ? scrollYProgress : spring);
+  const p = reduce ? settled : scrollYProgress;
 
   const bannerWidth = useTransform(p, [0, 0.12], ['90vw', '100vw']);
   const bannerHeight = useTransform(p, [0, 0.12], ['80svh', '100svh']);
@@ -96,7 +95,7 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
             borderRadius: bannerRadius,
             borderWidth: bannerBorder,
           }}
-          className="relative mx-auto flex max-w-[1920px] items-center justify-center overflow-hidden border-border bg-background will-change-transform"
+          className="relative mx-auto flex max-w-[1920px] items-center justify-center overflow-hidden border-border bg-background"
         >
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center" style={{ perspective: '1000px' }}>
             {/* Edge fades into the page colour so the wall never ends in a hard line. */}
@@ -111,7 +110,7 @@ export function ParallaxUnfurlingGallery({ photos, intro, footer, heightVh = 420
 
             <motion.div
               style={{ rotateX, rotateY, rotateZ, z, opacity: wallOpacity, transformStyle: 'preserve-3d', height: `${wallVh}vh` }}
-              className="flex w-[120vw] origin-center items-center justify-center gap-3 will-change-transform md:gap-6"
+              className="flex w-[120vw] origin-center items-center justify-center gap-3 md:gap-6"
             >
               {columns.map((col, c) => (
                 <motion.div
