@@ -55,7 +55,7 @@ export default function HeroSection() {
             className="hero-anim hero-reveal block text-5xl font-light sm:text-7xl md:text-8xl"
             style={{ animationDelay: '0.25s' }}
           >
-            Create unforgettable
+            create unforgettable
           </span>
           <span
             className="hero-anim hero-reveal block text-5xl font-semibold text-brand-ink sm:text-7xl md:text-8xl"
@@ -88,7 +88,7 @@ export default function HeroSection() {
           href={REGISTER_HREF}
           className="inline-flex min-h-11 items-center rounded-full bg-brand px-7 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-95"
         >
-          register now
+          Register now
         </a>
       </div>
     </section>

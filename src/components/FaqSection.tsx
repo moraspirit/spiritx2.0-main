@@ -17,7 +17,7 @@ const FAQS: Faq[] = [
   {
     topic: 'Eligibility',
     q: 'Who can take part in Spirit X 2.0?',
-    a: 'Undergraduates from state and private universities in Sri Lanka who are below 30 years of age as of 1 January 2027. Each participant can represent only one team.',
+    a: 'Undergraduates from state and private universities in Sri Lanka who are below 27 years of age as of 1 January 2027. Each participant can represent only one team.',
   },
   {
     topic: 'Teams',
