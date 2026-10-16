@@ -16,7 +16,7 @@ export default function Register() {
     <div className="min-h-screen bg-background">
       <section className="stage-dark relative min-h-[100svh] overflow-hidden bg-background">
         <AmbientVideo
-          className="ambient-drift absolute inset-0 h-full w-full object-cover opacity-55"
+          className="absolute inset-0 h-full w-full object-cover opacity-55"
           cut={STADIUM}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/80 via-background/55 to-background" />
