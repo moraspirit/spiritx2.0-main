@@ -221,6 +221,11 @@ body,
   html {
     scroll-behavior: smooth;
   }
+  /* Lenis already eases the wheel. Leaving this on makes Chrome smooth twice
+     and stutter. Firefox does not stack them. The motion stays Lenis. */
+  html.lenis {
+    scroll-behavior: auto;
+  }
 }
 
 body {

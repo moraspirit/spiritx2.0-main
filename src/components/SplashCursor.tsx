@@ -25,6 +25,8 @@ interface SplashCursorProps {
   COLOR?: string;
   COLOR_PALETTE?: string[];
   RAINBOW_MODE?: boolean;
+  /** Hide the trail while scrolling without destroying the WebGL context. */
+  hidden?: boolean;
 }
 
 function hexToRgb(hex: string): ColorRGB {
@@ -58,8 +60,12 @@ export default function SplashCursor({
   COLOR = '#A855F7',
   COLOR_PALETTE = ['#FFFFFF', '#A855F7', '#00C2FF', '#E9D5FF', '#38BDF8'],
   RAINBOW_MODE = false,
+  hidden = false,
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hiddenRef = useRef(hidden);
+  const resumeRef = useRef<(() => void) | null>(null);
+  hiddenRef.current = hidden;
   const isLight = usePrefersLight();
 
   // Safeguard: Never render on mobile or touch devices
@@ -1021,8 +1027,12 @@ export default function SplashCursor({
 
     window.addEventListener('mousemove', onMouseMove, { passive: true });
 
-    // Render loop
+    // Render loop. While hidden, stop the frames but keep the GL context alive.
     const update = () => {
+      if (hiddenRef.current) {
+        animFrameId = 0;
+        return;
+      }
       const now = Date.now();
       const dt = Math.min((now - lastUpdateTime) / 1000, 0.016);
       lastUpdateTime = now;
@@ -1046,9 +1056,16 @@ export default function SplashCursor({
       animFrameId = requestAnimationFrame(update);
     };
 
-    update();
+    resumeRef.current = () => {
+      if (animFrameId) return;
+      lastUpdateTime = Date.now();
+      animFrameId = requestAnimationFrame(update);
+    };
+
+    if (!hiddenRef.current) update();
 
     return () => {
+      resumeRef.current = null;
       cancelAnimationFrame(animFrameId);
       window.removeEventListener('mousemove', onMouseMove);
     };
@@ -1073,8 +1090,16 @@ export default function SplashCursor({
     isLight,
   ]);
 
+  useEffect(() => {
+    if (!hidden) resumeRef.current?.();
+  }, [hidden]);
+
   return (
-    <div className="pointer-events-none fixed inset-0 z-30 h-full w-full overflow-hidden">
+    <div
+      className="pointer-events-none fixed inset-0 z-30 h-full w-full overflow-hidden"
+      style={{ visibility: hidden ? 'hidden' : 'visible' }}
+      aria-hidden="true"
+    >
       <canvas ref={canvasRef} className="block h-full w-full pointer-events-none" />
     </div>
   );

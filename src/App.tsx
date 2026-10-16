@@ -61,9 +61,10 @@ export default function App() {
       {/* "user": motion drops transform/layout animation when the OS asks for reduced motion. */}
       <MotionConfig reducedMotion="user">
         <SmoothScroll>
-          {hasDesktopCursor && !scrolling && (
+          {hasDesktopCursor && (
             <Suspense fallback={null}>
               <SplashCursor
+                hidden={scrolling}
                 DENSITY_DISSIPATION={2.2}
                 VELOCITY_DISSIPATION={1.8}
                 PRESSURE={0.1}
