@@ -37,7 +37,7 @@ const CHAIRS: Chair[] = [
     role: 'Assistant Pillar Head – Web & Technology Pillar',
     affiliation: 'MoraSpirit 360',
     email: 'kusalpabasararcg@gmail.com',
-    phone: '074 016 4134',
+    phone: '078 772 0767',
     photo: '/contact/kusal_pabasara.jpeg',
   },
   {
