@@ -7,7 +7,7 @@ import { lift, revealOnce, rise, stagger } from '../motion.ts';
 
 type Faq = { topic: string; q: string; a: string };
 
-/** Answers marked MOCK are placeholders until the organisers confirm them. */
+/** Answers marked MOCK are placeholders until the organizers confirm them. */
 const FAQS: Faq[] = [
   {
     topic: 'About',

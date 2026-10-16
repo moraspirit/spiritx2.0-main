@@ -88,7 +88,7 @@ export default function ChallengeIntro() {
         </motion.div>
 
         <div className="mt-12 grid gap-8 sm:mt-16 lg:mt-24 lg:grid-cols-12">
-          <motion.div {...revealOnce} variants={rise} className="intro-organisers lg:col-span-4 lg:pt-2">
+          <motion.div {...revealOnce} variants={rise} className="intro-organizers lg:col-span-4 lg:pt-2">
             <OrganizerLockup size="md" className="flex-col !items-start gap-y-3" />
           </motion.div>
           <div className="lg:col-span-8">

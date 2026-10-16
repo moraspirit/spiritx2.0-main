@@ -22,9 +22,9 @@ type Tier = { label: string; featured?: boolean; partners: Partner[] };
 /** Only confirmed partners are listed. */
 const TIERS: Tier[] = [
   {
-    label: 'Organised by',
+    label: 'Organized by',
     partners: [
-      { name: 'MoraSpirit 360', role: 'Organising partner', moraspirit: true, href: 'https://moraspirit.com' },
+      { name: 'MoraSpirit 360', role: 'Organizing partner', moraspirit: true, href: 'https://moraspirit.com' },
     ],
   },
   {
@@ -75,7 +75,7 @@ export default function PartnersSection() {
       <div className="mx-auto max-w-6xl">
         <motion.div {...revealOnce} variants={stagger(0.1)} className="max-w-2xl">
           <motion.h2 variants={rise} id="partners-title" className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl">
-            Organisers <em className="font-serif font-normal text-brand-ink">&amp; partners.</em>
+            Organizers <em className="font-serif font-normal text-brand-ink">&amp; partners.</em>
           </motion.h2>
           <motion.p variants={rise} className="mt-4 max-w-md text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
             The people putting Spirit X 2.0 on the field.
@@ -127,7 +127,7 @@ export default function PartnersSection() {
         <motion.p {...revealOnce} variants={rise} className="mt-10 text-sm text-muted-foreground">
           Interested in partnering with Spirit X 2.0?{' '}
           <a href="#contact" className="font-medium text-brand-ink underline-offset-4 hover:underline">
-            Talk to the organising committee
+            Talk to the organizing committee
           </a>
           .
         </motion.p>

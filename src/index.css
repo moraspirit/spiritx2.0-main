@@ -611,8 +611,8 @@ body {
   letter-spacing: -0.035em;
 }
 
-/* Organiser credit, stacked beside the statement (divider only makes sense in a row). */
-.intro-organisers .h-4.w-px { display: none; }
+/* Organizer credit, stacked beside the statement (divider only makes sense in a row). */
+.intro-organizers .h-4.w-px { display: none; }
 
 /* Idea rows: number / title / detail, hairline-ruled, no cards. */
 .intro-idea {

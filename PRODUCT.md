@@ -7,10 +7,10 @@ brand
 ## Users
 Primary: undergraduates at Sri Lankan universities, mostly arriving on a phone from a WhatsApp group, Instagram story or Facebook post. They have a few seconds of attention and want to know: what is this, is it for me, what can I build, when is it, how do I register my team.
 
-Secondary: sponsors, judges, mentors and university staff checking that the event is credible — who organises it, how big it is, what happened at Spirit X 1.0.
+Secondary: sponsors, judges, mentors and university staff checking that the event is credible — who organizes it, how big it is, what happened at Spirit X 1.0.
 
 ## Product Purpose
-Spirit X 2.0 is the inter-university sports-innovation hackathon organised by the University of Moratuwa and MoraSpirit 360: 48 hours, 200+ hackers, 20+ universities. The site exists to turn a curious student into a registered team. Success means a visitor scrolls the whole story (what it is → tracks → timeline → experience → past stories → register) without thinking the site ended early, and reaches the register action knowing exactly what happens next.
+Spirit X 2.0 is the inter-university sports-innovation hackathon organized by the University of Moratuwa and MoraSpirit 360: 48 hours, 200+ hackers, 20+ universities. The site exists to turn a curious student into a registered team. Success means a visitor scrolls the whole story (what it is → tracks → timeline → experience → past stories → register) without thinking the site ended early, and reaches the register action knowing exactly what happens next.
 
 ## Brand Personality
 Cinematic, athletic, ambitious. The night-stadium world: floodlights, motion, the feeling of walking onto a big stage. The voice is short, direct and energetic ("Reinvent the game."), never corporate. Emotional goal: a student should feel this is the biggest stage they can play on this year, and that their team belongs on it.
