@@ -306,7 +306,7 @@ export default function ContactSection() {
                       {chair.role ? (
                         <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">{chair.role}</p>
                       ) : null}
-                      <p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>
+                      {/*<p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>*/}
                     </div>
                     
                     <div className="mt-6 flex flex-col items-center gap-1 border-t border-border/60 pt-4 text-sm">
