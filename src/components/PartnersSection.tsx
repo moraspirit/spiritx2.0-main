@@ -29,7 +29,7 @@ const TIERS: Tier[] = [
   },
   {
     label: 'Bronze partner',
-    partners: [{ name: 'Circles', role: 'Bronze partner', logo: '/partners/circles-horizontal.png', fullColour: true }],
+    partners: [{ name: 'Circles', role: 'Bronze partner', logo: '/partners/circles-horizontal.webp', fullColour: true }],
   },
 ];
 

@@ -125,9 +125,10 @@ function DesktopSpirit3DLogo({ className }: Spirit3DLogoProps) {
         canvas,
         alpha: true,
         antialias: true,
-        powerPreference: 'high-performance',
+        powerPreference: 'default',
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      // Match the screen so the logo stays sharp. Motion stays tiny, so this is one still frame, not a heavy loop.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.35;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -165,17 +166,6 @@ function DesktopSpirit3DLogo({ className }: Spirit3DLogoProps) {
     const pointLight = new THREE.PointLight(0x00f0ff, 1.8, 8);
     pointLight.position.set(0, 0, 2.5);
     scene.add(pointLight);
-
-    // Continuous sweeping shine lights (travels left -> right across the logo)
-    const shineLight = new THREE.PointLight(0xffffff, 0, 9);
-    scene.add(shineLight);
-
-    const shineCyanLight = new THREE.PointLight(0x00f0ff, 0, 8);
-    scene.add(shineCyanLight);
-
-    // Interactive mouse specular shine light
-    const mouseShineLight = new THREE.PointLight(0xffffff, 0, 7);
-    scene.add(mouseShineLight);
 
     // Load Model
     dracoLoader = new DRACOLoader();
@@ -286,126 +276,43 @@ function DesktopSpirit3DLogo({ className }: Spirit3DLogoProps) {
     resizeObserver.observe(container);
     updateSize();
 
-    // Mouse & Touch interaction
-    let targetRotationX = 0;
-    let targetRotationY = 0;
-    let currentRotationX = 0;
-    let currentRotationY = 0;
-
-    let isPointerDown = false;
-    let pointerStartX = 0;
-    let pointerStartY = 0;
-    let baseRotationX = 0;
-    let baseRotationY = 0;
-
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-
-      if (isPointerDown) {
-        const deltaX = (e.clientX - pointerStartX) / rect.width;
-        const deltaY = (e.clientY - pointerStartY) / rect.height;
-        targetRotationY = baseRotationY + deltaX * 1.2;
-        targetRotationX = baseRotationX - deltaY * 0.2; // Subdued vertical drag tilt
-      } else {
-        // Natural hover tilt (kept left/right movement, reduced top/bottom movement)
-        targetRotationY = nx * 0.2;
-        targetRotationX = -ny * 0.04; // Subtle vertical pitch tilt
-      }
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-      isPointerDown = true;
-      pointerStartX = e.clientX;
-      pointerStartY = e.clientY;
-      baseRotationX = targetRotationX;
-      baseRotationY = targetRotationY;
-      container.setPointerCapture?.(e.pointerId);
-    };
-
-    const onPointerUp = (e: PointerEvent) => {
-      isPointerDown = false;
-      container.releasePointerCapture?.(e.pointerId);
-    };
-
-    const onPointerLeave = () => {
-      if (!isPointerDown) {
-        targetRotationX = 0;
-        targetRotationY = 0;
-      }
-    };
-
-    // Static viewports (phones, touch, reduced motion) never react to the pointer.
-    if (!prefersReducedMotion) {
-      container.addEventListener('pointerdown', onPointerDown);
-      window.addEventListener('pointermove', onPointerMove);
-      window.addEventListener('pointerup', onPointerUp);
-      container.addEventListener('pointerleave', onPointerLeave);
-    }
-
-    // Animation Loop
+    // Still logo, plus a very small yaw. No drag, hover tilt, or shine sweep.
     let clock = new THREE.Clock();
+    let visible = true;
+    const FRAME_MS = 1000 / 12;
 
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
-
-      if (modelGroup) {
-        // Gentle smooth dampening (LERP)
-        currentRotationX += (targetRotationX - currentRotationX) * 0.08;
-        currentRotationY += (targetRotationY - currentRotationY) * 0.08;
-
-        // Subtle ambient floating motion
-        const floatOffset = prefersReducedMotion ? 0 : Math.sin(elapsedTime * 1.1) * 0.025;
-        const autoOscillate = prefersReducedMotion ? 0 : Math.sin(elapsedTime * 0.5) * 0.035;
-
-        modelGroup.rotation.x = currentRotationX + (prefersReducedMotion ? 0 : Math.sin(elapsedTime * 0.8) * 0.012);
-        modelGroup.rotation.y = currentRotationY + autoOscillate;
-        modelGroup.position.y = floatOffset;
+    const renderFrame = (elapsedTime: number) => {
+      if (modelGroup && !prefersReducedMotion) {
+        modelGroup.rotation.y = Math.sin(elapsedTime * 0.35) * 0.012;
       }
-
-      if (!prefersReducedMotion) {
-        // Continuous left-to-right metallic shine light sweep
-        const cycleDuration = 3.2; // 3.2s total cycle
-        const sweepDuration = 2.2; // 2.2s sweep, 1.0s pause
-        const cycleTime = elapsedTime % cycleDuration;
-
-        if (cycleTime < sweepDuration) {
-          const progress = cycleTime / sweepDuration; // 0.0 to 1.0
-          const shineX = -4.2 + progress * 8.4; // left to right sweep
-          const intensityFactor = Math.sin(progress * Math.PI); // smooth bell curve
-
-          shineLight.position.set(shineX, 0.4, 2.2);
-          shineLight.intensity = (isLight ? 4.5 : 6.5) * intensityFactor;
-
-          shineCyanLight.position.set(shineX - 0.6, -0.4, 1.8);
-          shineCyanLight.intensity = (isLight ? 2.5 : 4.5) * intensityFactor;
-        } else {
-          shineLight.intensity = 0;
-          shineCyanLight.intensity = 0;
-        }
-
-        // Mouse interactive specular shine tracking
-        mouseShineLight.position.set(targetRotationY * 3.5, -targetRotationX * 3.5 + 0.2, 2.0);
-        mouseShineLight.intensity = (isLight ? 2.5 : 4.0) * (isPointerDown ? 1.5 : 1.0);
-      }
-
-      if (renderer) {
-        renderer.render(scene, camera);
-      }
+      renderer?.render(scene, camera);
     };
 
-    animate();
+    const animate = (now: number) => {
+      animationFrameId = requestAnimationFrame(animate);
+      if (!visible) return;
+      if (now - lastFrame < FRAME_MS) return;
+      lastFrame = now;
+      renderFrame(clock.getElapsedTime());
+    };
+
+    let lastFrame = 0;
+    const visibility = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) renderFrame(clock.getElapsedTime());
+    });
+    visibility.observe(container);
+
+    if (prefersReducedMotion) {
+      renderFrame(0);
+    } else {
+      animationFrameId = requestAnimationFrame(animate);
+    }
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      visibility.disconnect();
       resizeObserver.disconnect();
-
-      container.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      container.removeEventListener('pointerleave', onPointerLeave);
 
       if (dracoLoader) {
         dracoLoader.dispose();
@@ -436,13 +343,13 @@ function DesktopSpirit3DLogo({ className }: Spirit3DLogoProps) {
   return (
     <div
       ref={containerRef}
-      className={`relative flex items-center justify-center select-none overflow-visible touch-none ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
+      className={`relative flex items-center justify-center select-none overflow-visible touch-pan-y ${className || 'h-36 sm:h-48 md:h-56 lg:h-64 w-full max-w-[98vw] sm:max-w-4xl md:max-w-5xl lg:max-w-6xl'}`}
       style={{ perspective: 1000 }}
     >
       {/* Fallback & smooth fade-in */}
       <canvas
         ref={canvasRef}
-        className={`w-full h-full cursor-grab active:cursor-grabbing transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         aria-label="Spirit X 2.0 Interactive 3D Model"
         role="img"
       />

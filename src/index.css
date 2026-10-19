@@ -1138,6 +1138,22 @@ a.partner-tile-inner:hover,
     hsl(var(--background)) 100%
   );
 }
+.section-backdrop.no-top-shade .section-backdrop-veil {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background) / var(--bd-veil-light)) 0%,
+    hsl(var(--background) / var(--bd-veil-light)) 78%,
+    hsl(var(--background)) 100%
+  );
+}
+.dark .section-backdrop.no-top-shade .section-backdrop-veil {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background) / var(--bd-veil)) 0%,
+    hsl(var(--background) / var(--bd-veil)) 78%,
+    hsl(var(--background)) 100%
+  );
+}
 
 /* Pinned frames: an even veil in the frame, with the fades at the section's own ends instead. */
 .section-backdrop.has-sticky {

@@ -26,7 +26,7 @@ export default function RegisterSection() {
       {isDark ? (
         <>
           <AmbientVideo
-            className="ambient-drift absolute inset-0 h-full w-full object-cover opacity-55"
+            className="absolute inset-0 h-full w-full object-cover opacity-55"
             cut={STADIUM_DARK}
             lazy
           />
@@ -38,7 +38,7 @@ export default function RegisterSection() {
             src={STADIUM_DAY}
             alt=""
             aria-hidden="true"
-            className="ambient-drift absolute inset-0 h-full w-full object-cover object-center opacity-65"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-65"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/80 via-background/45 to-background" />
         </>

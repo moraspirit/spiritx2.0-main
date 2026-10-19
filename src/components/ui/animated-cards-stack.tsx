@@ -12,12 +12,14 @@ import {
 
 import { cn } from '@/lib/utils';
 
-const cardVariants = cva('absolute will-change-transform', {
+const cardVariants = cva('absolute will-change-transform contain-paint', {
   variants: {
     variant: {
-      dark: 'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border border-stone-700/50 bg-accent-foreground/80 p-6 md:backdrop-blur-md',
+      dark: 'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border border-stone-700/50 bg-accent-foreground/90 p-6',
+      // No backdrop-blur: Chrome re-blurs every frame while these cards tilt and slide.
+      // Fill stays opaque so the stack still reads as solid glass cards.
       light:
-        'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border bg-accent bg-background/90 p-6 md:bg-background/80 md:backdrop-blur-md',
+        'flex size-full flex-col items-center justify-center gap-6 rounded-2xl border bg-accent bg-background/95 p-6',
     },
   },
   defaultVariants: {
