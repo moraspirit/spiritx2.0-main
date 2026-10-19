@@ -1,16 +1,22 @@
 import { useState } from 'react';
+import { Check } from 'lucide-react';
 import Turnstile from './Turnstile.tsx';
 import { apiConfigured, isApiError, submitProposal, turnstileSiteKey } from '../lib/api.ts';
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
 
-export default function ProposalForm() {
-  const [teamName, setTeamName] = useState('');
-  const [leaderName, setLeaderName] = useState('');
-  const [leaderEmail, setLeaderEmail] = useState('');
+type ProposalFormProps = {
+  teamCode: string;
+  submitted: boolean;
+  onSubmitted: () => void;
+};
+
+export default function ProposalForm({ teamCode, submitted, onSubmitted }: ProposalFormProps) {
   const [projectTitle, setProjectTitle] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  // Turnstile tokens are single-use: remount the widget after every attempt.
+  const [captchaKey, setCaptchaKey] = useState(0);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -57,31 +63,42 @@ export default function ProposalForm() {
 
     setPending(true);
     try {
-      const result = await submitProposal({
-        team_name: teamName.trim(),
-        leader_name: leaderName.trim(),
-        leader_email: leaderEmail.trim(),
+      const result = await submitProposal(teamCode, {
         project_title: projectTitle.trim(),
         proposal_file: file,
         turnstileToken: token ?? '',
       });
       setSuccess(result.message);
-      setTeamName('');
-      setLeaderName('');
-      setLeaderEmail('');
       setProjectTitle('');
       setFile(null);
-      setToken(null);
+      onSubmitted();
     } catch (err) {
-      if (isApiError(err)) setFormError(err.message);
-      else setFormError('Something went wrong. Please try again.');
+      if (isApiError(err)) {
+        setFormError(err.message);
+        if (err.status === 409) onSubmitted();
+      } else setFormError('Something went wrong. Please try again.');
     } finally {
+      setToken(null);
+      setCaptchaKey((k) => k + 1);
       setPending(false);
     }
   };
 
+  if (submitted) {
+    return (
+      <section className="space-y-2">
+        <h2 className="text-xl font-medium text-foreground sm:text-2xl">Proposal submission</h2>
+        <p className="flex items-center gap-2 text-sm text-brand-ink">
+          <Check className="h-4 w-4 shrink-0" aria-hidden />
+          {success ?? 'Your team’s proposal has been received.'}
+        </p>
+        <p className="text-sm text-muted-foreground">Each team can submit one proposal, so this step is done.</p>
+      </section>
+    );
+  }
+
   return (
-    <form onSubmit={onSubmit} className="mx-auto w-full max-w-xl space-y-5 text-left">
+    <form onSubmit={onSubmit} className="w-full space-y-5 text-left">
       <div>
         <h2 className="text-xl font-medium text-foreground sm:text-2xl">Proposal submission</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -89,28 +106,20 @@ export default function ProposalForm() {
         </p>
       </div>
 
-      {(
-        [
-          ['team_name', 'Team name', teamName, setTeamName, 'text'],
-          ['leader_name', 'Leader name', leaderName, setLeaderName, 'text'],
-          ['leader_email', 'Leader email', leaderEmail, setLeaderEmail, 'email'],
-          ['project_title', 'Project title', projectTitle, setProjectTitle, 'text'],
-        ] as const
-      ).map(([id, label, value, setter, type]) => (
-        <div key={id}>
-          <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground" htmlFor={id}>
-            {label}
-          </label>
-          <input
-            id={id}
-            type={type}
-            required
-            value={value}
-            onChange={(e) => setter(e.target.value)}
-            className="w-full rounded-xl border border-border bg-background/80 px-3 py-2.5 text-sm outline-none focus:border-brand/50 focus:ring-2 focus:ring-brand/30"
-          />
-        </div>
-      ))}
+      <div>
+        <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground" htmlFor="proposal_title">
+          Project title
+        </label>
+        <input
+          id="proposal_title"
+          required
+          minLength={3}
+          maxLength={100}
+          value={projectTitle}
+          onChange={(e) => setProjectTitle(e.target.value)}
+          className="w-full rounded-xl border border-border bg-background/80 px-3 py-2.5 text-sm outline-none focus:border-brand/50 focus:ring-2 focus:ring-brand/30"
+        />
+      </div>
 
       <div>
         <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground" htmlFor="proposal_file">
@@ -126,7 +135,7 @@ export default function ProposalForm() {
         />
       </div>
 
-      <Turnstile onToken={setToken} />
+      <Turnstile key={captchaKey} onToken={setToken} />
 
       {!apiConfigured ? (
         <p className="text-sm text-muted-foreground">API base URL is not set — form is wired but inactive.</p>
@@ -135,7 +144,6 @@ export default function ProposalForm() {
         <p className="text-sm text-muted-foreground">Turnstile site key is not set — submit stays locked.</p>
       ) : null}
       {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
-      {success ? <p className="text-sm text-brand-ink">{success}</p> : null}
 
       <button
         type="submit"

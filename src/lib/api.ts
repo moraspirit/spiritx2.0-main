@@ -6,6 +6,8 @@
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 export const registrationOpen = import.meta.env.VITE_REGISTRATION_OPEN === 'true';
+/** Shows the team-code login with the proposal and prototype forms on #/register. */
+export const submissionsOpen = import.meta.env.VITE_SUBMISSIONS_OPEN === 'true';
 /** Every "register" CTA: the form page once open, otherwise the countdown section on home. */
 export const REGISTER_HREF = registrationOpen ? '#/register' : '#register';
 export const turnstileSiteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined) ?? '';
@@ -35,14 +37,32 @@ export type TeamRegistrationPayload = {
   cf_turnstile_response: string;
 };
 
-export type ProposalPayload = {
+/** `SX-` plus 32 hex characters, emailed to the team leader at registration. */
+export const TEAM_CODE_PATTERN = /^SX-[A-F0-9]{32}$/;
+
+export function normalizeTeamCode(raw: string): string {
+  return raw.replace(/\s+/g, '').toUpperCase();
+}
+
+export type TeamStatus = {
   team_name: string;
-  leader_name: string;
-  leader_email: string;
+  proposal_submitted: boolean;
+  prototype_submitted: boolean;
+};
+
+export type ProposalPayload = {
   project_title: string;
   proposal_file: File;
   /** Turnstile token — sent under the hyphenated form field name. */
   turnstileToken: string;
+};
+
+export type PrototypePayload = {
+  project_title: string;
+  github_url: string;
+  youtube_url: string;
+  description: string;
+  cf_turnstile_response: string;
 };
 
 export type ApiError = {
@@ -56,6 +76,9 @@ function detailToMessage(detail: unknown, status: number): { message: string; fi
   if (status === 429) {
     return { message: 'Too many submissions from this network. Please wait a minute and try again.' };
   }
+  if (status === 401) {
+    return { message: 'That team code does not match any registered team.' };
+  }
   if (typeof detail === 'string') {
     return { message: detail };
   }
@@ -67,7 +90,9 @@ function detailToMessage(detail: unknown, status: number): { message: string; fi
       const loc = Array.isArray((item as { loc?: unknown }).loc)
         ? ((item as { loc: unknown[] }).loc.filter((x) => typeof x === 'string') as string[])
         : [];
-      const msg = typeof (item as { msg?: unknown }).msg === 'string' ? (item as { msg: string }).msg : '';
+      const raw = typeof (item as { msg?: unknown }).msg === 'string' ? (item as { msg: string }).msg : '';
+      // Pydantic prefixes custom validator messages with "Value error, ".
+      const msg = raw.replace(/^Value error,\s*/, '');
       const key = loc.slice(1).join('.') || loc.join('.') || 'form';
       if (msg) {
         fields[key] = msg;
@@ -97,7 +122,9 @@ async function parseError(res: Response): Promise<ApiError> {
   return { status: res.status, message, fields };
 }
 
-export async function registerTeam(payload: TeamRegistrationPayload): Promise<{ message: string }> {
+export async function registerTeam(
+  payload: TeamRegistrationPayload,
+): Promise<{ message: string; emailSent: boolean }> {
   if (!API_BASE) throw { status: 0, message: 'API is not configured yet.' } satisfies ApiError;
 
   const res = await fetch(`${API_BASE}/teams/register`, {
@@ -107,17 +134,26 @@ export async function registerTeam(payload: TeamRegistrationPayload): Promise<{ 
   });
 
   if (!res.ok) throw await parseError(res);
-  const data = (await res.json()) as { message?: string };
-  return { message: data.message ?? 'Team registered successfully!' };
+  const data = (await res.json()) as { message?: string; email_status?: string };
+  return { message: data.message ?? 'Team registered successfully!', emailSent: data.email_status !== 'failed' };
 }
 
-export async function submitProposal(payload: ProposalPayload): Promise<{ message: string }> {
+/** Checks a team code and returns the team's submission status. 401 means the code is wrong. */
+export async function getTeamStatus(teamCode: string): Promise<TeamStatus> {
+  if (!API_BASE) throw { status: 0, message: 'API is not configured yet.' } satisfies ApiError;
+
+  const res = await fetch(`${API_BASE}/teams/me`, {
+    headers: { Accept: 'application/json', 'X-Team-Code': teamCode },
+  });
+
+  if (!res.ok) throw await parseError(res);
+  return (await res.json()) as TeamStatus;
+}
+
+export async function submitProposal(teamCode: string, payload: ProposalPayload): Promise<{ message: string }> {
   if (!API_BASE) throw { status: 0, message: 'API is not configured yet.' } satisfies ApiError;
 
   const form = new FormData();
-  form.append('team_name', payload.team_name);
-  form.append('leader_name', payload.leader_name);
-  form.append('leader_email', payload.leader_email);
   form.append('project_title', payload.project_title);
   form.append('proposal_file', payload.proposal_file);
   // Proposals router uses the hyphenated Turnstile alias.
@@ -125,13 +161,27 @@ export async function submitProposal(payload: ProposalPayload): Promise<{ messag
 
   const res = await fetch(`${API_BASE}/proposals/`, {
     method: 'POST',
-    headers: { Accept: 'application/json' },
+    headers: { Accept: 'application/json', 'X-Team-Code': teamCode },
     body: form,
   });
 
   if (!res.ok) throw await parseError(res);
   const data = (await res.json()) as { message?: string };
   return { message: data.message ?? 'Proposal submitted successfully.' };
+}
+
+export async function submitPrototype(teamCode: string, payload: PrototypePayload): Promise<{ message: string }> {
+  if (!API_BASE) throw { status: 0, message: 'API is not configured yet.' } satisfies ApiError;
+
+  const res = await fetch(`${API_BASE}/prototypes/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-Team-Code': teamCode },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw await parseError(res);
+  const data = (await res.json()) as { message?: string };
+  return { message: data.message ?? 'Prototype submitted successfully.' };
 }
 
 export function isApiError(err: unknown): err is ApiError {

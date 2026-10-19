@@ -65,7 +65,8 @@ export default function RegisterPanel({ titleAs: Title = 'h2' }: RegisterPanelPr
           </Title>
         </motion.div>
         <motion.p variants={rise} className="mt-4 max-w-md text-legible text-sm leading-relaxed text-foreground/85 sm:text-base">
-          Teams of three or four undergraduates from the same university. Register your team, then send your proposal PDF from the same page.
+          Teams of three or four undergraduates from the same university. Register your team and your leader gets a
+          private team code by email, which you&rsquo;ll use to submit your proposal once submissions open.
         </motion.p>
         <motion.a
           variants={rise}

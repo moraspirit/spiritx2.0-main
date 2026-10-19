@@ -8,6 +8,15 @@ interface SmoothScrollContextType {
 
 const SmoothScrollContext = createContext<SmoothScrollContextType>({ lenis: null });
 
+/**
+ * The in-page section a hash link scrolls to, or null to let the browser and the hash
+ * router handle it. "#/register" is a page route, not the #register section of home.
+ */
+function sectionTarget(href: string): HTMLElement | null {
+  if (href.startsWith('#/')) return null;
+  return document.getElementById(href.slice(1));
+}
+
 export function useSmoothScroll() {
   return useContext(SmoothScrollContext);
 }
@@ -49,16 +58,11 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
           return;
         }
 
-        try {
-          const id = href.replace(/^#\/?/, '');
-          const targetElement = document.getElementById(id);
-          if (targetElement) {
-            e.preventDefault();
-            const top = targetElement.getBoundingClientRect().top + window.scrollY - 70;
-            window.scrollTo({ top, behavior: 'smooth' });
-          }
-        } catch {
-          // Ignore invalid selector
+        const targetElement = sectionTarget(href);
+        if (targetElement) {
+          e.preventDefault();
+          const top = targetElement.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({ top, behavior: 'smooth' });
         }
       };
 
@@ -100,19 +104,13 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Safe lookup for hash anchors
-      try {
-        const id = href.replace(/^#\/?/, '');
-        const targetElement = document.getElementById(id);
-        if (targetElement) {
-          e.preventDefault();
-          lenis.scrollTo(targetElement as HTMLElement, {
-            offset: -70,
-            duration: 1.2,
-          });
-        }
-      } catch {
-        // Ignore invalid CSS selector
+      const targetElement = sectionTarget(href);
+      if (targetElement) {
+        e.preventDefault();
+        lenis.scrollTo(targetElement, {
+          offset: -70,
+          duration: 1.2,
+        });
       }
     };
 
