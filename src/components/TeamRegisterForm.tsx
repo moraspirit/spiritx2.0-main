@@ -6,6 +6,7 @@ import WhatsAppIcon from './WhatsAppIcon.tsx';
 import {
   apiConfigured,
   isApiError,
+  isValidSriLankanPhone,
   registerTeam,
   turnstileSiteKey,
   WHATSAPP_GROUP_URL,
@@ -32,15 +33,19 @@ const labelClass = 'mb-1 block text-xs uppercase tracking-wider text-muted-foreg
 // Same rules as the FastAPI schema (app/scemas/team.py), so most mistakes are caught before submit.
 const NAME_RE = /^[a-zA-Z\s.'-]+$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const WHATSAPP_RE = /^\+?[0-9\s\-()]{7,20}$/;
-
 function validatePerson(prefix: string, p: LeaderPayload, errors: FieldErrors) {
   const name = p.name.trim();
   if (name.length < 2) errors[`${prefix}.name`] = 'Enter the full name.';
   else if (!NAME_RE.test(name)) errors[`${prefix}.name`] = 'Use letters, spaces, hyphens, apostrophes or dots only.';
   if (p.university_reg_no.trim().length < 2) errors[`${prefix}.university_reg_no`] = 'Enter the university registration number.';
   if (!EMAIL_RE.test(p.email.trim())) errors[`${prefix}.email`] = 'Enter a valid email address.';
-  if (!WHATSAPP_RE.test(p.whatsapp.trim())) errors[`${prefix}.whatsapp`] = 'Use a number like +94 77 123 4567.';
+
+  const whatsapp = p.whatsapp.trim();
+  if (!whatsapp) {
+    errors[`${prefix}.whatsapp`] = 'Enter a WhatsApp phone number.';
+  } else if (!isValidSriLankanPhone(whatsapp)) {
+    errors[`${prefix}.whatsapp`] = 'Enter a valid Sri Lankan phone number (e.g. 077 123 4567 or +94 77 123 4567).';
+  }
 }
 
 /** Which step a server-side field error belongs to. */

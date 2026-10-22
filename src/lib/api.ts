@@ -50,6 +50,22 @@ export function normalizeTeamCode(raw: string): string {
   return raw.replace(/\s+/g, '').toUpperCase();
 }
 
+/**
+ * Sri Lankan phone number regex:
+ * Accepts local format (07X XXXXXXX, 011 XXXXXXX) and international format (+94 7X XXXXXXX, +94 07X..., 0094..., 94...).
+ * Supports spaces, hyphens, parentheses, and dots.
+ * - Mobile: 070, 071, 072, 074, 075, 076, 077, 078 followed by 7 digits
+ * - Fixed line: 011, 021-027, 031-038, 041, 045, 047, 051-055, 057, 063, 065-067, 081, 091 followed by 7 digits
+ */
+export const SRI_LANKAN_PHONE_RE =
+  /^(?:(?:\+?94|0094)\s?0?|0)?(?:7[01245678]\d{7}|(?:11|2[1-7]|3[1-8]|4[157]|5[1-57]|6[35-7]|81|91)\d{7})$/;
+
+export function isValidSriLankanPhone(value: string): boolean {
+  if (!value) return false;
+  const cleaned = value.trim().replace(/[\s\-().]/g, '');
+  return SRI_LANKAN_PHONE_RE.test(cleaned);
+}
+
 export type TeamStatus = {
   team_name: string;
   proposal_submitted: boolean;
