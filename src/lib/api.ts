@@ -12,6 +12,10 @@ export const submissionsOpen = import.meta.env.VITE_SUBMISSIONS_OPEN === 'true';
 export const REGISTER_HREF = registrationOpen ? '#/register' : '#register';
 /** Official delegate booklet link. */
 export const DELEGATE_BOOKLET_URL = 'https://spiritx.moraspirit.com/delegate-booklet';
+/** Official WhatsApp group link for registered teams. */
+export const WHATSAPP_GROUP_URL =
+  (import.meta.env.VITE_WHATSAPP_GROUP_URL as string | undefined) ||
+  'https://chat.whatsapp.com/IohCBDmrCfN4GsbOORvlYE?s=cl&p=a&mlu=4&ilr=4';
 export const turnstileSiteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined) ?? '';
 export const apiConfigured = Boolean(API_BASE);
 

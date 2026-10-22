@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import Turnstile from './Turnstile.tsx';
+import WhatsAppIcon from './WhatsAppIcon.tsx';
 import {
   apiConfigured,
   isApiError,
   registerTeam,
   turnstileSiteKey,
+  WHATSAPP_GROUP_URL,
   type LeaderPayload,
   type MemberPayload,
 } from '../lib/api.ts';
@@ -323,7 +325,7 @@ export default function TeamRegisterForm() {
 
   if (success) {
     return (
-      <section className="mx-auto w-full max-w-xl space-y-5 text-left" aria-live="polite">
+      <section className="mx-auto w-full max-w-xl space-y-6 text-left" aria-live="polite">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand/15 text-brand-ink">
           <Check className="h-6 w-6" aria-hidden />
         </div>
@@ -334,10 +336,40 @@ export default function TeamRegisterForm() {
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{success}</p>
         </div>
+
+        <div className="relative overflow-hidden rounded-2xl border border-[#25D366]/30 bg-gradient-to-br from-[#25D366]/12 via-[#25D366]/5 to-transparent p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#25D366]/20 text-[#25D366] ring-1 ring-[#25D366]/30">
+              <WhatsAppIcon size={24} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base font-medium text-foreground">
+                Join the Official Team WhatsApp Group
+              </h3>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                Get real-time announcements, delegate updates, and connect directly with the organizing committee. All team members are encouraged to join!
+              </p>
+              <div className="mt-4">
+                <a
+                  href={WHATSAPP_GROUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-medium text-black shadow-md shadow-[#25D366]/20 transition-[transform,box-shadow,background-color] hover:bg-[#20ba5a] hover:shadow-[#25D366]/30 active:scale-95"
+                >
+                  <WhatsAppIcon size={18} className="shrink-0" />
+                  <span>Join WhatsApp Group</span>
+                  <ArrowRight size={15} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={reset}
-          className="rounded-full border border-border px-6 py-3 text-sm text-foreground transition-colors hover:border-brand/50"
+          className="rounded-full border border-border px-6 py-3 text-sm text-foreground transition-colors hover:border-brand/50 hover:bg-white/[.04]"
         >
           Register another team
         </button>
