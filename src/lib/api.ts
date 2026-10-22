@@ -10,6 +10,8 @@ export const registrationOpen = import.meta.env.VITE_REGISTRATION_OPEN === 'true
 export const submissionsOpen = import.meta.env.VITE_SUBMISSIONS_OPEN === 'true';
 /** Every "register" CTA: the form page once open, otherwise the countdown section on home. */
 export const REGISTER_HREF = registrationOpen ? '#/register' : '#register';
+/** Official delegate booklet link. */
+export const DELEGATE_BOOKLET_URL = 'https://spiritx.moraspirit.com/delegate-booklet';
 export const turnstileSiteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined) ?? '';
 export const apiConfigured = Boolean(API_BASE);
 
