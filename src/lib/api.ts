@@ -10,6 +10,12 @@ export const registrationOpen = import.meta.env.VITE_REGISTRATION_OPEN === 'true
 export const submissionsOpen = import.meta.env.VITE_SUBMISSIONS_OPEN === 'true';
 /** Every "register" CTA: the form page once open, otherwise the countdown section on home. */
 export const REGISTER_HREF = registrationOpen ? '#/register' : '#register';
+/** Official delegate booklet link. */
+export const DELEGATE_BOOKLET_URL = 'https://spiritx.moraspirit.com/delegate-booklet';
+/** Official WhatsApp group link for registered teams. */
+export const WHATSAPP_GROUP_URL =
+  (import.meta.env.VITE_WHATSAPP_GROUP_URL as string | undefined) ||
+  'https://chat.whatsapp.com/IohCBDmrCfN4GsbOORvlYE?s=cl&p=a&mlu=4&ilr=4';
 export const turnstileSiteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined) ?? '';
 export const apiConfigured = Boolean(API_BASE);
 
@@ -42,6 +48,22 @@ export const TEAM_CODE_PATTERN = /^SX-[A-F0-9]{32}$/;
 
 export function normalizeTeamCode(raw: string): string {
   return raw.replace(/\s+/g, '').toUpperCase();
+}
+
+/**
+ * Sri Lankan phone number regex:
+ * Accepts local format (07X XXXXXXX, 011 XXXXXXX) and international format (+94 7X XXXXXXX, +94 07X..., 0094..., 94...).
+ * Supports spaces, hyphens, parentheses, and dots.
+ * - Mobile: 070, 071, 072, 074, 075, 076, 077, 078 followed by 7 digits
+ * - Fixed line: 011, 021-027, 031-038, 041, 045, 047, 051-055, 057, 063, 065-067, 081, 091 followed by 7 digits
+ */
+export const SRI_LANKAN_PHONE_RE =
+  /^(?:(?:\+?94|0094)\s?0?|0)?(?:7[01245678]\d{7}|(?:11|2[1-7]|3[1-8]|4[157]|5[1-57]|6[35-7]|81|91)\d{7})$/;
+
+export function isValidSriLankanPhone(value: string): boolean {
+  if (!value) return false;
+  const cleaned = value.trim().replace(/[\s\-().]/g, '');
+  return SRI_LANKAN_PHONE_RE.test(cleaned);
 }
 
 export type TeamStatus = {

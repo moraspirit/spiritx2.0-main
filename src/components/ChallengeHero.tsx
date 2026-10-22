@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ArrowRight, FileText } from 'lucide-react';
-import { REGISTER_HREF } from '@/lib/api';
+import { DELEGATE_BOOKLET_URL, REGISTER_HREF } from '@/lib/api';
 
 import BrandLogo from './BrandLogo.tsx';
 import HeroDustCanvas from './HeroDustCanvas.tsx';
@@ -41,8 +41,7 @@ function HeroLogo() {
   );
 }
 
-/** Drop the booklet PDF at this path under public/ (it 404s until then). */
-const DELEGATE_BOOKLET = '/spirit-x-2.0-delegate-booklet.pdf';
+const DELEGATE_BOOKLET = DELEGATE_BOOKLET_URL;
 
 const LANDSCAPE = {
   src: '/media/home-cosmos.mp4',
