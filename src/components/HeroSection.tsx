@@ -72,7 +72,7 @@ export default function HeroSection() {
       >
         <p className="text-legible text-sm leading-relaxed">
           Experience results-driven student innovation anytime, anywhere with Spirit X &mdash; Sri
-          Lanka&rsquo;s flagship inter-university hackathon.
+          Lanka&rsquo;s flagship inter-university innovation challenge .
         </p>
       </div>
 

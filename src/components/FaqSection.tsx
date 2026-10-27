@@ -12,7 +12,7 @@ const FAQS: Faq[] = [
   {
     topic: 'About',
     q: 'What is Spirit X 2.0?',
-    a: 'A two-stage inter-university hackathon by MoraSpirit where undergraduates turn real problems in sport into practical digital solutions. Where sports meets technology.',
+    a: 'A two-stage inter-university innovation challenge  by MoraSpirit where undergraduates turn real problems in sport into practical digital solutions. Where sports meets technology.',
   },
   {
     topic: 'Eligibility',

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Marketing and registration site for **Spirit X 2.0**, the inter-university sports-innovation hackathon by the University of Moratuwa and MoraSpirit 360 (https://spiritx.moraspirit.com, deployed on Vercel).
+Marketing and registration site for **Spirit X 2.0**, the inter-university sports-innovation innovation challenge  by the University of Moratuwa and MoraSpirit 360 (https://spiritx.moraspirit.com, deployed on Vercel).
 
 This `live-site` branch is a **Vite + React 18 + TypeScript + Tailwind 3 SPA**. It was the `lithos/` subfolder on the `kusal/night-stadium-redesign` branch, promoted to the repo root. The `AGENTS.md` / `README.md` on `main` and the kusal branch describe an older Astro scaffold and do not apply here; ignore stray `.astro/`, `pnpm-lock.yaml` and `pnpm-workspace.yaml` files — `package-lock.json` (npm) is the tracked lockfile.
 
