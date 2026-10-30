@@ -1,8 +1,15 @@
-import { useEffect, useRef, useState, useCallback, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
-import { ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
-import { motion } from 'motion/react';
-import SectionBackdrop from './SectionBackdrop.tsx';
-import { lift, revealOnce, rise, stagger } from '../motion.ts';
+import {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
+import { ChevronLeft, ChevronRight, Mail, Phone } from "lucide-react";
+import { motion } from "motion/react";
+import SectionBackdrop from "./SectionBackdrop.tsx";
+import { lift, revealOnce, rise, stagger } from "../motion.ts";
 
 type Chair = {
   name: string;
@@ -28,16 +35,25 @@ const HEAD_CENTER_Y = 0.34;
 function portraitStyle({ photoSize, face }: Chair): CSSProperties | undefined {
   if (!photoSize || !face) return undefined;
   const [w, h] = photoSize;
-  const scale = Math.max(HEAD_HEIGHT / (((face.chin - face.top) / 100) * h), 1 / Math.min(w, h));
+  const scale = Math.max(
+    HEAD_HEIGHT / (((face.chin - face.top) / 100) * h),
+    1 / Math.min(w, h),
+  );
   const width = w * scale;
   const height = h * scale;
   const left = Math.min(0, Math.max(1 - width, 0.5 - (face.x / 100) * width));
-  const top = Math.min(0, Math.max(1 - height, HEAD_CENTER_Y - ((face.top + face.chin) / 200) * height));
+  const top = Math.min(
+    0,
+    Math.max(
+      1 - height,
+      HEAD_CENTER_Y - ((face.top + face.chin) / 200) * height,
+    ),
+  );
   return {
-    position: 'absolute',
-    maxWidth: 'none',
+    position: "absolute",
+    maxWidth: "none",
     width: `${width * 100}%`,
-    height: 'auto',
+    height: "auto",
     left: `${left * 100}%`,
     top: `${top * 100}%`,
   };
@@ -46,72 +62,72 @@ function portraitStyle({ photoSize, face }: Chair): CSSProperties | undefined {
 /** Spirit X 2.0 contacts. */
 const CHAIRS: Chair[] = [
   {
-    name: 'Pamudu Chandeepa',
-    role: 'CSO – MoraSpirit',
-    affiliation: 'MoraSpirit 360',
-    email: 'cso@moraspirit.com',
-    phone: '071 882 3065',
-    photo: '/contact/pamudu.webp',
+    name: "Pamudu Chandeepa",
+    role: "CSO – MoraSpirit",
+    affiliation: "MoraSpirit 360",
+    email: "cso@moraspirit.com",
+    phone: "071 882 3065",
+    photo: "/contact/pamudu.webp",
     photoSize: [800, 791],
     face: { top: 2, chin: 21, x: 50 },
   },
   {
-    name: 'Sangeeth Kariyapperuma',
-    role: 'Pillar Head – Web & Technology Pillar',
-    affiliation: 'MoraSpirit 360',
-    email: 'web@moraspirit.com',
-    phone: '0760858499',
-    photo: '/contact/sangeeth.webp',
+    name: "Sangeeth Kariyapperuma",
+    role: "Pillar Head – Web & Technology Pillar",
+    affiliation: "MoraSpirit 360",
+    email: "web@moraspirit.com",
+    phone: "0760858499",
+    photo: "/contact/sangeeth.webp",
     photoSize: [635, 609],
     face: { top: 6.7, chin: 34.4, x: 53 },
   },
   {
-    name: 'Kusal Pabasara',
-    role: 'Assistant Pillar Head – Web & Technology Pillar',
-    affiliation: 'MoraSpirit 360',
-    email: 'kusalpabasararcg@gmail.com',
-    phone: '078 772 0767',
-    photo: '/contact/kusal_pabasara.webp',
+    name: "Kusal Pabasara",
+    role: "Assistant Pillar Head – Web & Technology Pillar",
+    affiliation: "MoraSpirit 360",
+    email: "kusalpabasararcg@gmail.com",
+    phone: "078 772 0767",
+    photo: "/contact/kusal_pabasara.webp",
     photoSize: [598, 800],
     face: { top: 24, chin: 50, x: 43 },
   },
   {
-    name: 'Kusal Nirukshan',
-    role: 'Co-Chair – SpiritX 2.0',
-    affiliation: 'MoraSpirit 360',
-    email: 'kusalnirukshan@moraspirit.com',
-    phone: '071 114 5121',
-    photo: '/contact/kusal_nirukshan.webp',
+    name: "Kusal Nirukshan",
+    role: "Co-Chair – SpiritX 2.0",
+    affiliation: "MoraSpirit 360",
+    email: "kusalnirukshan@moraspirit.com",
+    phone: "071 114 5121",
+    photo: "/contact/kusal_nirukshan.webp",
     photoSize: [635, 710],
     face: { top: 24.6, chin: 46.4, x: 53.7 },
   },
   {
-    name: 'Sawani Thiwandika',
-    role: 'Co-Chair – SpiritX 2.0',
-    affiliation: 'MoraSpirit 360',
-    email: 'thiwandika.whs02@gmail.com',
-    phone: '076 351 9008',
-    photo: '/contact/sawani.webp',
+    name: "Sawani Thiwandika",
+    role: "Co-Chair – SpiritX 2.0",
+    affiliation: "MoraSpirit 360",
+    email: "thiwandika.whs02@gmail.com",
+    phone: "076 351 9008",
+    photo: "/contact/sawani.webp",
     photoSize: [635, 676],
     face: { top: 4, chin: 37, x: 56 },
   },
   {
-    name: 'Pragathi Jayasinghe',
-    role: 'Delegate Lead',
-    affiliation: 'MoraSpirit 360',
-    email: 'pragathijayasinghe@gmail.com',
-    phone: '071 581 4164',
-    photo: '/contact/pragathi.webp',
+    name: "Pragathi Jayasinghe",
+    role: "Delegate Lead",
+    affiliation: "MoraSpirit 360",
+    email: "pragathijayasinghe@gmail.com",
+    phone: "071 581 4164",
+    photo: "/contact/pragathi.webp",
     photoSize: [622, 800],
     face: { top: 7.6, chin: 58, x: 50.6 },
   },
   {
-    name: 'D.G.S Anuchana Jayarathne',
-    role: 'Delegate Lead',
-    affiliation: 'MoraSpirit 360',
-    email: 'shavindaanuchana@gmail.com',
-    phone: '070 398 5778',
-    photo: '/contact/anuchana.webp',
+    name: "D.G.S Anuchana Jayarathne",
+    role: "Delegate Lead",
+    affiliation: "MoraSpirit 360",
+    email: "shavindaanuchana@gmail.com",
+    phone: "070 398 5778",
+    photo: "/contact/anuchana.webp",
     photoSize: [597, 800],
     face: { top: 11.4, chin: 42.6, x: 50 },
   },
@@ -120,8 +136,8 @@ const CHAIRS: Chair[] = [
 /** Three copies so the carousel can wrap around without a visible rewind. */
 /** Sri Lankan numbers (0XX… or +94…) to a wa.me link. */
 const whatsappHref = (phone: string) => {
-  const digits = phone.replace(/\D/g, '');
-  return `https://wa.me/${digits.startsWith('94') ? digits : `94${digits.replace(/^0/, '')}`}`;
+  const digits = phone.replace(/\D/g, "");
+  return `https://wa.me/${digits.startsWith("94") ? digits : `94${digits.replace(/^0/, "")}`}`;
 };
 
 const LOOP = [...CHAIRS, ...CHAIRS, ...CHAIRS];
@@ -130,8 +146,8 @@ const initials = (name: string) =>
   name
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('');
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 
 function Avatar({ chair }: { chair: Chair }) {
   const [imgError, setImgError] = useState(false);
@@ -143,7 +159,7 @@ function Avatar({ chair }: { chair: Chair }) {
         <img
           src={chair.photo}
           alt={chair.name}
-          loading="lazy"
+          loading="eager"
           decoding="async"
           onError={() => setImgError(true)}
           className="h-full w-full object-cover object-top"
@@ -180,12 +196,15 @@ export default function ContactSection() {
     const slides = Array.from(el.children) as HTMLElement[];
     if (slides.length === 0) return;
 
-    const align = getComputedStyle(slides[0]).scrollSnapAlign.split(' ').pop() === 'center' ? 'center' : 'start';
+    const align =
+      getComputedStyle(slides[0]).scrollSnapAlign.split(" ").pop() === "center"
+        ? "center"
+        : "start";
     const box = el.getBoundingClientRect();
-    const anchor = align === 'center' ? box.left + box.width / 2 : box.left;
+    const anchor = align === "center" ? box.left + box.width / 2 : box.left;
     const pointOf = (slide: HTMLElement) => {
       const r = slide.getBoundingClientRect();
-      return align === 'center' ? r.left + r.width / 2 : r.left;
+      return align === "center" ? r.left + r.width / 2 : r.left;
     };
 
     let current = 0;
@@ -198,8 +217,9 @@ export default function ContactSection() {
       }
     });
 
-    const target = slides[Math.min(slides.length - 1, Math.max(0, current + direction))];
-    el.scrollBy({ left: pointOf(target) - anchor, behavior: 'smooth' });
+    const target =
+      slides[Math.min(slides.length - 1, Math.max(0, current + direction))];
+    el.scrollBy({ left: pointOf(target) - anchor, behavior: "smooth" });
   }, []);
 
   const scrollToNext = useCallback(() => goToSlide(1), [goToSlide]);
@@ -212,12 +232,12 @@ export default function ContactSection() {
     if (!el) return;
     const setWidth = () => el.scrollWidth / 3;
     const jump = (delta: number) => {
-      el.style.scrollBehavior = 'auto';
-      el.style.scrollSnapType = 'none';
+      el.style.scrollBehavior = "auto";
+      el.style.scrollSnapType = "none";
       el.scrollLeft += delta;
       requestAnimationFrame(() => {
-        el.style.scrollBehavior = '';
-        el.style.scrollSnapType = '';
+        el.style.scrollBehavior = "";
+        el.style.scrollSnapType = "";
       });
     };
     jump(setWidth());
@@ -230,10 +250,10 @@ export default function ContactSection() {
         else if (el.scrollLeft > w * 1.5) jump(-w);
       }, 140);
     };
-    el.addEventListener('scroll', onScroll, { passive: true });
+    el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.clearTimeout(timer);
-      el.removeEventListener('scroll', onScroll);
+      el.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -251,7 +271,11 @@ export default function ContactSection() {
   // Automatic loop swiping to the left
   useEffect(() => {
     const interval = setInterval(() => {
-      if (inViewRef.current && !isHoveredRef.current && !isInteractingRef.current) {
+      if (
+        inViewRef.current &&
+        !isHoveredRef.current &&
+        !isInteractingRef.current
+      ) {
         scrollToNext();
       }
     }, 3500);
@@ -298,17 +322,40 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="contact-section relative isolate">
-      <SectionBackdrop src="/media/gallery/10.webp" tone="duotone" position="50% 30%" veil={0.86} cropWatermark noTopShade />
+    <section
+      id="contact"
+      aria-labelledby="contact-title"
+      className="contact-section relative isolate"
+    >
+      <SectionBackdrop
+        src="/media/gallery/10.webp"
+        tone="duotone"
+        position="50% 30%"
+        veil={0.86}
+        cropWatermark
+        noTopShade
+      />
 
       <div className="mx-auto max-w-6xl px-1 sm:px-4">
         {/* Header with Title and Subtitle */}
-        <motion.div {...revealOnce} variants={stagger(0.1)} className="text-center">
-          <motion.h2 variants={rise} id="contact-title" className="contact-title">
+        <motion.div
+          {...revealOnce}
+          variants={stagger(0.1)}
+          className="text-center"
+        >
+          <motion.h2
+            variants={rise}
+            id="contact-title"
+            className="contact-title"
+          >
             Contact us
           </motion.h2>
-          <motion.p variants={rise} className="mx-auto mt-2 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Questions about teams, your idea or registration? Reach the people running Spirit X 2.0 directly.
+          <motion.p
+            variants={rise}
+            className="mx-auto mt-2 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base"
+          >
+            Questions about teams, your idea or registration? Reach the people
+            running Spirit X 2.0 directly.
           </motion.p>
         </motion.div>
 
@@ -316,10 +363,19 @@ export default function ContactSection() {
         <div
           ref={wrapperRef}
           className="relative mt-10"
-          onMouseEnter={() => { isHoveredRef.current = true; }}
-          onMouseLeave={() => { isHoveredRef.current = false; handleMouseUpOrLeave(); }}
-          onTouchStart={() => { isInteractingRef.current = true; }}
-          onTouchEnd={() => { isInteractingRef.current = false; }}
+          onMouseEnter={() => {
+            isHoveredRef.current = true;
+          }}
+          onMouseLeave={() => {
+            isHoveredRef.current = false;
+            handleMouseUpOrLeave();
+          }}
+          onTouchStart={() => {
+            isInteractingRef.current = true;
+          }}
+          onTouchEnd={() => {
+            isInteractingRef.current = false;
+          }}
         >
           {/* Swipeable / Scrollable Slider Track */}
           <motion.ul
@@ -343,11 +399,16 @@ export default function ContactSection() {
                   <div className="contact-card flex flex-col justify-between">
                     <div>
                       <Avatar chair={chair} />
-                      <h3 className="mt-6 truncate text-lg font-semibold tracking-tight text-foreground" title={chair.name}>
+                      <h3
+                        className="mt-6 truncate text-lg font-semibold tracking-tight text-foreground"
+                        title={chair.name}
+                      >
                         {chair.name}
                       </h3>
                       {chair.role ? (
-                        <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">{chair.role}</p>
+                        <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand-ink">
+                          {chair.role}
+                        </p>
                       ) : null}
                       {/*<p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>*/}
                     </div>
@@ -363,7 +424,11 @@ export default function ContactSection() {
                             if (isDraggingRef.current) e.preventDefault();
                           }}
                         >
-                          <Mail size={14} strokeWidth={1.75} aria-hidden="true" />
+                          <Mail
+                            size={14}
+                            strokeWidth={1.75}
+                            aria-hidden="true"
+                          />
                           <span className="truncate">{chair.email}</span>
                         </a>
                       ) : null}
@@ -378,7 +443,11 @@ export default function ContactSection() {
                           if (isDraggingRef.current) e.preventDefault();
                         }}
                       >
-                        <Phone size={14} strokeWidth={1.75} aria-hidden="true" />
+                        <Phone
+                          size={14}
+                          strokeWidth={1.75}
+                          aria-hidden="true"
+                        />
                         <span className="tabular-nums">{chair.phone}</span>
                       </a>
                     </div>
