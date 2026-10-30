@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, type MouseEvent as ReactMouseEvent } from 'react';
+import { useEffect, useRef, useState, useCallback, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
 import { ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
 import SectionBackdrop from './SectionBackdrop.tsx';
@@ -11,7 +11,37 @@ type Chair = {
   email?: string;
   phone: string;
   photo?: string;
+  /** Natural pixel size of `photo`, so the avatar can be cropped before the image loads. */
+  photoSize?: [width: number, height: number];
+  /** Where the head sits in `photo`, as percentages of its height (top of hair, chin) and width (face centre). */
+  face?: { top: number; chin: number; x: number };
 };
+
+/** Every avatar is framed like Anuchana's portrait: the head (hair to chin) fills this share of
+ *  the circle, centred horizontally with its middle at `HEAD_CENTER_Y`. */
+const HEAD_HEIGHT = 0.42;
+const HEAD_CENTER_Y = 0.34;
+
+/** Scales and offsets a photo so its head matches the reference framing. The crop is clamped so the
+ *  photo always covers the circle: a head near the top edge sits a little higher, and a tight
+ *  headshot can't shrink past "cover". Percentages keep it responsive to the avatar size. */
+function portraitStyle({ photoSize, face }: Chair): CSSProperties | undefined {
+  if (!photoSize || !face) return undefined;
+  const [w, h] = photoSize;
+  const scale = Math.max(HEAD_HEIGHT / (((face.chin - face.top) / 100) * h), 1 / Math.min(w, h));
+  const width = w * scale;
+  const height = h * scale;
+  const left = Math.min(0, Math.max(1 - width, 0.5 - (face.x / 100) * width));
+  const top = Math.min(0, Math.max(1 - height, HEAD_CENTER_Y - ((face.top + face.chin) / 200) * height));
+  return {
+    position: 'absolute',
+    maxWidth: 'none',
+    width: `${width * 100}%`,
+    height: 'auto',
+    left: `${left * 100}%`,
+    top: `${top * 100}%`,
+  };
+}
 
 /** Spirit X 2.0 contacts. */
 const CHAIRS: Chair[] = [
@@ -22,6 +52,8 @@ const CHAIRS: Chair[] = [
     email: 'cso@moraspirit.com',
     phone: '071 882 3065',
     photo: '/contact/pamudu.webp',
+    photoSize: [800, 791],
+    face: { top: 2, chin: 21, x: 50 },
   },
   {
     name: 'Sangeeth Kariyapperuma',
@@ -30,6 +62,8 @@ const CHAIRS: Chair[] = [
     email: 'web@moraspirit.com',
     phone: '0760858499',
     photo: '/contact/sangeeth.webp',
+    photoSize: [635, 609],
+    face: { top: 6.7, chin: 34.4, x: 53 },
   },
   {
     name: 'Kusal Pabasara',
@@ -38,6 +72,8 @@ const CHAIRS: Chair[] = [
     email: 'kusalpabasararcg@gmail.com',
     phone: '078 772 0767',
     photo: '/contact/kusal_pabasara.webp',
+    photoSize: [598, 800],
+    face: { top: 24, chin: 50, x: 43 },
   },
   {
     name: 'Kusal Nirukshan',
@@ -46,6 +82,8 @@ const CHAIRS: Chair[] = [
     email: 'kusalnirukshan@moraspirit.com',
     phone: '071 114 5121',
     photo: '/contact/kusal_nirukshan.webp',
+    photoSize: [635, 710],
+    face: { top: 24.6, chin: 46.4, x: 53.7 },
   },
   {
     name: 'Sawani Thiwandika',
@@ -54,6 +92,8 @@ const CHAIRS: Chair[] = [
     email: 'thiwandika.whs02@gmail.com',
     phone: '076 351 9008',
     photo: '/contact/sawani.webp',
+    photoSize: [635, 676],
+    face: { top: 4, chin: 37, x: 56 },
   },
   {
     name: 'Pragathi Jayasinghe',
@@ -62,6 +102,8 @@ const CHAIRS: Chair[] = [
     email: 'pragathijayasinghe@gmail.com',
     phone: '071 581 4164',
     photo: '/contact/pragathi.webp',
+    photoSize: [622, 800],
+    face: { top: 7.6, chin: 58, x: 50.6 },
   },
   {
     name: 'D.G.S Anuchana Jayarathne',
@@ -70,6 +112,8 @@ const CHAIRS: Chair[] = [
     email: 'shavindaanuchana@gmail.com',
     phone: '070 398 5778',
     photo: '/contact/anuchana.webp',
+    photoSize: [597, 800],
+    face: { top: 11.4, chin: 42.6, x: 50 },
   },
 ];
 
@@ -103,6 +147,7 @@ function Avatar({ chair }: { chair: Chair }) {
           decoding="async"
           onError={() => setImgError(true)}
           className="h-full w-full object-cover object-top"
+          style={portraitStyle(chair)}
         />
       ) : (
         <span aria-hidden="true" className="contact-initials">
@@ -255,7 +300,7 @@ export default function ContactSection() {
   return (
     <section id="contact" aria-labelledby="contact-title" className="contact-section relative isolate">
       <SectionBackdrop src="/media/gallery/10.webp" tone="duotone" position="50% 30%" veil={0.86} cropWatermark noTopShade />
-      
+
       <div className="mx-auto max-w-6xl px-1 sm:px-4">
         {/* Header with Title and Subtitle */}
         <motion.div {...revealOnce} variants={stagger(0.1)} className="text-center">
@@ -306,13 +351,13 @@ export default function ContactSection() {
                       ) : null}
                       {/*<p className="mt-1 truncate text-xs text-muted-foreground">{chair.affiliation}</p>*/}
                     </div>
-                    
+
                     <div className="mt-6 flex flex-col items-center gap-1 border-t border-border/60 pt-4 text-sm">
                       {chair.email ? (
-                      <a
+                        <a
                           href={`mailto:${chair.email}`}
                           className="contact-link"
-                        tabIndex={index >= CHAIRS.length ? -1 : undefined}
+                          tabIndex={index >= CHAIRS.length ? -1 : undefined}
                           title={chair.email}
                           onClick={(e) => {
                             if (isDraggingRef.current) e.preventDefault();
