@@ -83,11 +83,11 @@ const MILESTONES: Milestone[] = [
     body: 'Prototypes are due. Submit your build for evaluation.',
   },
   {
-    id: 'final-10',
+    id: 'finalists',
     when: '22 Jan',
     date: '2027-01-22T00:00:00+05:30',
-    title: 'Final 10 announced',
-    body: 'The ten teams heading to the final evaluation are officially announced.',
+    title: 'Finalists announced',
+    body: 'Finalists heading to the final evaluation are officially announced.',
   },
   {
     id: 'finale',
