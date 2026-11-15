@@ -6,8 +6,44 @@
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 export const registrationOpen = import.meta.env.VITE_REGISTRATION_OPEN === 'true';
-/** Shows the team-code login with the proposal and prototype forms on #/register. */
-export const submissionsOpen = import.meta.env.VITE_SUBMISSIONS_OPEN === 'true';
+/** Shows the proposal form in the team portal on #/register. The API enforces the real window. */
+export const proposalsOpen = import.meta.env.VITE_PROPOSALS_OPEN === 'true';
+/** Shows the prototype form in the team portal on #/register. */
+export const prototypesOpen = import.meta.env.VITE_PROTOTYPES_OPEN === 'true';
+/** The team-code login appears whenever either submission is open. */
+export const portalOpen = proposalsOpen || prototypesOpen;
+
+function parseDeadline(raw: string | undefined): Date | null {
+  if (!raw) return null;
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+/** Display copy of the backend's PROPOSAL_DEADLINE (ISO with offset, e.g. 2026-12-03T23:59:00+05:30). */
+export const proposalDeadline = parseDeadline(import.meta.env.VITE_PROPOSAL_DEADLINE);
+
+/** Formats a deadline in Sri Lanka time, e.g. "3 Dec 2026, 11:59 PM". */
+export function formatDeadline(date: Date): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Colombo',
+  }).format(date);
+}
+
+/** True while proposals are switched on and the display deadline has not passed. */
+export function proposalsAcceptingNow(now = Date.now()): boolean {
+  return proposalsOpen && (proposalDeadline === null || now < proposalDeadline.getTime());
+}
+
+/** Team proposal template, served from public/. */
+export const PROPOSAL_TEMPLATE_URL = '/SpiritX_2.0_Team_Proposal_Template.pdf';
+/** The team-code portal page. */
+export const PORTAL_HREF = '#/portal';
 /** Every "register" CTA: the form page once open, otherwise the countdown section on home. */
 export const REGISTER_HREF = registrationOpen ? '#/register' : '#register';
 /** Official delegate booklet link. */

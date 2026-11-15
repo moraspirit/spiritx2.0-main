@@ -1,8 +1,8 @@
 import { useEffect, useState, type MouseEvent } from 'react';
-import { Menu, X } from 'lucide-react';
+import { KeyRound, Menu, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
-import { REGISTER_HREF } from '@/lib/api';
+import { PORTAL_HREF, REGISTER_HREF, portalOpen } from '@/lib/api';
 import type { Route } from '../useHashRoute.ts';
 import { useScrollSpy } from '../useScrollSpy.ts';
 import { EASE_OUT } from '../motion.ts';
@@ -29,6 +29,7 @@ export default function SiteNav({ route }: { route: Route }) {
   const active = spied === 'hero' ? 'about' : spied;
   const activeLabel = TABS.find((t) => t.id === active)?.label;
   const registerCurrent = route === '/register' || active === 'register';
+  const portalCurrent = route === '/portal';
 
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -107,6 +108,22 @@ export default function SiteNav({ route }: { route: Route }) {
         </div>
 
         <div className="pointer-events-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {portalOpen ? (
+            <a
+              href={PORTAL_HREF}
+              aria-current={portalCurrent ? 'page' : undefined}
+              className={cn(
+                'hidden min-h-11 items-center gap-2 rounded-full border bg-card/80 px-4 py-2.5 text-sm backdrop-blur-md transition-colors sm:inline-flex sm:px-5 sm:py-3',
+                portalCurrent
+                  ? 'border-brand/60 text-brand-ink'
+                  : 'border-border text-foreground hover:border-brand/40 hover:text-brand-ink'
+              )}
+            >
+              <KeyRound size={15} aria-hidden="true" />
+              Team login
+            </a>
+          ) : null}
+
           <a
             href={REGISTER_HREF}
             aria-current={registerCurrent ? 'location' : undefined}
@@ -162,6 +179,22 @@ export default function SiteNav({ route }: { route: Route }) {
               </a>
             );
           })}
+          {portalOpen ? (
+            <a
+              href={PORTAL_HREF}
+              onClick={() => setOpen(false)}
+              aria-current={portalCurrent ? 'page' : undefined}
+              className={cn(
+                'flex items-center justify-between rounded-2xl border px-5 py-3.5 text-base transition-colors',
+                portalCurrent
+                  ? 'border-brand/60 font-medium text-brand-ink'
+                  : 'border-border text-foreground hover:bg-secondary'
+              )}
+            >
+              Team login
+              <KeyRound size={17} aria-hidden="true" />
+            </a>
+          ) : null}
           <a
             href={REGISTER_HREF}
             onClick={() => setOpen(false)}

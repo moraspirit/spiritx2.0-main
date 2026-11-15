@@ -1,5 +1,6 @@
 import ChallengeHero from '../components/ChallengeHero.tsx';
 import ChallengeIntro from '../components/ChallengeIntro.tsx';
+import ProposalCallout from '../components/ProposalCallout.tsx';
 import TracksSection from '../components/TracksSection.tsx';
 import TimelineSection from '../components/TimelineSection.tsx';
 // Kept for when official prize pool is announced:
@@ -24,6 +25,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <ChallengeHero />
+      <ProposalCallout />
       <SectionGap />
       <ChallengeIntro />
       <SectionGap />

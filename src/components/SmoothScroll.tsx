@@ -17,6 +17,17 @@ function sectionTarget(href: string): HTMLElement | null {
   return document.getElementById(href.slice(1));
 }
 
+/**
+ * "Back to top" links. "#/" only means that on home; from #/register or #/portal it is a
+ * route change the hash router must see, so leave it alone there.
+ */
+function isScrollToTop(href: string): boolean {
+  if (href === '#' || href === '#top') return true;
+  if (href !== '#/') return false;
+  const current = window.location.hash;
+  return !current.startsWith('#/') || current === '#/';
+}
+
 export function useSmoothScroll() {
   return useContext(SmoothScrollContext);
 }
@@ -52,7 +63,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
         const href = anchor.getAttribute('href');
         if (!href || !href.startsWith('#')) return;
 
-        if (href === '#/' || href === '#' || href === '#top') {
+        if (isScrollToTop(href)) {
           e.preventDefault();
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
@@ -98,7 +109,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       const href = anchor.getAttribute('href');
       if (!href || !href.startsWith('#')) return;
 
-      if (href === '#/' || href === '#' || href === '#top') {
+      if (isScrollToTop(href)) {
         e.preventDefault();
         lenis.scrollTo(0, { duration: 1.2 });
         return;

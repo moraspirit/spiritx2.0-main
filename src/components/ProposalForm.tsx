@@ -1,7 +1,15 @@
 import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Clock } from 'lucide-react';
 import Turnstile from './Turnstile.tsx';
-import { apiConfigured, isApiError, submitProposal, turnstileSiteKey } from '../lib/api.ts';
+import ProposalTemplateLink from './ProposalTemplateLink.tsx';
+import {
+  apiConfigured,
+  formatDeadline,
+  isApiError,
+  proposalDeadline,
+  submitProposal,
+  turnstileSiteKey,
+} from '../lib/api.ts';
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
 
@@ -10,6 +18,26 @@ type ProposalFormProps = {
   submitted: boolean;
   onSubmitted: () => void;
 };
+
+function deadlinePassed(): boolean {
+  return proposalDeadline !== null && Date.now() >= proposalDeadline.getTime();
+}
+
+/** Heading, due date and template download: shown in every state of the section. */
+function ProposalHeader({ closed }: { closed: boolean }) {
+  return (
+    <div className="space-y-3">
+      <h2 className="text-xl font-medium text-foreground sm:text-2xl">Proposal submission</h2>
+      {proposalDeadline ? (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="h-4 w-4 shrink-0 text-brand-ink" aria-hidden />
+          {closed ? 'Closed' : 'Due'} {formatDeadline(proposalDeadline)} (Sri Lanka time)
+        </p>
+      ) : null}
+      <ProposalTemplateLink />
+    </div>
+  );
+}
 
 export default function ProposalForm({ teamCode, submitted, onSubmitted }: ProposalFormProps) {
   const [projectTitle, setProjectTitle] = useState('');
@@ -20,6 +48,10 @@ export default function ProposalForm({ teamCode, submitted, onSubmitted }: Propo
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  // The API is the real gate: a 403 means it has closed proposals, whatever the display deadline says.
+  const [closedByApi, setClosedByApi] = useState(false);
+
+  const closed = closedByApi || deadlinePassed();
 
   const onFile = (f: File | null) => {
     setFormError(null);
@@ -74,7 +106,8 @@ export default function ProposalForm({ teamCode, submitted, onSubmitted }: Propo
       onSubmitted();
     } catch (err) {
       if (isApiError(err)) {
-        setFormError(err.message);
+        if (err.status === 403) setClosedByApi(true);
+        else setFormError(err.message);
         if (err.status === 409) onSubmitted();
       } else setFormError('Something went wrong. Please try again.');
     } finally {
@@ -86,8 +119,8 @@ export default function ProposalForm({ teamCode, submitted, onSubmitted }: Propo
 
   if (submitted) {
     return (
-      <section className="space-y-2">
-        <h2 className="text-xl font-medium text-foreground sm:text-2xl">Proposal submission</h2>
+      <section className="space-y-4">
+        <ProposalHeader closed={closed} />
         <p className="flex items-center gap-2 text-sm text-brand-ink">
           <Check className="h-4 w-4 shrink-0" aria-hidden />
           {success ?? 'Your team’s proposal has been received.'}
@@ -97,12 +130,31 @@ export default function ProposalForm({ teamCode, submitted, onSubmitted }: Propo
     );
   }
 
+  if (closed) {
+    return (
+      <section className="space-y-4">
+        <ProposalHeader closed />
+        <div className="rounded-2xl border border-border/70 bg-card/50 p-4">
+          <p className="text-sm font-medium text-foreground">Proposal submissions are closed.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            The deadline has passed, so new proposals can no longer be accepted. If you think this is a mistake,{' '}
+            <a href="#contact" className="text-brand-ink underline-offset-4 hover:underline">
+              contact the organisers
+            </a>
+            .
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="w-full space-y-5 text-left">
-      <div>
-        <h2 className="text-xl font-medium text-foreground sm:text-2xl">Proposal submission</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          One PDF per team (max 10 MB). Resubmissions are not allowed.
+      <div className="space-y-2">
+        <ProposalHeader closed={false} />
+        <p className="text-sm text-muted-foreground">
+          Fill in the template, export it as a PDF (max 10 MB) and upload it below. One proposal per team;
+          resubmissions are not allowed.
         </p>
       </div>
 

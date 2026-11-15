@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Check, Eye, EyeOff, LogOut } from 'lucide-react';
+import { ArrowRight, Check, Eye, EyeOff, LogOut } from 'lucide-react';
 import ProposalForm from './ProposalForm.tsx';
 import PrototypeForm from './PrototypeForm.tsx';
+import ProposalTemplateLink from './ProposalTemplateLink.tsx';
 import {
+  REGISTER_HREF,
   TEAM_CODE_PATTERN,
   apiConfigured,
   getTeamStatus,
   isApiError,
   normalizeTeamCode,
+  proposalsOpen,
+  prototypesOpen,
   type TeamStatus,
 } from '../lib/api.ts';
+
+/** "your proposal", "your prototype" or "your proposal and prototype", per what is open. */
+const OPEN_WORK = [proposalsOpen && 'proposal', prototypesOpen && 'prototype'].filter(Boolean).join(' and ');
 
 const STORAGE_KEY = 'spiritx.teamCode';
 
@@ -79,10 +86,9 @@ function TeamLoginForm({ onLogin }: { onLogin: (code: string, status: TeamStatus
     <form onSubmit={onSubmit} className="mx-auto w-full max-w-xl space-y-5 text-left">
       <div>
         <p className="eyebrow text-brand-ink">Team portal</p>
-        <h2 className="mt-2 text-xl font-medium text-foreground sm:text-2xl">Team login</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Already registered? Enter the team code we emailed to your team leader to submit your proposal and
-          prototype.
+        <h2 className="mt-2 text-balance text-2xl font-medium text-foreground sm:text-3xl">Team login</h2>
+        <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Enter the team code we emailed to your team leader to submit your {OPEN_WORK}.
         </p>
       </div>
 
@@ -131,11 +137,25 @@ function TeamLoginForm({ onLogin }: { onLogin: (code: string, status: TeamStatus
 
       <p className="text-xs text-muted-foreground">
         Lost the code? It was sent to the leader&apos;s email.{' '}
-        <a href="#contact" className="text-brand-ink underline-offset-4 hover:underline">
+        <a href="#contact"className="text-brand-ink underline-offset-4 hover:underline">
           Contact the organisers
         </a>{' '}
         and we can send a new one.
       </p>
+
+      <div className="flex flex-col gap-4 border-t border-border/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        {proposalsOpen ? <ProposalTemplateLink className="self-start" /> : null}
+        <p className="text-sm text-muted-foreground">
+          Not registered yet?{' '}
+          <a
+            href={REGISTER_HREF}
+            className="group inline-flex items-center gap-1 font-medium text-brand-ink underline-offset-4 hover:underline"
+          >
+            Register your team
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          </a>
+        </p>
+      </div>
     </form>
   );
 }
@@ -216,13 +236,21 @@ export default function TeamPortal() {
           </button>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          <StatusChip done={status.proposal_submitted} label="Proposal" />
-          <StatusChip done={status.prototype_submitted} label="Prototype" />
+          {proposalsOpen || status.proposal_submitted ? (
+            <StatusChip done={status.proposal_submitted} label="Proposal" />
+          ) : null}
+          {prototypesOpen || status.prototype_submitted ? (
+            <StatusChip done={status.prototype_submitted} label="Prototype" />
+          ) : null}
         </div>
       </div>
 
-      <ProposalForm teamCode={code} submitted={status.proposal_submitted} onSubmitted={refresh} />
-      <PrototypeForm teamCode={code} submitted={status.prototype_submitted} onSubmitted={refresh} />
+      {proposalsOpen ? (
+        <ProposalForm teamCode={code} submitted={status.proposal_submitted} onSubmitted={refresh} />
+      ) : null}
+      {prototypesOpen ? (
+        <PrototypeForm teamCode={code} submitted={status.prototype_submitted} onSubmitted={refresh} />
+      ) : null}
     </div>
   );
 }

@@ -8,6 +8,7 @@ import ScrollToTop from './components/ScrollToTop.tsx';
 import SmoothScroll from './components/SmoothScroll.tsx';
 
 const Register = lazy(() => import('./pages/Register.tsx'));
+const Portal = lazy(() => import('./pages/Portal.tsx'));
 const SplashCursor = lazy(() => import('./components/SplashCursor.tsx'));
 
 function checkDesktopPointer(): boolean {
@@ -80,12 +81,12 @@ export default function App() {
             </Suspense>
           )}
           <SiteNav route={route} />
-          {route === '/register' ? (
-            <Suspense fallback={<div className="min-h-screen bg-background" />}>
-              <Register />
-            </Suspense>
-          ) : (
+          {route === '/' ? (
             <Home />
+          ) : (
+            <Suspense fallback={<div className="min-h-screen bg-background" />}>
+              {route === '/register' ? <Register /> : <Portal />}
+            </Suspense>
           )}
           <ScrollToTop />
         </SmoothScroll>

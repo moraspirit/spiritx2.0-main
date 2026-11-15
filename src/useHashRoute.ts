@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 /** Real pages. Everything else is a section of the single-page home. */
-export type Route = '/' | '/register';
+export type Route = '/' | '/register' | '/portal';
 
 /** Home sections, in page order. The nav, scroll-spy and footer all key off these ids. */
 export const SECTIONS = ['about', 'challenge', 'timeline', 'experience', 'stories', 'partners', 'register', 'faq', 'contact'] as const;
@@ -19,6 +19,7 @@ const TOP = '__top__';
 function read(): { route: Route; section: string | null; legacy: boolean } {
   const raw = window.location.hash.replace(/^#/, '');
   if (raw === '/register') return { route: '/register', section: null, legacy: false };
+  if (raw === '/portal') return { route: '/portal', section: null, legacy: false };
   if (LEGACY[raw]) return { route: '/', section: LEGACY[raw], legacy: true };
   // "#tracks" style anchors (no leading slash) are in-page sections on home.
   if (raw && !raw.startsWith('/')) return { route: '/', section: raw, legacy: false };
@@ -34,7 +35,7 @@ function jumpTo(target: string) {
 }
 
 /**
- * Minimal hash router. "#/register" is the only other page; "#section" anchors scroll
+ * Minimal hash router. "#/register" and "#/portal" are the only other pages; "#section" anchors scroll
  * natively (html has scroll-behavior: smooth). This hook only steps in when the page
  * changes, when a legacy "#/tracks" link arrives, or on a first load deep link — the
  * cases where the browser can't find the target on its own.

@@ -2,18 +2,14 @@ import Footer from '../components/Footer.tsx';
 import AmbientVideo from '../components/AmbientVideo.tsx';
 import RegisterPanel from '../components/RegisterPanel.tsx';
 import TeamRegisterForm from '../components/TeamRegisterForm.tsx';
-import TeamPortal from '../components/TeamPortal.tsx';
-import { registrationOpen, submissionsOpen } from '../lib/api.ts';
+import { registrationOpen } from '../lib/api.ts';
 
 const STADIUM = {
   src: '/media/home-stadium.mp4',
   poster: '/media/home-stadium-poster.webp',
 };
 
-/**
- * The only page besides home: team registration, plus the team-code portal once
- * submissions open (or the countdown until registration opens).
- */
+/** Team registration (or the countdown until it opens). The team login lives on #/portal. */
 export default function Register() {
   return (
     <div className="min-h-screen bg-background">
@@ -26,14 +22,9 @@ export default function Register() {
 
         <div className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-0 pt-[max(5.5rem,calc(env(safe-area-inset-top)+4.5rem))] pb-[max(2rem,env(safe-area-inset-bottom))]">
           {registrationOpen ? (
-            <div
-              className={`mx-auto flex w-full flex-col gap-12 px-4 sm:px-5 ${
-                submissionsOpen ? 'max-w-5xl lg:flex-row lg:items-start lg:gap-16' : 'max-w-xl'
-              }`}
-            >
+            <div className="mx-auto flex w-full max-w-xl flex-col gap-12 px-4 sm:px-5">
               <h1 className="sr-only">Register for Spirit X 2.0</h1>
               <TeamRegisterForm />
-              {submissionsOpen ? <TeamPortal /> : null}
             </div>
           ) : (
             <RegisterPanel titleAs="h1" />

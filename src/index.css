@@ -34,6 +34,17 @@
   }
 }
 
+/* Proposal notice: a floodlight falling from the top-left corner onto the deadline. */
+.proposal-callout::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    conic-gradient(from 115deg at -4% -20%, transparent 0deg, hsl(var(--brand-ink) / 0.13) 14deg, transparent 34deg),
+    radial-gradient(ellipse 40% 70% at 0% 0%, hsl(var(--brand-ink) / 0.1), transparent 70%);
+}
+
 .challenge-intro {
   padding: clamp(3rem,7vw,7rem) max(1.25rem,env(safe-area-inset-left));
   background: radial-gradient(ellipse at 80% 20%,hsl(var(--brand-ink) / .06),transparent 60%),hsl(var(--background));

@@ -4,9 +4,11 @@ import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import Turnstile from './Turnstile.tsx';
 import WhatsAppIcon from './WhatsAppIcon.tsx';
 import {
+  PORTAL_HREF,
   apiConfigured,
   isApiError,
   isValidSriLankanPhone,
+  portalOpen,
   registerTeam,
   turnstileSiteKey,
   WHATSAPP_GROUP_URL,
@@ -295,7 +297,9 @@ export default function TeamRegisterForm() {
       });
       setSuccess(
         result.emailSent
-          ? `Your team code is on its way to ${leader.email.trim()}. Keep it safe — you’ll need it to submit your proposal once submissions open.`
+          ? portalOpen
+            ? `Your team code is on its way to ${leader.email.trim()}. Keep it safe — use it in the team portal to submit your proposal.`
+            : `Your team code is on its way to ${leader.email.trim()}. Keep it safe — you’ll need it to submit your proposal once submissions open.`
           : 'We couldn’t email your team code, so please contact the organisers to receive it.',
       );
     } catch (err) {
@@ -371,13 +375,24 @@ export default function TeamRegisterForm() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={reset}
-          className="rounded-full border border-border px-6 py-3 text-sm text-foreground transition-colors hover:border-brand/50 hover:bg-white/[.04]"
-        >
-          Register another team
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {portalOpen ? (
+            <a
+              href={PORTAL_HREF}
+              className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-medium text-primary-foreground transition-[box-shadow,transform] hover:shadow-brand active:scale-[0.98]"
+            >
+              Go to team portal
+              <ArrowRight size={15} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
+            </a>
+          ) : null}
+          <button
+            type="button"
+            onClick={reset}
+            className="min-h-11 rounded-full border border-border px-6 py-3 text-sm text-foreground transition-colors hover:border-brand/50 hover:bg-white/[.04]"
+          >
+            Register another team
+          </button>
+        </div>
       </section>
     );
   }
