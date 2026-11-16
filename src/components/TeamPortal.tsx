@@ -143,8 +143,17 @@ function TeamLoginForm({ onLogin }: { onLogin: (code: string, status: TeamStatus
         and we can send a new one.
       </p>
 
-      <div className="flex flex-col gap-4 border-t border-border/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        {proposalsOpen ? <ProposalTemplateLink className="self-start" /> : null}
+      {proposalsOpen ? (
+        <div className="space-y-3 border-t border-border/70 pt-5">
+          <p className="text-pretty text-sm leading-relaxed text-muted-foreground">
+            Save the proposal template to your Google Drive, edit it with your team, then log in here to upload the
+            final proposal as a PDF.
+          </p>
+          <ProposalTemplateLink />
+        </div>
+      ) : null}
+
+      <div className="border-t border-border/70 pt-5">
         <p className="text-sm text-muted-foreground">
           Not registered yet?{' '}
           <a

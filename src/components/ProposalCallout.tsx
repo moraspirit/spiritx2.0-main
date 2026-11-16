@@ -58,7 +58,8 @@ export default function ProposalCallout() {
               Put your idea on paper.
             </h2>
             <p className="mt-2 max-w-[52ch] text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Fill in the template with your team, then upload it as one PDF from the team portal.
+              Save the proposal template to your Google Drive, edit it with your team, then upload the final
+              proposal as a PDF from the team portal.
               {proposalDeadline ? ` ${countdown(proposalDeadline)}` : ''}
             </p>
           </div>

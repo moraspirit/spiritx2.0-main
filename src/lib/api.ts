@@ -40,8 +40,9 @@ export function proposalsAcceptingNow(now = Date.now()): boolean {
   return proposalsOpen && (proposalDeadline === null || now < proposalDeadline.getTime());
 }
 
-/** Team proposal template, served from public/. */
-export const PROPOSAL_TEMPLATE_URL = '/SpiritX_2.0_Team_Proposal_Template.pdf';
+/** Proposal template: a shared Google Doc teams copy or download, edit, then upload as a PDF. */
+export const PROPOSAL_TEMPLATE_URL =
+  'https://docs.google.com/document/d/17PVuqbYJPZ4UQZGN3KURVroQTb_LNZUUALQ_yIm0N10/edit?usp=sharing';
 /** The team-code portal page. */
 export const PORTAL_HREF = '#/portal';
 /** Every "register" CTA: the form page once open, otherwise the countdown section on home. */
