@@ -153,8 +153,9 @@ export default function ProposalForm({ teamCode, submitted, onSubmitted }: Propo
       <div className="space-y-2">
         <ProposalHeader closed={false} />
         <p className="text-sm text-muted-foreground">
-          Copy the proposal template to your Google Drive (File → Make a copy) and edit it with your team. Then
-          upload the final proposal below as a PDF (max 10 MB). One proposal per team; resubmissions are not
+          Download the proposal template (.docx) or copy it to your Google Drive (File → Make a copy), and edit it
+          with your team. Save the final version as a PDF (File → Save as / Download → PDF, max 10 MB) and upload
+          it below. One proposal per team; resubmissions are not
           allowed.
         </p>
       </div>
