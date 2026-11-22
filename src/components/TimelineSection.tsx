@@ -42,8 +42,8 @@ const MILESTONES: Milestone[] = [
   },
   {
     id: 'registration-closed',
-    when: '20 Nov',
-    date: '2026-11-20T00:00:00+05:30',
+    when: '25 Nov',
+    date: '2026-11-25T23:59:00+05:30',
     title: 'Registration closes',
     body: 'Last day to register your team.',
   },
