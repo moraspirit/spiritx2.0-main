@@ -58,8 +58,8 @@ export default function ProposalCallout() {
               Put your idea on paper.
             </h2>
             <p className="mt-2 max-w-[52ch] text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Copy the proposal template to your Google Drive, edit it with your team, then upload the final
-              proposal as a PDF from the team portal.
+              Download the proposal template (.docx) or copy it to your Google Drive, edit it with your team, then
+              upload the final proposal as a PDF from the team portal.
               {proposalDeadline ? ` ${countdown(proposalDeadline)}` : ''}
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function ProposalCallout() {
                 <ArrowRight size={17} aria-hidden="true" />
               </span>
             </a>
-            <ProposalTemplateLink className="justify-center" />
+            <ProposalTemplateLink stacked />
           </div>
         </div>
       </motion.div>

@@ -146,8 +146,8 @@ function TeamLoginForm({ onLogin }: { onLogin: (code: string, status: TeamStatus
       {proposalsOpen ? (
         <div className="space-y-3 border-t border-border/70 pt-5">
           <p className="text-pretty text-sm leading-relaxed text-muted-foreground">
-            Copy the proposal template to your Google Drive, edit it with your team, then log in here to upload the
-            final proposal as a PDF.
+            Download the proposal template (.docx) or copy it to your Google Drive, edit it with your team, then log
+            in here to upload the final proposal as a PDF.
           </p>
           <ProposalTemplateLink />
         </div>
